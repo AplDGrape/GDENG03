@@ -18,6 +18,8 @@ public:
 	void onCreate() override;
 	void onUpdate() override;
 	void onDestroy() override;
+
+	UINT size_list;
 private:
 	SwapChain* m_swap_chain;
 	VertexBuffer* m_vb;

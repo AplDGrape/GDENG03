@@ -28,6 +28,9 @@
     <Filter Include="GameEngine\GraphicsEngine\PixelShader">
       <UniqueIdentifier>{f977a64f-d85a-414b-9702-293cdceb0832}</UniqueIdentifier>
     </Filter>
+    <Filter Include="GameEngine\Challenges">
+      <UniqueIdentifier>{2054f491-363c-461d-9c82-249e42fbb782}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -57,6 +60,9 @@
     <ClCompile Include="PixelShader.cpp">
       <Filter>GameEngine\GraphicsEngine\PixelShader</Filter>
     </ClCompile>
+    <ClCompile Include="RenderMultipleQuad.cpp">
+      <Filter>GameEngine\Challenges</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AppWindow.h">
@@ -82,6 +88,9 @@
     </ClInclude>
     <ClInclude Include="PixelShader.h">
       <Filter>GameEngine\GraphicsEngine\PixelShader</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderMultipleQuad.h">
+      <Filter>GameEngine\Challenges</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

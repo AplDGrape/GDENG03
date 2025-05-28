@@ -1,15 +1,17 @@
 #include "AppWindow.h"
+#include "RenderMultipleQuad.h"
+#include <iostream>
 
-struct vec3
-{
-	float x, y, z;
-};
-
-struct vertex
-{
-	vec3 position;
-	vec3 color;
-};
+//struct vec3
+//{
+//	float x, y, z;
+//};
+//
+//struct vertex
+//{
+//	vec3 position;
+//	vec3 color;
+//};
 
 AppWindow::AppWindow()
 {
@@ -23,6 +25,8 @@ void AppWindow::onCreate()
 
 	RECT rc = this->getClientWindowRect();
 	m_swap_chain->init(this->m_hwnd, rc.right - rc.left, rc.bottom - rc.top);
+
+	RenderMultipleQuad::initialize();
 
 	vertex list[] =
 	{
@@ -53,9 +57,13 @@ void AppWindow::onCreate()
 		{ 0.5f,  0.5f, 0.0f,	0,1,0} //POS4
 	};
 
+	//const vertex* list = RenderMultipleQuad::getInstance()->getVertexList();
+	//size_t size_list = RenderMultipleQuad::getInstance()->getVertexCount();
+
 	m_vb = GraphicsEngine::get()->createVertexBuffer();
 	UINT size_list = ARRAYSIZE(list);
-
+	//Bring this back for animate
+	
 	//GraphicsEngine::get()->createShaders();
 	
 	void* shader_byte_code = nullptr;
@@ -67,6 +75,7 @@ void AppWindow::onCreate()
 	m_vs = GraphicsEngine::get()->createVertexShader(shader_byte_code, size_shader);
 	//GraphicsEngine::get()->getShaderBufferAndSize(&shader_byte_code, &size_shader);
 	
+	//m_vb->load((void*)list, sizeof(vertex), (UINT)size_list, shader_byte_code, size_shader);
 	m_vb->load(list, sizeof(vertex), size_list, shader_byte_code, size_shader);
 
 	GraphicsEngine::get()->releaseCompiledShader();
@@ -80,6 +89,7 @@ void AppWindow::onCreate()
 	//m_vb->load(list, sizeof(vertex), size_list, shader_byte_code, size_shader);
 
 	GraphicsEngine::get()->releaseCompiledShader();
+
 }
 
 void AppWindow::onUpdate()
@@ -101,9 +111,14 @@ void AppWindow::onUpdate()
 	GraphicsEngine::get()->getImmediateDeviceContext()->setVertexBuffer(m_vb);
 
 	//FINALLY DRAW THE TRIANGLE
+	//For animate part
 	GraphicsEngine::get()->getImmediateDeviceContext()->drawTriangleStrip(m_vb->getSizeVertexList(), 0);
+	//GraphicsEngine::get()->getImmediateDeviceContext()->drawTriangleList(m_vb->getSizeVertexList(), 0);
 
 	m_swap_chain->present(false);
+
+	//int x = RenderMultipleQuad::getInstance()->getX();
+	//std::cout << "My X " << x << std::endl;
 }
 
 void AppWindow::onDestroy()
@@ -113,6 +128,9 @@ void AppWindow::onDestroy()
 	m_swap_chain->release();
 	m_vs->release();
 	m_ps->release();
+
+	RenderMultipleQuad::destroy();
+
 	GraphicsEngine::get()->release();
 }
 
