@@ -31,6 +31,9 @@
     <Filter Include="GameEngine\Challenges">
       <UniqueIdentifier>{2054f491-363c-461d-9c82-249e42fbb782}</UniqueIdentifier>
     </Filter>
+    <Filter Include="GameEngine\ConstantBuffer">
+      <UniqueIdentifier>{8f977165-c817-4293-9647-efc67fc9020f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -63,6 +66,9 @@
     <ClCompile Include="RenderMultipleQuad.cpp">
       <Filter>GameEngine\Challenges</Filter>
     </ClCompile>
+    <ClCompile Include="ConstantBuffer.cpp">
+      <Filter>GameEngine\ConstantBuffer</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AppWindow.h">
@@ -91,6 +97,9 @@
     </ClInclude>
     <ClInclude Include="RenderMultipleQuad.h">
       <Filter>GameEngine\Challenges</Filter>
+    </ClInclude>
+    <ClInclude Include="ConstantBuffer.h">
+      <Filter>GameEngine\ConstantBuffer</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

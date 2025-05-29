@@ -1,6 +1,7 @@
 #include "AppWindow.h"
 #include "RenderMultipleQuad.h"
 #include <iostream>
+#include <Windows.h>
 
 //struct vec3
 //{
@@ -12,6 +13,12 @@
 //	vec3 position;
 //	vec3 color;
 //};
+
+__declspec(align(16))
+struct constant
+{
+	unsigned int m_time;
+};
 
 AppWindow::AppWindow()
 {
@@ -48,13 +55,13 @@ void AppWindow::onCreate()
 		//{ 0.5f, -0.5f, 0.0f,	0,0,1}	//POS3
 		
 		//RECT GREEN
-		{-0.5f, -0.5f, 0.0f,	0,1,0}, //POS1
+		{-0.5f, -0.5f, 0.0f,	-0.32f,-0.11f, 0.0f,	0,1,0,	1,0,0}, //POS1
 
-		{-0.5f,  0.5f, 0.0f,	0,1,0}, //POS2
+		{-0.5f,  0.5f, 0.0f,	-0.11f, 0.78f, 0.0f,	0,1,0,	1,1,0}, //POS2
 
-		{ 0.5f, -0.5f, 0.0f,	0,1,0},  //POS3
+		{ 0.5f, -0.5f, 0.0f,	 0.75f,-0.73f, 0.0f,	0,1,0,	1,0,1},  //POS3
 
-		{ 0.5f,  0.5f, 0.0f,	0,1,0} //POS4
+		{ 0.5f,  0.5f, 0.0f,	 0.88f, 0.77f, 0.0f,	0,1,0,	1,1,1} //POS4
 	};
 
 	//const vertex* list = RenderMultipleQuad::getInstance()->getVertexList();
@@ -90,6 +97,12 @@ void AppWindow::onCreate()
 
 	GraphicsEngine::get()->releaseCompiledShader();
 
+	constant cc;
+	cc.m_time = 0;
+
+	m_cb = GraphicsEngine::get()->createConstantBuffer();
+	m_cb->load(&cc, sizeof(constant));
+
 }
 
 void AppWindow::onUpdate()
@@ -103,6 +116,13 @@ void AppWindow::onUpdate()
 	GraphicsEngine::get()->getImmediateDeviceContext()->setViewportSize(rc.right - rc.left, rc.bottom - rc.top);
 	//SET THE DEFAULT SHADER IN THE GRAPHICS PIPELINE TO BE ABLE TO DRAW
 	//GraphicsEngine::get()->setShaders();
+
+	constant cc;
+	cc.m_time = ::GetTickCount();
+	m_cb->update(GraphicsEngine::get()->getImmediateDeviceContext(), &cc);
+
+	GraphicsEngine::get()->getImmediateDeviceContext()->setConstantBuffer(m_vs, m_cb);
+	GraphicsEngine::get()->getImmediateDeviceContext()->setConstantBuffer(m_ps, m_cb);
 
 	GraphicsEngine::get()->getImmediateDeviceContext()->setVertexShader(m_vs);
 	GraphicsEngine::get()->getImmediateDeviceContext()->setPixelShader(m_ps);
