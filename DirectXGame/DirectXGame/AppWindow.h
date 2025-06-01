@@ -9,6 +9,8 @@
 #include "VertexShader.h"
 #include "PixelShader.h"
 
+class WireframeRenderer;
+
 class AppWindow: public Window
 {
 public:
@@ -27,5 +29,8 @@ private:
 	VertexShader* m_vs;
 	PixelShader* m_ps;
 	ConstantBuffer* m_cb;
+
+private:
+	WireframeRenderer* m_wireframe_renderer = nullptr;
 };
 

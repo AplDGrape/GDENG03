@@ -39,6 +39,10 @@ public:
 public:
 	static GraphicsEngine* get();
 
+//wireframe
+public:
+	ID3D11Device* getD3DDevice();
+	ID3D11DeviceContext* getD3DDeviceContext();
 private:
 	DeviceContext* m_imm_device_context;
 

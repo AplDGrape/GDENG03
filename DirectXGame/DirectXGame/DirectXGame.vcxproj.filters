@@ -69,6 +69,9 @@
     <ClCompile Include="ConstantBuffer.cpp">
       <Filter>GameEngine\ConstantBuffer</Filter>
     </ClCompile>
+    <ClCompile Include="WireframeRenderer.cpp">
+      <Filter>GameEngine\Challenges</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AppWindow.h">
@@ -100,6 +103,9 @@
     </ClInclude>
     <ClInclude Include="ConstantBuffer.h">
       <Filter>GameEngine\ConstantBuffer</Filter>
+    </ClInclude>
+    <ClInclude Include="WireframeRenderer.h">
+      <Filter>GameEngine\Challenges</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

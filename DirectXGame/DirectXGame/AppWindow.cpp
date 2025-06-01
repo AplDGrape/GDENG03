@@ -1,5 +1,6 @@
 #include "AppWindow.h"
 #include "RenderMultipleQuad.h"
+#include "WireframeRenderer.h"
 #include <iostream>
 #include <Windows.h>
 
@@ -103,6 +104,13 @@ void AppWindow::onCreate()
 	m_cb = GraphicsEngine::get()->createConstantBuffer();
 	m_cb->load(&cc, sizeof(constant));
 
+	//wireframe
+	m_wireframe_renderer = new WireframeRenderer();
+	if (m_wireframe_renderer->init(GraphicsEngine::get()->getD3DDevice()))
+	{
+		// Handle error / incase some shit happens
+	}
+
 }
 
 void AppWindow::onUpdate()
@@ -110,7 +118,7 @@ void AppWindow::onUpdate()
 	Window::onUpdate();
 	//CLEAR THE RENDER TARGET
 	GraphicsEngine::get()->getImmediateDeviceContext()->clearRenderTargetColor(this->m_swap_chain,
-		0, 0.5, 0.5, 1);
+		0, 0.0, 0.0, 1);
 	//SET VIEWPORT OF RENDER TARGET IN WHICH WE HAVE TO DRAW
 	RECT rc = this->getClientWindowRect();
 	GraphicsEngine::get()->getImmediateDeviceContext()->setViewportSize(rc.right - rc.left, rc.bottom - rc.top);
@@ -129,6 +137,9 @@ void AppWindow::onUpdate()
 
 	//SET THE VERTICES OF THE TRIANGLE TO DRAW
 	GraphicsEngine::get()->getImmediateDeviceContext()->setVertexBuffer(m_vb);
+
+	//Wireframe
+	m_wireframe_renderer->set(GraphicsEngine::get()->getD3DDeviceContext());
 
 	//FINALLY DRAW THE TRIANGLE
 	//For animate part
@@ -150,6 +161,11 @@ void AppWindow::onDestroy()
 	m_ps->release();
 
 	RenderMultipleQuad::destroy();
+
+	//wireframe
+	m_wireframe_renderer->release();
+	delete m_wireframe_renderer;
+	m_wireframe_renderer = nullptr;
 
 	GraphicsEngine::get()->release();
 }

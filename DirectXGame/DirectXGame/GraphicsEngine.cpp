@@ -184,3 +184,14 @@ GraphicsEngine* GraphicsEngine::get()
 	static GraphicsEngine engine;
 	return &engine;
 }
+
+//wireframe
+ID3D11Device* GraphicsEngine::getD3DDevice()
+{
+	return m_d3d_device;
+}
+
+ID3D11DeviceContext* GraphicsEngine::getD3DDeviceContext()
+{
+	return m_imm_context;
+}
