@@ -139,6 +139,11 @@ void AppWindow::onUpdate()
 	GraphicsEngine::get()->getImmediateDeviceContext()->setVertexBuffer(m_vb);
 
 	//Wireframe
+	if (GetAsyncKeyState('T') & 0x1) //Press T to toggle
+	{
+		m_wireframe_renderer->toggle(); //Toggles with this line
+	}
+
 	m_wireframe_renderer->set(GraphicsEngine::get()->getD3DDeviceContext());
 
 	//FINALLY DRAW THE TRIANGLE
