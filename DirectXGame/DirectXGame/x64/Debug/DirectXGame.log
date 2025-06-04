@@ -1,5 +1,3 @@
 ﻿  AppWindow.cpp
-C:\Users\Francis Apolinar\Documents\GitHub\GDENG03\DirectXGame\DirectXGame\AppWindow.cpp(87,75): warning C4267: 'argument': conversion from 'size_t' to 'UINT', possible loss of data
-  WireframeRenderer.cpp
-  Generating Code...
+C:\Users\Francis Apolinar\Documents\GitHub\GDENG03\DirectXGame\DirectXGame\AppWindow.cpp(88,75): warning C4267: 'argument': conversion from 'size_t' to 'UINT', possible loss of data
   DirectXGame.vcxproj -> C:\Users\Francis Apolinar\Documents\GitHub\GDENG03\DirectXGame\x64\Debug\DirectXGame.exe

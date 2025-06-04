@@ -1,6 +1,7 @@
 #include "AppWindow.h"
 #include "RenderMultipleQuad.h"
 #include "WireframeRenderer.h"
+#include "EngineTime.h"
 #include <iostream>
 #include <Windows.h>
 
@@ -125,6 +126,18 @@ void AppWindow::onUpdate()
 	//SET THE DEFAULT SHADER IN THE GRAPHICS PIPELINE TO BE ABLE TO DRAW
 	//GraphicsEngine::get()->setShaders();
 
+	// Check if "-" key is pressed, decrease time by 1 second
+	if (GetAsyncKeyState('-') & 0x1)
+	{
+		EngineTime::decreaseTime(1.0);
+	}
+
+	// Check if "=" key (plus key) is pressed, increase time by 1 second
+	if (GetAsyncKeyState('=') & 0x1)
+	{
+		EngineTime::increaseTime(1.0);
+	}
+
 	constant cc;
 	cc.m_time = ::GetTickCount();
 	m_cb->update(GraphicsEngine::get()->getImmediateDeviceContext(), &cc);
@@ -146,6 +159,18 @@ void AppWindow::onUpdate()
 
 	m_wireframe_renderer->set(GraphicsEngine::get()->getD3DDeviceContext());
 
+	// Check if "T" key is pressed to render triangle
+	if (GetAsyncKeyState('E') & 0x8000)
+	{
+		RenderMultipleQuad::getInstance()->setRenderShape(false); // Set to triangle
+	}
+
+	// Check if "Q" key is pressed to render quad
+	if (GetAsyncKeyState('Q') & 0x8000)
+	{
+		RenderMultipleQuad::getInstance()->setRenderShape(true); // Set to quad
+	}
+
 	//FINALLY DRAW THE TRIANGLE
 	//For animate part
 	GraphicsEngine::get()->getImmediateDeviceContext()->drawTriangleStrip(m_vb->getSizeVertexList(), 0);
@@ -155,6 +180,7 @@ void AppWindow::onUpdate()
 
 	//int x = RenderMultipleQuad::getInstance()->getX();
 	//std::cout << "My X " << x << std::endl;
+	
 }
 
 void AppWindow::onDestroy()

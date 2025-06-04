@@ -27,6 +27,7 @@ public:
     // Return number of vertices in the list
     size_t getVertexCount() const;
 
+    void setRenderShape(bool isQuad); // Add this method to switch between shapes
 private:
     RenderMultipleQuad();
     ~RenderMultipleQuad();
@@ -37,4 +38,7 @@ private:
     std::vector<vertex> m_vertexList;
 
     void buildVertexList();
+
+    void buildTriangle(); // Method to build triangle vertices
+    void buildQuad();     // Method to build quad vertices
 };

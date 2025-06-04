@@ -1,4 +1,5 @@
 #include "RenderMultipleQuad.h"
+#include <iostream>
 
 RenderMultipleQuad* RenderMultipleQuad::sharedInstance = nullptr;
 
@@ -75,6 +76,47 @@ void RenderMultipleQuad::buildVertexList()
     }
 }
 
+void RenderMultipleQuad::buildTriangle()
+{
+    // Define vertices for a single triangle
+    m_vertexList = {
+        {{-0.5f, -0.5f, 0.0f}, {1.0f, 0.0f, 0.0f}},
+        {{ 0.0f,  0.5f, 0.0f}, {0.0f, 1.0f, 0.0f}},
+        {{ 0.5f, -0.5f, 0.0f}, {0.0f, 0.0f, 1.0f}}
+    };
+
+    std::cout << "Triangle\n";
+}
+
+void RenderMultipleQuad::buildQuad()
+{
+    const int quadCount = 3;
+    const float quadSize = 0.3f;
+    const float spacing = 0.4f;
+
+    for (int i = 0; i < quadCount; ++i)
+    {
+        float offsetX = (i - 1) * spacing;
+
+        vec3 bottomLeft = { -quadSize + offsetX, -quadSize, 0.0f };
+        vec3 topLeft = { -quadSize + offsetX,  quadSize, 0.0f };
+        vec3 bottomRight = { quadSize + offsetX, -quadSize, 0.0f };
+        vec3 topRight = { quadSize + offsetX,  quadSize, 0.0f };
+
+        vec3 color = { 0.3f * i, 1.0f - 0.3f * i, 0.5f };
+
+        m_vertexList.push_back({ bottomLeft, color });
+        m_vertexList.push_back({ topLeft, color });
+        m_vertexList.push_back({ bottomRight, color });
+
+        m_vertexList.push_back({ bottomRight, color });
+        m_vertexList.push_back({ topLeft, color });
+        m_vertexList.push_back({ topRight, color });
+    }
+
+    std::cout << "Quad\n";
+}
+
 
 const vertex* RenderMultipleQuad::getVertexList() const
 {
@@ -84,4 +126,13 @@ const vertex* RenderMultipleQuad::getVertexList() const
 size_t RenderMultipleQuad::getVertexCount() const
 {
     return m_vertexList.size();
+}
+
+void RenderMultipleQuad::setRenderShape(bool isQuad)
+{
+    m_vertexList.clear();
+    if (isQuad)
+        buildQuad();
+    else
+        buildTriangle();
 }

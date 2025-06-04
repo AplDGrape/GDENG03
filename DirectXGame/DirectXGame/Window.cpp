@@ -3,6 +3,7 @@
 #endif
 
 #include "Window.h"
+#include "EngineTime.h"
 
 Window* window = nullptr;
 
@@ -82,6 +83,8 @@ bool Window::init()
 
 bool Window::broadcast()
 {
+    EngineTime::LogFrameStart();
+
     MSG msg;
 
     this->onUpdate();
@@ -95,6 +98,8 @@ bool Window::broadcast()
     //this->onUpdate();
 
     Sleep(0);
+
+    EngineTime::LogFrameEnd();
 
     return false;
 }
