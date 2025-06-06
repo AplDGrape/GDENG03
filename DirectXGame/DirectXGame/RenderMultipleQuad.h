@@ -1,17 +1,22 @@
 #pragma once
 #include <vector>
+#include "Vector3D.h"
 
-struct vec3
-{
-    float x, y, z;
-};
+//struct vec3
+//{
+//    float x, y, z;
+//};
 
 struct vertex
 {
-    vec3 position;
+    /*vec3 position;
     vec3 position1;
     vec3 color;
-    vec3 color1;
+    vec3 color1;*/
+    Vector3D position;
+    Vector3D position1;
+    Vector3D color;
+    Vector3D color1;
 };
 
 class RenderMultipleQuad

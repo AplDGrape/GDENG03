@@ -2,6 +2,8 @@
 #include "RenderMultipleQuad.h"
 #include "WireframeRenderer.h"
 #include "EngineTime.h"
+#include "Vector3D.h"
+#include "Matrix4x4.h"
 #include <iostream>
 #include <Windows.h>
 
@@ -19,11 +21,51 @@
 __declspec(align(16))
 struct constant
 {
+	Matrix4x4 m_world;
+	Matrix4x4 m_view;
+	Matrix4x4 m_proj;
 	unsigned int m_time;
 };
 
 AppWindow::AppWindow()
 {
+}
+
+void AppWindow::updateQuadPosition()
+{
+	constant cc;
+	cc.m_time = ::GetTickCount();
+	//cc.m_time = static_cast<unsigned int>(EngineTime::getTime() * 1000); // milliseconds
+	
+	m_delta_pos += m_delta_time / 4.0f;
+
+	if (m_delta_pos > 1.0f)
+		m_delta_pos = 0;
+
+	Matrix4x4 temp;
+
+	//cc.m_world.setTranslation(Vector3D::lerp(Vector3D(-2, -2, 0), Vector3D(2, 2, 0), m_delta_pos));
+	
+	m_delta_scale += m_delta_time / 0.15f;
+	
+	cc.m_world.setScale(Vector3D::lerp(Vector3D(0.5, 0.5, 0), Vector3D(1.0f, 1.0f, 0), (sin(m_delta_scale)+1.0f)/2.0f));
+
+	temp.setTranslation(Vector3D::lerp(Vector3D(-1.5f, -1.5f, 0), Vector3D(1.5f, 1.5f, 0), m_delta_pos));
+
+	cc.m_world *= temp;
+
+	cc.m_view.setIdentity();
+	cc.m_proj.setOrthoLH
+	(
+		(this->getClientWindowRect().right - this->getClientWindowRect().left)/400.0f,
+		(this->getClientWindowRect().bottom - this->getClientWindowRect().top)/400.0f,
+		-4.0f,
+		4.0f
+	);
+	
+	m_cb->update(GraphicsEngine::get()->getImmediateDeviceContext(), &cc);
+
+
 }
 
 void AppWindow::onCreate()
@@ -58,13 +100,13 @@ void AppWindow::onCreate()
 		//{ 0.5f, -0.5f, 0.0f,	0,0,1}	//POS3
 		
 		//RECT GREEN
-		{-0.5f, -0.5f, 0.0f,	-0.32f,-0.11f, 0.0f,	0,1,0,	1,0,0}, //POS1
+		{Vector3D (-0.5f, -0.5f, 0.0f),	Vector3D (-0.32f,-0.11f, 0.0f),	Vector3D (0,1,0),	Vector3D(1,0,0)}, //POS1
 
-		{-0.5f,  0.5f, 0.0f,	-0.11f, 0.78f, 0.0f,	0,1,0,	1,1,0}, //POS2
+		{Vector3D (-0.5f,  0.5f, 0.0f),	Vector3D (-0.11f, 0.78f, 0.0f),	Vector3D (0,1,0),	Vector3D(1,1,0)}, //POS2
 
-		{ 0.5f, -0.5f, 0.0f,	 0.75f,-0.73f, 0.0f,	0,1,0,	1,0,1},  //POS3
+		{Vector3D (0.5f, -0.5f, 0.0f),	Vector3D (0.75f,-0.73f, 0.0f),	Vector3D (0,1,0),	Vector3D(1,0,1)},  //POS3
 
-		{ 0.5f,  0.5f, 0.0f,	 0.88f, 0.77f, 0.0f,	0,1,0,	1,1,1} //POS4
+		{Vector3D (0.5f,  0.5f, 0.0f),	Vector3D (0.88f, 0.77f, 0.0f),	Vector3D (0,1,0),	Vector3D(1,1,1)} //POS4
 	};
 
 	//const vertex* list = RenderMultipleQuad::getInstance()->getVertexList();
@@ -130,10 +172,14 @@ void AppWindow::onUpdate()
 	//SET THE DEFAULT SHADER IN THE GRAPHICS PIPELINE TO BE ABLE TO DRAW
 	//GraphicsEngine::get()->setShaders();
 
-	constant cc;
-	cc.m_time = ::GetTickCount();
-	//cc.m_time = static_cast<unsigned int>(EngineTime::getTime() * 1000); // milliseconds
-	m_cb->update(GraphicsEngine::get()->getImmediateDeviceContext(), &cc);
+	//constant cc;
+	//cc.m_time = ::GetTickCount();
+	////cc.m_time = static_cast<unsigned int>(EngineTime::getTime() * 1000); // milliseconds
+	//m_cb->update(GraphicsEngine::get()->getImmediateDeviceContext(), &cc);
+
+	updateQuadPosition();
+
+
 
 	// Check if "-" key is pressed, decrease time by 1 second
 	if (GetAsyncKeyState(VK_OEM_MINUS) & 0x1)
@@ -186,6 +232,10 @@ void AppWindow::onUpdate()
 	//int x = RenderMultipleQuad::getInstance()->getX();
 	//std::cout << "My X " << x << std::endl;
 	
+	m_old_delta = m_new_delta;
+	m_new_delta = ::GetTickCount();
+
+	m_delta_time = (m_old_delta)?((m_new_delta - m_old_delta) / 1000.0f):0;
 }
 
 void AppWindow::onDestroy()

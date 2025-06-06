@@ -34,6 +34,9 @@
     <Filter Include="GameEngine\ConstantBuffer">
       <UniqueIdentifier>{8f977165-c817-4293-9647-efc67fc9020f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="GameEngine\Math">
+      <UniqueIdentifier>{dbd96253-4129-464b-948f-d7479db9e387}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -112,6 +115,12 @@
     </ClInclude>
     <ClInclude Include="EngineTime.h">
       <Filter>GameEngine\Challenges</Filter>
+    </ClInclude>
+    <ClInclude Include="Vector3D.h">
+      <Filter>GameEngine\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Matrix4x4.h">
+      <Filter>GameEngine\Math</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

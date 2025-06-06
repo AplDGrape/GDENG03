@@ -57,12 +57,12 @@ void RenderMultipleQuad::buildVertexList()
         float offsetX = (i - 1) * spacing; // spread them left, center, right
 
         // Quad corner positions (2 triangles per quad)
-        vec3 bottomLeft = { -quadSize + offsetX, -quadSize, 0.0f };
-        vec3 topLeft = { -quadSize + offsetX,  quadSize, 0.0f };
-        vec3 bottomRight = { quadSize + offsetX, -quadSize, 0.0f };
-        vec3 topRight = { quadSize + offsetX,  quadSize, 0.0f };
+        Vector3D bottomLeft = { -quadSize + offsetX, -quadSize, 0.0f };
+        Vector3D topLeft = { -quadSize + offsetX,  quadSize, 0.0f };
+        Vector3D bottomRight = { quadSize + offsetX, -quadSize, 0.0f };
+        Vector3D topRight = { quadSize + offsetX,  quadSize, 0.0f };
 
-        vec3 color = { 0.3f * i, 1.0f - 0.3f * i, 0.5f }; // unique color per quad
+        Vector3D color = { 0.3f * i, 1.0f - 0.3f * i, 0.5f }; // unique color per quad
 
         // Triangle 1
         m_vertexList.push_back({ bottomLeft,  color });
@@ -98,12 +98,12 @@ void RenderMultipleQuad::buildQuad()
     {
         float offsetX = (i - 1) * spacing;
 
-        vec3 bottomLeft = { -quadSize + offsetX, -quadSize, 0.0f };
-        vec3 topLeft = { -quadSize + offsetX,  quadSize, 0.0f };
-        vec3 bottomRight = { quadSize + offsetX, -quadSize, 0.0f };
-        vec3 topRight = { quadSize + offsetX,  quadSize, 0.0f };
+        Vector3D bottomLeft = { -quadSize + offsetX, -quadSize, 0.0f };
+        Vector3D topLeft = { -quadSize + offsetX,  quadSize, 0.0f };
+        Vector3D bottomRight = { quadSize + offsetX, -quadSize, 0.0f };
+        Vector3D topRight = { quadSize + offsetX,  quadSize, 0.0f };
 
-        vec3 color = { 0.3f * i, 1.0f - 0.3f * i, 0.5f };
+        Vector3D color = { 0.3f * i, 1.0f - 0.3f * i, 0.5f };
 
         m_vertexList.push_back({ bottomLeft, color });
         m_vertexList.push_back({ topLeft, color });
