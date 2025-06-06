@@ -12,6 +12,9 @@ public:
 	static void initialize();
 	static double getDeltaTime();
 
+	static void update();
+	static double getTime();
+
 	static void increaseTime(double seconds);
 	static void decreaseTime(double seconds);
 
@@ -30,6 +33,8 @@ private:
 	std::chrono::system_clock::time_point end;
 
 	double deltaTime = 0.0;
+
+	double simulatedTime = 0.0;
 
 	static void LogFrameStart();
 	static void LogFrameEnd();

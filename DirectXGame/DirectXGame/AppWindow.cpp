@@ -36,6 +36,7 @@ void AppWindow::onCreate()
 	m_swap_chain->init(this->m_hwnd, rc.right - rc.left, rc.bottom - rc.top);
 
 	RenderMultipleQuad::initialize();
+	EngineTime::initialize();
 
 	vertex list[] =
 	{
@@ -117,6 +118,9 @@ void AppWindow::onCreate()
 void AppWindow::onUpdate()
 {
 	Window::onUpdate();
+
+	EngineTime::update();
+
 	//CLEAR THE RENDER TARGET
 	GraphicsEngine::get()->getImmediateDeviceContext()->clearRenderTargetColor(this->m_swap_chain,
 		0, 0.0, 0.0, 1);
@@ -126,21 +130,22 @@ void AppWindow::onUpdate()
 	//SET THE DEFAULT SHADER IN THE GRAPHICS PIPELINE TO BE ABLE TO DRAW
 	//GraphicsEngine::get()->setShaders();
 
+	constant cc;
+	cc.m_time = ::GetTickCount();
+	//cc.m_time = static_cast<unsigned int>(EngineTime::getTime() * 1000); // milliseconds
+	m_cb->update(GraphicsEngine::get()->getImmediateDeviceContext(), &cc);
+
 	// Check if "-" key is pressed, decrease time by 1 second
-	if (GetAsyncKeyState('-') & 0x1)
+	if (GetAsyncKeyState(VK_OEM_MINUS) & 0x1)
 	{
 		EngineTime::decreaseTime(1.0);
 	}
 
 	// Check if "=" key (plus key) is pressed, increase time by 1 second
-	if (GetAsyncKeyState('=') & 0x1)
+	if (GetAsyncKeyState(VK_OEM_PLUS) & 0x1)
 	{
 		EngineTime::increaseTime(1.0);
 	}
-
-	constant cc;
-	cc.m_time = ::GetTickCount();
-	m_cb->update(GraphicsEngine::get()->getImmediateDeviceContext(), &cc);
 
 	GraphicsEngine::get()->getImmediateDeviceContext()->setConstantBuffer(m_vs, m_cb);
 	GraphicsEngine::get()->getImmediateDeviceContext()->setConstantBuffer(m_ps, m_cb);

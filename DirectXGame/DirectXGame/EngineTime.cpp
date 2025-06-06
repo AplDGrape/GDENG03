@@ -23,28 +23,38 @@ double EngineTime::getDeltaTime()
     return sharedInstance->deltaTime;
 }
 
+void EngineTime::update()
+{
+    if (!sharedInstance) return;
+
+    sharedInstance->end = std::chrono::system_clock::now();
+    std::chrono::duration<double> frameDuration = sharedInstance->end - sharedInstance->start;
+    sharedInstance->deltaTime = frameDuration.count();
+    sharedInstance->simulatedTime += sharedInstance->deltaTime;
+    sharedInstance->start = sharedInstance->end;
+}
+
+double EngineTime::getTime()
+{
+    return sharedInstance ? sharedInstance->simulatedTime : 0.0;
+}
+
 void EngineTime::increaseTime(double seconds)
 {
-    if (sharedInstance == nullptr)
+    if (sharedInstance)
     {
-        std::cerr << "EngineTime not initialized!" << std::endl;
-        return;
+        sharedInstance->simulatedTime += seconds;
+        std::cout << "Increase Time: " << sharedInstance->simulatedTime << "s\n";
     }
-
-    sharedInstance->deltaTime += seconds;
-    std::cout << "Increase Time\n";
 }
 
 void EngineTime::decreaseTime(double seconds)
 {
-    if (sharedInstance == nullptr)
+    if (sharedInstance)
     {
-        std::cerr << "EngineTime not initialized!" << std::endl;
-        return;
+        sharedInstance->simulatedTime -= seconds;
+        std::cout << "Decrease Time: " << sharedInstance->simulatedTime << "s\n";
     }
-
-    sharedInstance->deltaTime -= seconds;
-    std::cout << "Decrease Time\n";
 }
 
 EngineTime::EngineTime()
