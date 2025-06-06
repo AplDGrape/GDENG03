@@ -14,7 +14,7 @@ struct vertex
     vec3 color;
     vec3 color1;*/
     Vector3D position;
-    Vector3D position1;
+    //Vector3D position1;
     Vector3D color;
     Vector3D color1;
 };

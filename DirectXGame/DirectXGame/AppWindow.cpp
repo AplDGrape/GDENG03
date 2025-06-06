@@ -46,12 +46,26 @@ void AppWindow::updateQuadPosition()
 
 	//cc.m_world.setTranslation(Vector3D::lerp(Vector3D(-2, -2, 0), Vector3D(2, 2, 0), m_delta_pos));
 	
-	m_delta_scale += m_delta_time / 0.15f;
+	m_delta_scale += m_delta_time / 0.55f;
 	
-	cc.m_world.setScale(Vector3D::lerp(Vector3D(0.5, 0.5, 0), Vector3D(1.0f, 1.0f, 0), (sin(m_delta_scale)+1.0f)/2.0f));
+	//cc.m_world.setScale(Vector3D::lerp(Vector3D(0.5, 0.5, 0), Vector3D(1.0f, 1.0f, 0), (sin(m_delta_scale)+1.0f)/2.0f));
 
-	temp.setTranslation(Vector3D::lerp(Vector3D(-1.5f, -1.5f, 0), Vector3D(1.5f, 1.5f, 0), m_delta_pos));
+	//temp.setTranslation(Vector3D::lerp(Vector3D(-1.5f, -1.5f, 0), Vector3D(1.5f, 1.5f, 0), m_delta_pos));
 
+	//cc.m_world *= temp;
+
+	cc.m_world.setScale(Vector3D(1, 1, 1));
+
+	temp.setIdentity();
+	temp.setRotationZ(m_delta_scale);
+	cc.m_world *= temp;
+
+	temp.setIdentity();
+	temp.setRotationY(m_delta_scale);
+	cc.m_world *= temp;
+
+	temp.setIdentity();
+	temp.setRotationX(m_delta_scale);
 	cc.m_world *= temp;
 
 	cc.m_view.setIdentity();
@@ -80,7 +94,7 @@ void AppWindow::onCreate()
 	RenderMultipleQuad::initialize();
 	EngineTime::initialize();
 
-	vertex list[] =
+	vertex vertex_list[] =
 	{
 		//X - Y - Z
 		//RECT PRIDE
@@ -100,24 +114,61 @@ void AppWindow::onCreate()
 		//{ 0.5f, -0.5f, 0.0f,	0,0,1}	//POS3
 		
 		//RECT GREEN
-		{Vector3D (-0.5f, -0.5f, 0.0f),	Vector3D (-0.32f,-0.11f, 0.0f),	Vector3D (0,1,0),	Vector3D(1,0,0)}, //POS1
+		//FRONT FACE
+		{Vector3D (-0.5f, -0.5f, -0.5f),	/*Vector3D (-0.32f,-0.11f, 0.0f),*/	Vector3D (1,0,0),	Vector3D(0.2f,0,0)}, //POS1
 
-		{Vector3D (-0.5f,  0.5f, 0.0f),	Vector3D (-0.11f, 0.78f, 0.0f),	Vector3D (0,1,0),	Vector3D(1,1,0)}, //POS2
+		{Vector3D (-0.5f,  0.5f, -0.5f),	/*Vector3D (-0.11f, 0.78f, 0.0f),*/	Vector3D (1,1,0),	Vector3D(0.2f,0.2f,0)}, //POS2
 
-		{Vector3D (0.5f, -0.5f, 0.0f),	Vector3D (0.75f,-0.73f, 0.0f),	Vector3D (0,1,0),	Vector3D(1,0,1)},  //POS3
+		{Vector3D ( 0.5f,  0.5f, -0.5f),	/*Vector3D (0.75f,-0.73f, 0.0f),*/	Vector3D (1,1,0),	Vector3D(0.2f,0.2f,0)},  //POS3
 
-		{Vector3D (0.5f,  0.5f, 0.0f),	Vector3D (0.88f, 0.77f, 0.0f),	Vector3D (0,1,0),	Vector3D(1,1,1)} //POS4
+		{Vector3D ( 0.5f, -0.5f, -0.5f),	/*Vector3D (0.88f, 0.77f, 0.0f),*/	Vector3D (1,0,0),	Vector3D(0.2f,0,0)}, //POS4
+
+		//BACK FACE
+		{Vector3D( 0.5f, -0.5f,  0.5f),	/*Vector3D (-0.32f,-0.11f, 0.0f),*/	Vector3D(0,1,0),	Vector3D(0,0.2f,0)}, //POS1
+
+		{Vector3D( 0.5f,  0.5f,  0.5f),	/*Vector3D (-0.11f, 0.78f, 0.0f),*/	Vector3D(0,1,1),	Vector3D(0,0.2f,0.2f)}, //POS2
+
+		{Vector3D(-0.5f,  0.5f,  0.5f),	/*Vector3D (0.75f,-0.73f, 0.0f),*/	Vector3D(0,1,1),	Vector3D(0,0.2f,0.2f)},  //POS3
+
+		{Vector3D(-0.5f, -0.5f,  0.5f),	/*Vector3D (0.88f, 0.77f, 0.0f),*/	Vector3D(0,1,0),	Vector3D(0,0.2f,0)} //POS4
 	};
 
 	//const vertex* list = RenderMultipleQuad::getInstance()->getVertexList();
 	//size_t size_list = RenderMultipleQuad::getInstance()->getVertexCount();
 
 	m_vb = GraphicsEngine::get()->createVertexBuffer();
-	UINT size_list = ARRAYSIZE(list);
+	UINT size_list = ARRAYSIZE(vertex_list);
 	//Bring this back for animate
 	
 	//GraphicsEngine::get()->createShaders();
 	
+	unsigned int index_list[] =
+	{
+		//FRONT SIDE
+		0,1,2,	//FIRST TRAINGLE
+		2,3,0,	//SECOND TRIANGLE
+		//BACK SIDE
+		4,5,6,
+		6,7,4,
+		//TOP SIDE
+		1,6,5,
+		5,2,1,
+		//BOTTOM SIDE
+		7,0,3,
+		3,4,7,
+		//RIGHT SIDE
+		3,2,5,
+		5,4,3,
+		//LEFT SIDE
+		7,6,1,
+		1,0,7
+	};
+
+	m_ib = GraphicsEngine::get()->createIndexBuffer();
+	UINT size_index_list = ARRAYSIZE(index_list);
+
+	m_ib->load(index_list, size_index_list);
+
 	void* shader_byte_code = nullptr;
 	size_t size_shader = 0;
 	
@@ -128,7 +179,7 @@ void AppWindow::onCreate()
 	//GraphicsEngine::get()->getShaderBufferAndSize(&shader_byte_code, &size_shader);
 	
 	//m_vb->load((void*)list, sizeof(vertex), (UINT)size_list, shader_byte_code, size_shader);
-	m_vb->load(list, sizeof(vertex), size_list, shader_byte_code, size_shader);
+	m_vb->load(vertex_list, sizeof(vertex), size_list, shader_byte_code, size_shader);
 
 	GraphicsEngine::get()->releaseCompiledShader();
 
@@ -201,6 +252,8 @@ void AppWindow::onUpdate()
 
 	//SET THE VERTICES OF THE TRIANGLE TO DRAW
 	GraphicsEngine::get()->getImmediateDeviceContext()->setVertexBuffer(m_vb);
+	//SET THE INDICES OF THE TRIANGLE TO DRAW
+	GraphicsEngine::get()->getImmediateDeviceContext()->setIndexBuffer(m_ib);
 
 	//Wireframe
 	if (GetAsyncKeyState('T') & 0x1) //Press T to toggle
@@ -224,7 +277,8 @@ void AppWindow::onUpdate()
 
 	//FINALLY DRAW THE TRIANGLE
 	//For animate part
-	GraphicsEngine::get()->getImmediateDeviceContext()->drawTriangleStrip(m_vb->getSizeVertexList(), 0);
+	//GraphicsEngine::get()->getImmediateDeviceContext()->drawTriangleStrip(m_vb->getSizeVertexList(), 0);
+	GraphicsEngine::get()->getImmediateDeviceContext()->drawIndexedTriangleList(m_ib->getSizeIndexList(), 0, 0);
 	//GraphicsEngine::get()->getImmediateDeviceContext()->drawTriangleList(m_vb->getSizeVertexList(), 0);
 
 	m_swap_chain->present(false);
@@ -242,6 +296,8 @@ void AppWindow::onDestroy()
 {
 	Window::onDestroy();
 	m_vb->release();
+	m_ib->release();
+	m_cb->release();
 	m_swap_chain->release();
 	m_vs->release();
 	m_ps->release();
