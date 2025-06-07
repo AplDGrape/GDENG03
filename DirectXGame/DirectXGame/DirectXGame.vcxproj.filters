@@ -84,6 +84,12 @@
     <ClCompile Include="IndexBuffer.cpp">
       <Filter>GameEngine\GraphicsEngine\IndexBuffer</Filter>
     </ClCompile>
+    <ClCompile Include="AGameObject.cpp">
+      <Filter>GameEngine\Challenges</Filter>
+    </ClCompile>
+    <ClCompile Include="Cube.cpp">
+      <Filter>GameEngine\Challenges</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AppWindow.h">
@@ -130,6 +136,18 @@
     </ClInclude>
     <ClInclude Include="IndexBuffer.h">
       <Filter>GameEngine\GraphicsEngine\IndexBuffer</Filter>
+    </ClInclude>
+    <ClInclude Include="AGameObject.h">
+      <Filter>GameEngine\Challenges</Filter>
+    </ClInclude>
+    <ClInclude Include="MathUtils.h">
+      <Filter>GameEngine\Challenges</Filter>
+    </ClInclude>
+    <ClInclude Include="Cube.h">
+      <Filter>GameEngine\Challenges</Filter>
+    </ClInclude>
+    <ClInclude Include="CubeMeshData.h">
+      <Filter>GameEngine\Challenges</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -15,6 +15,17 @@ public:
 
 	}
 
+	//
+	static Vector3D zeros()
+	{
+		return Vector3D(0.0f, 0.0f, 0.0f);
+	}
+	//
+	static Vector3D ones()
+	{
+		return Vector3D(1.0f, 1.0f, 1.0f);
+	}
+
 	static Vector3D lerp(const Vector3D& start, const Vector3D& end, float delta)
 	{
 		Vector3D v;

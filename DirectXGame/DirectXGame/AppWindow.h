@@ -10,6 +10,9 @@
 #include "VertexShader.h"
 #include "PixelShader.h"
 
+#include <vector>
+#include "Cube.h"
+
 class WireframeRenderer;
 
 class AppWindow: public Window
@@ -43,5 +46,8 @@ private:
 	float m_delta_scale;
 private:
 	WireframeRenderer* m_wireframe_renderer = nullptr;
+
+private:
+	std::vector<Cube*> cubeList;
 };
 

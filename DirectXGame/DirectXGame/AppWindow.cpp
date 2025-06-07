@@ -1,11 +1,15 @@
 #include "AppWindow.h"
 #include "RenderMultipleQuad.h"
+#include "Cube.h"
 #include "WireframeRenderer.h"
 #include "EngineTime.h"
 #include "Vector3D.h"
 #include "Matrix4x4.h"
 #include <iostream>
 #include <Windows.h>
+
+#include "MathUtils.h"
+#include "CubeMeshData.h"
 
 //struct vec3
 //{
@@ -46,7 +50,7 @@ void AppWindow::updateQuadPosition()
 
 	//cc.m_world.setTranslation(Vector3D::lerp(Vector3D(-2, -2, 0), Vector3D(2, 2, 0), m_delta_pos));
 	
-	m_delta_scale += m_delta_time / 0.55f;
+	m_delta_scale += m_delta_time / 0.5f;
 	
 	//cc.m_world.setScale(Vector3D::lerp(Vector3D(0.5, 0.5, 0), Vector3D(1.0f, 1.0f, 0), (sin(m_delta_scale)+1.0f)/2.0f));
 
@@ -191,7 +195,19 @@ void AppWindow::onCreate()
 
 	//m_vb->load(list, sizeof(vertex), size_list, shader_byte_code, size_shader);
 
-	GraphicsEngine::get()->releaseCompiledShader();
+	//Render multiple cube (i.e. 100)
+	Cube* cubeObject = new Cube("Cube", shader_byte_code, size_shader);
+
+	for (int i = 0; i < 100; i++) {
+		float x = MathUtils::randomFloat(-0.75, 0.75f);
+		float y = MathUtils::randomFloat(-0.75, 0.75f);
+
+		Cube* cubeObject = new Cube("Cube", shader_byte_code, size_shader);
+		cubeObject->setAnimSpeed(MathUtils::randomFloat(-3.75f, 3.75f));
+		cubeObject->setPosition(Vector3D(x, y, 0.0f));
+		cubeObject->setScale(Vector3D(0.25, 0.25, 0.25));
+		this->cubeList.push_back(cubeObject);
+	}
 
 	constant cc;
 	cc.m_time = 0;
@@ -205,7 +221,8 @@ void AppWindow::onCreate()
 	{
 		// Handle error / incase some shit happens
 	}
-
+	
+	GraphicsEngine::get()->releaseCompiledShader();
 }
 
 void AppWindow::onUpdate()
@@ -281,7 +298,18 @@ void AppWindow::onUpdate()
 	GraphicsEngine::get()->getImmediateDeviceContext()->drawIndexedTriangleList(m_ib->getSizeIndexList(), 0, 0);
 	//GraphicsEngine::get()->getImmediateDeviceContext()->drawTriangleList(m_vb->getSizeVertexList(), 0);
 
-	m_swap_chain->present(false);
+	RECT windowRect = this->getClientWindowRect();
+	int width = windowRect.right - windowRect.left;
+	int height = windowRect.bottom - windowRect.top;
+
+	for (int i = 0; i < this->cubeList.size(); i++) {
+		this->cubeList[i]->update(EngineTime::getDeltaTime());
+		this->cubeList[i]->draw(width, height, m_vs, m_ps);
+	}
+
+	m_swap_chain->present(true);
+
+	//m_swap_chain->present(false);
 
 	//int x = RenderMultipleQuad::getInstance()->getX();
 	//std::cout << "My X " << x << std::endl;
