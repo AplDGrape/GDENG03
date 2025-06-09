@@ -2,14 +2,15 @@
 #include <chrono>
 #include <iostream>
 
-EngineTime* EngineTime::sharedInstance = nullptr;
+EngineTime* EngineTime::sharedInstance = NULL;
 
 void EngineTime::initialize()
 {
-    if (sharedInstance == nullptr)
+    /*if (sharedInstance == nullptr)
     {
         sharedInstance = new EngineTime();
-    }
+    }*/
+    sharedInstance = new EngineTime();
 }
 
 double EngineTime::getDeltaTime()
