@@ -198,7 +198,7 @@ void AppWindow::onCreate()
 	//Render multiple cube (i.e. 100)
 	Cube* cubeObject = new Cube("Cube", shader_byte_code, size_shader);
 
-	/*for (int i = 0; i < 100; i++) {
+	for (int i = 0; i < 100; i++) {
 		float x = MathUtils::randomFloat(-0.75, 0.75f);
 		float y = MathUtils::randomFloat(-0.75, 0.75f);
 
@@ -207,7 +207,7 @@ void AppWindow::onCreate()
 		cubeObject->setPosition(Vector3D(x, y, 0.0f));
 		cubeObject->setScale(Vector3D(0.25, 0.25, 0.25));
 		this->cubeList.push_back(cubeObject);
-	}*/
+	}
 
 	constant cc;
 	cc.m_time = 0;
