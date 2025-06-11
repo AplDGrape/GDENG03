@@ -11,7 +11,6 @@ C:\Users\Francis Apolinar\Documents\GitHub\GDENG03\DirectXGame\DirectXGame\Matri
 C:\Users\Francis Apolinar\Documents\GitHub\GDENG03\DirectXGame\DirectXGame\Matrix4x4.h(60,20): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
 C:\Users\Francis Apolinar\Documents\GitHub\GDENG03\DirectXGame\DirectXGame\Matrix4x4.h(61,17): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
 C:\Users\Francis Apolinar\Documents\GitHub\GDENG03\DirectXGame\DirectXGame\Matrix4x4.h(62,20): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-C:\Users\Francis Apolinar\Documents\GitHub\GDENG03\DirectXGame\DirectXGame\AppWindow.cpp(186,82): warning C4267: 'argument': conversion from 'size_t' to 'UINT', possible loss of data
-C:\Users\Francis Apolinar\Documents\GitHub\GDENG03\DirectXGame\DirectXGame\AppWindow.cpp(306,53): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-C:\Users\Francis Apolinar\Documents\GitHub\GDENG03\DirectXGame\DirectXGame\AppWindow.cpp(318,30): warning C4244: '=': conversion from 'DWORD' to 'float', possible loss of data
+C:\Users\Francis Apolinar\Documents\GitHub\GDENG03\DirectXGame\DirectXGame\AppWindow.cpp(191,82): warning C4267: 'argument': conversion from 'size_t' to 'UINT', possible loss of data
+C:\Users\Francis Apolinar\Documents\GitHub\GDENG03\DirectXGame\DirectXGame\AppWindow.cpp(330,30): warning C4244: '=': conversion from 'DWORD' to 'float', possible loss of data
   DirectXGame.vcxproj -> C:\Users\Francis Apolinar\Documents\GitHub\GDENG03\DirectXGame\x64\Debug\DirectXGame.exe

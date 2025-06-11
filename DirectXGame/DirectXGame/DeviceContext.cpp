@@ -32,6 +32,23 @@ void DeviceContext::setVertexBuffer(VertexBuffer* vertex_buffer)
 	//return true;
 }
 
+void DeviceContext::setVertexBuffers(VertexBuffer* vertex_buffer1, VertexBuffer* vertex_buffer2)
+{
+	ID3D11Buffer* buffers[2] = { vertex_buffer1->m_buffer, vertex_buffer2->m_buffer };
+	UINT strides[2] = { vertex_buffer1->m_size_vertex, vertex_buffer2->m_size_vertex };
+	UINT offsets[2] = { 0, 0 };
+
+	m_device_context->IASetVertexBuffers(0, 2, buffers, strides, offsets);
+
+	// Use layout from the first buffer (assuming both share the same input layout)
+	m_device_context->IASetInputLayout(vertex_buffer1->m_layout);
+}
+
+void DeviceContext::drawIndexedInstanced(UINT indexCountPerInstance, UINT instanceCount, UINT startIndexLocation, INT baseVertexLocation, UINT startInstanceLocation)
+{
+	m_device_context->DrawIndexedInstanced(indexCountPerInstance, instanceCount, startIndexLocation, baseVertexLocation, startInstanceLocation);
+}
+
 void DeviceContext::setIndexBuffer(IndexBuffer* index_buffer)
 {
 	m_device_context->IASetIndexBuffer(index_buffer->m_buffer, DXGI_FORMAT_R32_UINT, 0);

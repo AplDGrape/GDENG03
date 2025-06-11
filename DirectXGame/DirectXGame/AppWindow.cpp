@@ -22,6 +22,11 @@
 //	vec3 color;
 //};
 
+struct InstanceData
+{
+	Matrix4x4 transform;
+};
+
 __declspec(align(16))
 struct constant
 {
@@ -209,6 +214,9 @@ void AppWindow::onCreate()
 		this->cubeList.push_back(cubeObject);
 	}
 
+	//VertexBuffer* m_instanceBuffer = nullptr;
+	//m_instanceBuffer = GraphicsEngine::get()->createVertexBuffer();
+
 	constant cc;
 	cc.m_time = 0;
 
@@ -269,6 +277,7 @@ void AppWindow::onUpdate()
 
 	//SET THE VERTICES OF THE TRIANGLE TO DRAW
 	GraphicsEngine::get()->getImmediateDeviceContext()->setVertexBuffer(m_vb);
+	//GraphicsEngine::get()->getImmediateDeviceContext()->setVertexBuffers(m_vb, m_instanceBuffer);
 	//SET THE INDICES OF THE TRIANGLE TO DRAW
 	GraphicsEngine::get()->getImmediateDeviceContext()->setIndexBuffer(m_ib);
 
@@ -302,10 +311,13 @@ void AppWindow::onUpdate()
 	int width = windowRect.right - windowRect.left;
 	int height = windowRect.bottom - windowRect.top;
 
-	for (int i = 0; i < this->cubeList.size(); i++) {
+	int renderedCount = 0;
+
+	/*for (int i = 0; i < this->cubeList.size(); i++) {
 		this->cubeList[i]->update(EngineTime::getDeltaTime());
 		this->cubeList[i]->draw(width, height, m_vs, m_ps);
-	}
+		renderedCount++;
+	}*/
 
 	m_swap_chain->present(true);
 

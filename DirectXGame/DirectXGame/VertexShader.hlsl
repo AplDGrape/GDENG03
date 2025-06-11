@@ -4,6 +4,8 @@ struct VS_INPUT
 	//float4 position1 : POSITION1;
 	float3 color: COLOR;
 	float3 color1: COLOR1;
+
+	//float4x4 instanceTransform : INSTANCE_TRANSFORM;
 };
 
 struct VS_OUTPUT
@@ -24,6 +26,8 @@ cbuffer constant: register(b0)
 VS_OUTPUT vsmain( VS_INPUT input )
 {
 	VS_OUTPUT output = (VS_OUTPUT)0;
+
+	//float4 worldPos = mul(float4(input.position, 1.0f), input.instanceTransform);
 
 	//output.position = lerp(input.position, input.position1, (sin(m_time / 1000.0f) + 1.0f) / 2.0f);
 	//WORLD SPACE
