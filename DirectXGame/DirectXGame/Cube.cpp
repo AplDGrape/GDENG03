@@ -149,7 +149,8 @@ void Cube::draw(int width, int height, VertexShader* vertexShader, PixelShader* 
 
 	// AABB check for 2D ortho view (ignoring Z depth for now)
 	if (pos.m_x + scale.m_x < -viewHalfWidth || pos.m_x - scale.m_x > viewHalfWidth ||
-		pos.m_y + scale.m_y < -viewHalfHeight || pos.m_y - scale.m_y > viewHalfHeight)
+		pos.m_y + scale.m_y < -viewHalfHeight || pos.m_y - scale.m_y > viewHalfHeight ||
+		pos.m_z + scale.m_z < -10.0f || pos.m_z - scale.m_z > 10.0f) // New depth check
 	{
 		// Skip rendering this cube
 		return;
@@ -180,7 +181,8 @@ void Cube::draw(int width, int height, VertexShader* vertexShader, PixelShader* 
 
 	cbData.worldMatrix = allMatrix;
 	cbData.viewMatrix.setIdentity();
-	cbData.projMatrix.setOrthoLH(width / 400.0f, height / 400.0f, -4.0f, 4.0f);
+	//cbData.projMatrix.setOrthoLH(width / 400.0f, height / 400.0f, -4.0f, 4.0f);
+	cbData.projMatrix.setOrthoLH(width / 400.0f, height / 400.0f, -10.0f, 10.0f);
 
 	this->constantBuffer->update(deviceContext, &cbData);
 	deviceContext->setConstantBuffer(vertexShader, this->constantBuffer);

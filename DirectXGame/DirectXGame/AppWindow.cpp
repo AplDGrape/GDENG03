@@ -206,10 +206,11 @@ void AppWindow::onCreate()
 	for (int i = 0; i < 100; i++) {
 		float x = MathUtils::randomFloat(-0.75, 0.75f);
 		float y = MathUtils::randomFloat(-0.75, 0.75f);
+		float z = MathUtils::randomFloat(-0.75f, 0.75f); //For depth
 
 		Cube* cubeObject = new Cube("Cube", shader_byte_code, size_shader);
 		cubeObject->setAnimSpeed(MathUtils::randomFloat(-3.75f, 3.75f));
-		cubeObject->setPosition(Vector3D(x, y, 0.0f));
+		cubeObject->setPosition(Vector3D(x, y, z/*0.0f*/));
 		cubeObject->setScale(Vector3D(0.25, 0.25, 0.25));
 		this->cubeList.push_back(cubeObject);
 	}
@@ -313,11 +314,11 @@ void AppWindow::onUpdate()
 
 	int renderedCount = 0;
 
-	/*for (int i = 0; i < this->cubeList.size(); i++) {
+	for (int i = 0; i < this->cubeList.size(); i++) {
 		this->cubeList[i]->update(EngineTime::getDeltaTime());
 		this->cubeList[i]->draw(width, height, m_vs, m_ps);
 		renderedCount++;
-	}*/
+	}
 
 	m_swap_chain->present(true);
 

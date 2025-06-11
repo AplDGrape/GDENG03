@@ -41,11 +41,13 @@ void WireframeRenderer::set(ID3D11DeviceContext* context)
 
     if (m_is_wireframe)
     {
+        //context->RSSetState(m_wireframe_state);
         context->RSSetState(m_solid_state);
     }
     else
     {
         context->RSSetState(m_wireframe_state);
+        //context->RSSetState(m_solid_state);
     }
 }
 
