@@ -14,6 +14,7 @@
 #include "Cube.h"
 
 class WireframeRenderer;
+class AGameObject;
 
 class AppWindow: public Window
 {
@@ -51,5 +52,6 @@ private:
 
 private:
 	std::vector<Cube*> cubeList;
+	std::vector<AGameObject*> cubeList2;
 };
 

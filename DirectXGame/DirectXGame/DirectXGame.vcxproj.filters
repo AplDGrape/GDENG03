@@ -90,6 +90,9 @@
     <ClCompile Include="Cube.cpp">
       <Filter>GameEngine\Challenges</Filter>
     </ClCompile>
+    <ClCompile Include="Plane.cpp">
+      <Filter>GameEngine\Challenges</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AppWindow.h">
@@ -147,6 +150,9 @@
       <Filter>GameEngine\Challenges</Filter>
     </ClInclude>
     <ClInclude Include="CubeMeshData.h">
+      <Filter>GameEngine\Challenges</Filter>
+    </ClInclude>
+    <ClInclude Include="Plane.h">
       <Filter>GameEngine\Challenges</Filter>
     </ClInclude>
   </ItemGroup>

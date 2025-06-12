@@ -1,6 +1,7 @@
 #include "AppWindow.h"
 #include "RenderMultipleQuad.h"
 #include "Cube.h"
+#include "Plane.h"
 #include "WireframeRenderer.h"
 #include "EngineTime.h"
 #include "Vector3D.h"
@@ -215,6 +216,12 @@ void AppWindow::onCreate()
 		this->cubeList.push_back(cubeObject);
 	}
 
+	// Added temporary plane
+	Plane* plane = new Plane("MyPlane", shader_byte_code, size_shader);
+	plane->setPosition(Vector3D(0, -0.5f, 0));
+	plane->setScale(Vector3D(1.0f, 1.0f, 1.0f));
+	this->cubeList2.push_back(plane); // reusing cubeList for general drawables
+
 	//VertexBuffer* m_instanceBuffer = nullptr;
 	//m_instanceBuffer = GraphicsEngine::get()->createVertexBuffer();
 
@@ -231,6 +238,7 @@ void AppWindow::onCreate()
 		// Handle error / incase some shit happens
 	}
 	
+
 	GraphicsEngine::get()->releaseCompiledShader();
 }
 
