@@ -204,22 +204,23 @@ void AppWindow::onCreate()
 	//Render multiple cube (i.e. 100)
 	Cube* cubeObject = new Cube("Cube", shader_byte_code, size_shader);
 
-	for (int i = 0; i < 100; i++) {
-		float x = MathUtils::randomFloat(-0.75, 0.75f);
-		float y = MathUtils::randomFloat(-0.75, 0.75f);
-		float z = MathUtils::randomFloat(-0.75f, 0.75f); //For depth
+	//for (int i = 0; i < 100; i++) {
+	//	float x = MathUtils::randomFloat(-0.75, 0.75f);
+	//	float y = MathUtils::randomFloat(-0.75, 0.75f);
+	//	float z = MathUtils::randomFloat(-0.75f, 0.75f); //For depth
 
-		Cube* cubeObject = new Cube("Cube", shader_byte_code, size_shader);
-		cubeObject->setAnimSpeed(MathUtils::randomFloat(-3.75f, 3.75f));
-		cubeObject->setPosition(Vector3D(x, y, z/*0.0f*/));
-		cubeObject->setScale(Vector3D(0.25, 0.25, 0.25));
-		this->cubeList.push_back(cubeObject);
-	}
+	//	Cube* cubeObject = new Cube("Cube", shader_byte_code, size_shader);
+	//	cubeObject->setAnimSpeed(MathUtils::randomFloat(-3.75f, 3.75f));
+	//	cubeObject->setPosition(Vector3D(x, y, z/*0.0f*/));
+	//	cubeObject->setScale(Vector3D(0.25, 0.25, 0.25));
+	//	this->cubeList.push_back(cubeObject);
+	//}
 
 	// Added temporary plane
 	Plane* plane = new Plane("MyPlane", shader_byte_code, size_shader);
-	plane->setPosition(Vector3D(0, -0.5f, 0));
-	plane->setScale(Vector3D(1.0f, 1.0f, 1.0f));
+	plane->setPosition(Vector3D(0, -0.51f, 0.1f));
+	plane->setScale(Vector3D(5.0f, 1.0f, 5.0f));
+	//plane->setRotation(Vector3D(0, 0, 0)); // Lay flat rotation
 	this->cubeList2.push_back(plane); // reusing cubeList for general drawables
 
 	//VertexBuffer* m_instanceBuffer = nullptr;
@@ -321,10 +322,17 @@ void AppWindow::onUpdate()
 
 	int renderedCount = 0;
 
+	//100 cubes
 	for (int i = 0; i < this->cubeList.size(); i++) {
 		this->cubeList[i]->update(EngineTime::getDeltaTime());
 		this->cubeList[i]->draw(width, height, m_vs, m_ps);
 		renderedCount++;
+	}
+
+	// Render plane objects
+	for (int i = 0; i < this->cubeList2.size(); i++) {
+		this->cubeList2[i]->update(EngineTime::getDeltaTime());
+		this->cubeList2[i]->draw(width, height, m_vs, m_ps);
 	}
 
 	m_swap_chain->present(true);

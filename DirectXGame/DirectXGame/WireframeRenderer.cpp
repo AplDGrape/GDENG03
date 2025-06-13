@@ -17,7 +17,7 @@ bool WireframeRenderer::init(ID3D11Device* device)
     /*D3D11_RASTERIZER_DESC wireframe_desc;
     ZeroMemory(&wireframe_desc, sizeof(D3D11_RASTERIZER_DESC));*/
     wireframe_desc.FillMode = D3D11_FILL_WIREFRAME;
-    wireframe_desc.CullMode = D3D11_CULL_BACK;
+    wireframe_desc.CullMode = D3D11_CULL_NONE;
     wireframe_desc.DepthClipEnable = TRUE;
 
     if (FAILED(device->CreateRasterizerState(&wireframe_desc, &m_wireframe_state)))

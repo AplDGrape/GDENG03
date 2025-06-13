@@ -32,6 +32,10 @@ bool SwapChain::init(HWND hwnd, UINT width, UINT height)
 		return false;
 	}
 
+	//DepthStencil
+	//HRESULT depthStencilResult = this->directXDevice->CreateDepthStencilView(buffer, NULL, &this->depthView);
+	//LogUtils::PrintHResult(depthStencilResult);
+
 	ID3D11Texture2D* buffer = NULL;
 	hr = m_swap_chain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&buffer);
 	

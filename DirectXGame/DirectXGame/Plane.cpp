@@ -6,10 +6,10 @@ Plane::Plane(string name, void* shaderByteCode, size_t sizeShader) : AGameObject
 {
     // A simple quad on the X-Y plane (Z = 0)
     Vertex quad[] = {
-        { Vector3D(-0.5f, -0.5f, 0.0f), Vector3D(1, 0, 0), Vector3D(0, 0, 0) }, // bottom-left
-        { Vector3D(-0.5f,  0.5f, 0.0f), Vector3D(0, 1, 0), Vector3D(0, 1, 0) }, // top-left
-        { Vector3D(0.5f,  0.5f, 0.0f), Vector3D(0, 0, 1), Vector3D(1, 1, 0) }, // top-right
-        { Vector3D(0.5f, -0.5f, 0.0f), Vector3D(1, 1, 0), Vector3D(1, 0, 0) }  // bottom-right
+        { Vector3D(-0.5f, 0.0f, -0.5f), Vector3D(1, 0, 0), Vector3D(0, 0, 0) }, // bottom-left
+        { Vector3D(-0.5f,  0.0f, 0.5f), Vector3D(0, 1, 0), Vector3D(0, 1, 0) }, // top-left
+        { Vector3D(0.5f,  0.0f, 0.5f), Vector3D(0, 0, 1), Vector3D(1, 1, 0) }, // top-right
+        { Vector3D(0.5f, 0.0f, -0.5f), Vector3D(1, 1, 0), Vector3D(1, 0, 0) }  // bottom-right
     };
 
     this->vertexBuffer = GraphicsEngine::get()->createVertexBuffer();
@@ -63,7 +63,7 @@ void Plane::draw(int width, int height, VertexShader* vertexShader, PixelShader*
 
     cbData.worldMatrix = worldMatrix;
     cbData.viewMatrix.setIdentity();
-    cbData.projMatrix.setOrthoLH(width / 400.0f, height / 400.0f, -10.0f, 10.0f);
+    cbData.projMatrix.setOrthoLH(width / 400.0f, height / 400.0f, -4.0f, 4.0f);
 
     constantBuffer->update(ctx, &cbData);
     ctx->setConstantBuffer(vertexShader, constantBuffer);
