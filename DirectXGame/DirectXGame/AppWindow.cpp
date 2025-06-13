@@ -376,26 +376,6 @@ void AppWindow::onDestroy()
 
 void AppWindow::onKeyDown(int key)
 {
-	/*if (key == 'W')
-	{
-		m_rot_x += 0.707f * m_delta_time;
-	}
-	else if (key == 'S')
-	{
-		m_rot_x -= 0.707f * m_delta_time;
-	}
-	else if (key == 'A')
-	{
-		m_rot_y += 0.707f * m_delta_time;
-	}
-	else if (key == 'D')
-	{
-		m_rot_y -= 0.707f * m_delta_time;
-	}*/
-}
-
-void AppWindow::onKeyUp(int key)
-{
 	if (key == 'W')
 	{
 		m_rot_x += 0.707f * m_delta_time;
@@ -412,6 +392,11 @@ void AppWindow::onKeyUp(int key)
 	{
 		m_rot_y -= 0.707f * m_delta_time;
 	}
+}
+
+void AppWindow::onKeyUp(int key)
+{
+
 }
 
 AppWindow::~AppWindow()
