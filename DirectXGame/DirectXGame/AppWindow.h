@@ -9,6 +9,7 @@
 #include "ConstantBuffer.h"
 #include "VertexShader.h"
 #include "PixelShader.h"
+#include "InputListener.h"
 
 #include <vector>
 #include "Cube.h"
@@ -16,7 +17,7 @@
 class WireframeRenderer;
 class AGameObject;
 
-class AppWindow: public Window
+class AppWindow: public Window, public InputListener
 {
 public:
 	AppWindow();
@@ -29,6 +30,10 @@ public:
 	void onCreate() override;
 	void onUpdate() override;
 	void onDestroy() override;
+
+	// Inherited via InputListener
+	virtual void onKeyDown(int key) override;
+	virtual void onKeyUp(int key) override;
 
 	UINT size_list;
 private:
@@ -47,11 +52,16 @@ private:
 
 	float m_delta_pos;
 	float m_delta_scale;
+
+	float m_rot_x = 0.0f;
+	float m_rot_y = 0.0f;
 private:
 	WireframeRenderer* m_wireframe_renderer = nullptr;
 
 private:
 	std::vector<Cube*> cubeList;
 	std::vector<AGameObject*> cubeList2;
+
+	
 };
 
