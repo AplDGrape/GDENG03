@@ -114,7 +114,9 @@ void AppWindow::update()
 	int POVwidth = (this->getClientWindowRect().right - this->getClientWindowRect().left);
 	int POVheight = (this->getClientWindowRect().bottom - this->getClientWindowRect().top);
 
-	cc.m_proj.setPerspectiveFovLH(1.57f, ((float)POVwidth / (float)POVheight), 0.1f, 100.0f);
+	//cc.m_proj.setPerspectiveFovLH(1.57f, ((float)POVwidth / (float)POVheight), 0.1f, 100.0f);
+	//Adjusted for zoom in and zoom out
+	cc.m_proj.setPerspectiveFovLH(1.57f - m_forward * 0.1f, ((float)POVwidth / (float)POVheight), 0.1f, 100.0f);
 
 	m_cb->update(GraphicsEngine::get()->getImmediateDeviceContext(), &cc);
 
@@ -302,8 +304,6 @@ void AppWindow::onUpdate()
 
 	update();
 
-
-
 	// Check if "-" key is pressed, decrease time by 1 second
 	if (GetAsyncKeyState(VK_OEM_MINUS) & 0x1)
 	{
@@ -441,6 +441,18 @@ void AppWindow::onKeyDown(int key)
 	{
 		//Sends a close message to the window
 		PostMessage(this->m_hwnd, WM_CLOSE, 0, 0);
+	}
+	//Zoom in
+	else if (key == 'Z')
+	{
+		m_forward = -0.1f;  // Move camera forward (zoom in)
+		std::cout << "Zoom in\n";
+	}
+	//Zoom out
+	else if (key == 'C')
+	{
+		m_forward = 0.1f;  // Move camera backward (zoom out)
+		std::cout << "Zoom out\n";
 	}
 }
 
