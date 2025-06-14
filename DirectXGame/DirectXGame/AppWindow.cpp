@@ -445,13 +445,13 @@ void AppWindow::onKeyDown(int key)
 	//Zoom in
 	else if (key == 'Z')
 	{
-		m_forward = -0.1f;  // Move camera forward (zoom in)
+		m_forward = 0.1f;  // Move camera forward (zoom in)
 		std::cout << "Zoom in\n";
 	}
 	//Zoom out
 	else if (key == 'C')
 	{
-		m_forward = 0.1f;  // Move camera backward (zoom out)
+		m_forward = -0.1f;  // Move camera backward (zoom out)
 		std::cout << "Zoom out\n";
 	}
 }
