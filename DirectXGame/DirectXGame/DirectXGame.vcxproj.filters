@@ -43,6 +43,9 @@
     <Filter Include="GameEngine\InputSystem">
       <UniqueIdentifier>{3c41c560-9607-456a-b5cb-e33799e6129d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="GameEngine\IMGUI">
+      <UniqueIdentifier>{dbd6883c-5e5f-4ca2-bb7c-d87c069142b3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -98,6 +101,24 @@
     </ClCompile>
     <ClCompile Include="InputSystem.cpp">
       <Filter>GameEngine\InputSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Student\Downloads\IMGUI_Stable\imgui.cpp">
+      <Filter>GameEngine\IMGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Student\Downloads\IMGUI_Stable\imgui_demo.cpp">
+      <Filter>GameEngine\IMGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Student\Downloads\IMGUI_Stable\imgui_draw.cpp">
+      <Filter>GameEngine\IMGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Student\Downloads\IMGUI_Stable\imgui_impl_dx11.cpp">
+      <Filter>GameEngine\IMGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Student\Downloads\IMGUI_Stable\imgui_impl_win32.cpp">
+      <Filter>GameEngine\IMGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Student\Downloads\IMGUI_Stable\imgui_widgets.cpp">
+      <Filter>GameEngine\IMGUI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -173,6 +194,30 @@
     <ClInclude Include="Vector4D.h">
       <Filter>GameEngine\Math</Filter>
     </ClInclude>
+    <ClInclude Include="C:\Users\Student\Downloads\IMGUI_Stable\imconfig.h">
+      <Filter>GameEngine\IMGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Student\Downloads\IMGUI_Stable\imgui_impl_dx11.h">
+      <Filter>GameEngine\IMGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Student\Downloads\IMGUI_Stable\imgui_impl_win32.h">
+      <Filter>GameEngine\IMGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Student\Downloads\IMGUI_Stable\imgui_internal.h">
+      <Filter>GameEngine\IMGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Student\Downloads\IMGUI_Stable\imstb_rectpack.h">
+      <Filter>GameEngine\IMGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Student\Downloads\IMGUI_Stable\imstb_textedit.h">
+      <Filter>GameEngine\IMGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Student\Downloads\IMGUI_Stable\imstb_truetype.h">
+      <Filter>GameEngine\IMGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Student\Downloads\IMGUI_Stable\imgui.h">
+      <Filter>GameEngine\IMGUI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="VertexShader.hlsl">
@@ -184,5 +229,10 @@
     <FxCompile Include="PixelShader.hlsl">
       <Filter>App</Filter>
     </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="C:\Users\Student\Downloads\IMGUI_Stable\imgui.ini">
+      <Filter>GameEngine\IMGUI</Filter>
+    </None>
   </ItemGroup>
 </Project>

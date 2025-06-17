@@ -104,6 +104,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -130,6 +131,12 @@
   <ItemGroup>
     <ClCompile Include="AGameObject.cpp" />
     <ClCompile Include="AppWindow.cpp" />
+    <ClCompile Include="C:\Users\Student\Downloads\IMGUI_Stable\imgui.cpp" />
+    <ClCompile Include="C:\Users\Student\Downloads\IMGUI_Stable\imgui_demo.cpp" />
+    <ClCompile Include="C:\Users\Student\Downloads\IMGUI_Stable\imgui_draw.cpp" />
+    <ClCompile Include="C:\Users\Student\Downloads\IMGUI_Stable\imgui_impl_dx11.cpp" />
+    <ClCompile Include="C:\Users\Student\Downloads\IMGUI_Stable\imgui_impl_win32.cpp" />
+    <ClCompile Include="C:\Users\Student\Downloads\IMGUI_Stable\imgui_widgets.cpp" />
     <ClCompile Include="ConstantBuffer.cpp" />
     <ClCompile Include="Cube.cpp" />
     <ClCompile Include="DeviceContext.cpp" />
@@ -150,6 +157,16 @@
   <ItemGroup>
     <ClInclude Include="AGameObject.h" />
     <ClInclude Include="AppWindow.h" />
+    <ClInclude Include="C:\Users\Student\Downloads\IMGUI_Stable\imconfig.h" />
+    <ClInclude Include="C:\Users\Student\Downloads\IMGUI_Stable\imgui.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Student\Downloads\IMGUI_Stable\imgui_impl_dx11.h" />
+    <ClInclude Include="C:\Users\Student\Downloads\IMGUI_Stable\imgui_impl_win32.h" />
+    <ClInclude Include="C:\Users\Student\Downloads\IMGUI_Stable\imgui_internal.h" />
+    <ClInclude Include="C:\Users\Student\Downloads\IMGUI_Stable\imstb_rectpack.h" />
+    <ClInclude Include="C:\Users\Student\Downloads\IMGUI_Stable\imstb_textedit.h" />
+    <ClInclude Include="C:\Users\Student\Downloads\IMGUI_Stable\imstb_truetype.h" />
     <ClInclude Include="ConstantBuffer.h" />
     <ClInclude Include="Cube.h" />
     <ClInclude Include="CubeMeshData.h" />
@@ -191,6 +208,9 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="C:\Users\Student\Downloads\IMGUI_Stable\imgui.ini" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

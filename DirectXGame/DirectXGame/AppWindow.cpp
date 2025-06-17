@@ -12,6 +12,7 @@
 
 #include "MathUtils.h"
 #include "CubeMeshData.h"
+//#include "imgui.h"
 
 //struct vec3
 //{
@@ -453,6 +454,16 @@ void AppWindow::onKeyDown(int key)
 	{
 		m_forward = -0.1f;  // Move camera backward (zoom out)
 		std::cout << "Zoom out\n";
+	}
+	else if (key == VK_SPACE)
+	{
+		//Create a circle
+		std::cout << "Create Circle\n";
+	}
+	else if (key == VK_BACK)
+	{
+		//Delete latest circle
+		std::cout << "Delete Circle\n";
 	}
 }
 
