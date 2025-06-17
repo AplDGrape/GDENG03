@@ -388,7 +388,7 @@ void AppWindow::onUpdate()
 
 	//UI code
 	ImGui::Begin("My ImGui Window");
-	ImGui::Text("Hello, World!");
+	ImGui::Text("Hello World!");
 	ImGui::End();
 
 	//Render ImGui
