@@ -139,6 +139,15 @@ void AppWindow::onCreate()
 	RenderMultipleQuad::initialize();
 	EngineTime::initialize();
 
+	//IMGUI stuff
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGuiIO& io = ImGui::GetIO(); (void)io;
+	ImGui::StyleColorsDark();
+
+	ImGui_ImplWin32_Init(this->m_hwnd); // use your HWND
+	ImGui_ImplDX11_Init(GraphicsEngine::get()->getD3DDevice(), GraphicsEngine::get()->getD3DDeviceContext());
+
 	m_world_cam.setTranslation(Vector3D(0, 0, -2));
 
 	vertex vertex_list[] =
@@ -372,6 +381,20 @@ void AppWindow::onUpdate()
 	//	this->cubeList2[i]->draw(width, height, m_vs, m_ps);
 	//}
 
+	//Start ImGui frame
+	ImGui_ImplDX11_NewFrame();
+	ImGui_ImplWin32_NewFrame();
+	ImGui::NewFrame();
+
+	//UI code
+	ImGui::Begin("My ImGui Window");
+	ImGui::Text("Hello, World!");
+	ImGui::End();
+
+	//Render ImGui
+	ImGui::Render();
+	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+
 	m_swap_chain->present(true);
 
 	//m_swap_chain->present(false);
@@ -396,6 +419,11 @@ void AppWindow::onDestroy()
 	m_ps->release();
 
 	RenderMultipleQuad::destroy();
+
+	//IMGUI
+	ImGui_ImplDX11_Shutdown();
+	ImGui_ImplWin32_Shutdown();
+	ImGui::DestroyContext();
 
 	//wireframe
 	m_wireframe_renderer->release();

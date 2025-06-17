@@ -43,6 +43,9 @@
     <Filter Include="GameEngine\InputSystem">
       <UniqueIdentifier>{3c41c560-9607-456a-b5cb-e33799e6129d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="GameEngine\GraphicsEngine\imgui">
+      <UniqueIdentifier>{3b49fd12-3331-4a26-84c4-9931f1f16d1f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -98,6 +101,24 @@
     </ClCompile>
     <ClCompile Include="InputSystem.cpp">
       <Filter>GameEngine\InputSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Desktop\IMGUI\imgui.cpp">
+      <Filter>GameEngine\GraphicsEngine\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Desktop\IMGUI\imgui_demo.cpp">
+      <Filter>GameEngine\GraphicsEngine\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Desktop\IMGUI\imgui_draw.cpp">
+      <Filter>GameEngine\GraphicsEngine\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Desktop\IMGUI\imgui_impl_dx11.cpp">
+      <Filter>GameEngine\GraphicsEngine\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Desktop\IMGUI\imgui_impl_win32.cpp">
+      <Filter>GameEngine\GraphicsEngine\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Desktop\IMGUI\imgui_widgets.cpp">
+      <Filter>GameEngine\GraphicsEngine\imgui</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -173,6 +194,30 @@
     <ClInclude Include="Vector4D.h">
       <Filter>GameEngine\Math</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Desktop\IMGUI\imconfig.h">
+      <Filter>GameEngine\GraphicsEngine\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Desktop\IMGUI\imgui.h">
+      <Filter>GameEngine\GraphicsEngine\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Desktop\IMGUI\imgui_impl_dx11.h">
+      <Filter>GameEngine\GraphicsEngine\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Desktop\IMGUI\imgui_impl_win32.h">
+      <Filter>GameEngine\GraphicsEngine\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Desktop\IMGUI\imgui_internal.h">
+      <Filter>GameEngine\GraphicsEngine\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Desktop\IMGUI\imstb_rectpack.h">
+      <Filter>GameEngine\GraphicsEngine\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Desktop\IMGUI\imstb_textedit.h">
+      <Filter>GameEngine\GraphicsEngine\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Desktop\IMGUI\imstb_truetype.h">
+      <Filter>GameEngine\GraphicsEngine\imgui</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="VertexShader.hlsl">
@@ -184,5 +229,10 @@
     <FxCompile Include="PixelShader.hlsl">
       <Filter>App</Filter>
     </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\..\..\Desktop\IMGUI\imgui.ini">
+      <Filter>GameEngine\GraphicsEngine\imgui</Filter>
+    </None>
   </ItemGroup>
 </Project>
