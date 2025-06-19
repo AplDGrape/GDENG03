@@ -74,6 +74,10 @@ private:
 	float m_forward = 0.0f;
 	float m_rightward = 0.0f;
 
+	float m_scale_x = 1.0f;
+	float m_scale_y = 1.0f;
+	float m_scale_z = 1.0f;
+
 	Matrix4x4 m_world_cam;
 private:
 	WireframeRenderer* m_wireframe_renderer = nullptr;

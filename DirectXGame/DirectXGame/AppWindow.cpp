@@ -79,7 +79,9 @@ void AppWindow::update()
 	temp.setRotationX(m_rot_x);
 	cc.m_world *= temp;*/
 
-	cc.m_world.setIdentity();
+	cc.m_world.setScale(Vector3D(m_scale_x, m_scale_y, m_scale_z));
+
+	//cc.m_world.setIdentity();
 
 	Matrix4x4 world_cam;
 	world_cam.setIdentity();
@@ -481,6 +483,21 @@ void AppWindow::onKeyDown(int key)
 	{
 		m_forward = -0.1f;  // Move camera backward (zoom out)
 		std::cout << "Zoom out\n";
+	}
+	// Scale X-axis
+	else if (key == 'J') {
+		m_scale_x += 0.1f;
+		std::cout << "Scale X: " << m_scale_x << std::endl;
+	}
+	// Scale Y-axis
+	else if (key == 'K') {
+		m_scale_y += 0.1f;
+		std::cout << "Scale Y: " << m_scale_y << std::endl;
+	}
+	// Scale Z-axis
+	else if (key == 'L') {
+		m_scale_z += 0.1f;
+		std::cout << "Scale Z: " << m_scale_z << std::endl;
 	}
 }
 

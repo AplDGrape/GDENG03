@@ -30,7 +30,7 @@ public:
 
 	void setScale(const Vector3D& scale)
 	{
-		//setIdentity();
+		setIdentity();
 		m_mat[0][0] = scale.m_x;
 		m_mat[1][1] = scale.m_y;
 		m_mat[2][2] = scale.m_z;
