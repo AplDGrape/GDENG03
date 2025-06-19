@@ -49,6 +49,19 @@ void DeviceContext::drawIndexedInstanced(UINT indexCountPerInstance, UINT instan
 	m_device_context->DrawIndexedInstanced(indexCountPerInstance, instanceCount, startIndexLocation, baseVertexLocation, startInstanceLocation);
 }
 
+void DeviceContext::clearDepthStencilView(SwapChain* swap_chain)
+{
+	if (swap_chain->m_dsv)
+	{
+		m_device_context->ClearDepthStencilView(swap_chain->m_dsv, D3D11_CLEAR_DEPTH, 1.0f, 0);
+	}
+}
+
+void DeviceContext::setInputLayout(ID3D11InputLayout* layout)
+{
+	m_device_context->IASetInputLayout(layout);
+}
+
 void DeviceContext::setIndexBuffer(IndexBuffer* index_buffer)
 {
 	m_device_context->IASetIndexBuffer(index_buffer->m_buffer, DXGI_FORMAT_R32_UINT, 0);

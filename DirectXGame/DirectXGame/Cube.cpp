@@ -2,7 +2,9 @@
 #include "GraphicsEngine.h"
 #include "SwapChain.h"
 #include "DeviceContext.h"
+#include "AppWindow.h"
 //#include "CubeMeshData.h"
+#include <iostream>
 
 Cube::Cube(string name, void* shaderByteCode, size_t sizeShader):AGameObject(name)
 {
@@ -77,6 +79,8 @@ Cube::Cube(string name, void* shaderByteCode, size_t sizeShader):AGameObject(nam
 	cbData.time = 0;
 	this->constantBuffer = GraphicsEngine::get()->createConstantBuffer();
 	this->constantBuffer->load(&cbData, sizeof(CBData));
+	
+	//std::cout << "Cube created: " << name << std::endl;
 }
 
 Cube::~Cube()
@@ -94,58 +98,102 @@ void Cube::update(float deltaTime)
 
 void Cube::draw(int width, int height, VertexShader* vertexShader, PixelShader* pixelShader)
 {
-	// Calculate half-size of orthographic projection
-	float viewHalfWidth = width / 800.0f;  // since width use 400.0f
-	float viewHalfHeight = height / 800.0f;
+	DeviceContext* context = GraphicsEngine::get()->getImmediateDeviceContext();
 
-	Vector3D pos = this->getLocalPosition();
-	Vector3D scale = this->getLocalScale();
-
-	// AABB check for 2D ortho view (ignoring Z depth for now)
-	if (pos.m_x + scale.m_x < -viewHalfWidth || pos.m_x - scale.m_x > viewHalfWidth ||
-		pos.m_y + scale.m_y < -viewHalfHeight || pos.m_y - scale.m_y > viewHalfHeight ||
-		pos.m_z + scale.m_z < -10.0f || pos.m_z - scale.m_z > 10.0f) // New depth check
-	{
-		// Skip rendering this cube
-		return;
-	}
-
-	//existing code to draw the cube
-	GraphicsEngine* graphEngine = GraphicsEngine::get();
-	DeviceContext* deviceContext = graphEngine->getImmediateDeviceContext();
+	Matrix4x4 identity;
+	identity.setIdentity();
 
 	CBData cbData = {};
-
-	if (this->deltaPos > 1.0f)
-		this->deltaPos = 0.0f;
-	else
-		this->deltaPos += this->deltaTime * 0.1f;
-
-	Matrix4x4 allMatrix; allMatrix.setIdentity();
-	Matrix4x4 translationMatrix; translationMatrix.setTranslation(pos);
-	Matrix4x4 scaleMatrix; scaleMatrix.setScale(scale);
-	Vector3D rotation = this->getLocalRotation();
-	Matrix4x4 zMatrix; zMatrix.setRotationZ(rotation.m_z);
-	Matrix4x4 xMatrix; xMatrix.setRotationX(rotation.m_x);
-	Matrix4x4 yMatrix; yMatrix.setRotationY(rotation.m_y);
-	Matrix4x4 rotMatrix; rotMatrix.setIdentity();
-	rotMatrix = rotMatrix.multiplyTo(xMatrix.multiplyTo(yMatrix.multiplyTo(zMatrix)));
-	allMatrix = allMatrix.multiplyTo(scaleMatrix.multiplyTo(rotMatrix));
-	allMatrix = allMatrix.multiplyTo(translationMatrix);
-
-	cbData.worldMatrix = allMatrix;
+	cbData.worldMatrix.setTranslation(Vector3D(0, 0, 2)); // Or -2 depending on camera Z
 	cbData.viewMatrix.setIdentity();
-	//cbData.projMatrix.setOrthoLH(width / 400.0f, height / 400.0f, -4.0f, 4.0f);
-	cbData.projMatrix.setOrthoLH(width / 400.0f, height / 400.0f, -10.0f, 10.0f);
+	cbData.projMatrix.setPerspectiveFovLH(1.57f, width / (float)height, 0.1f, 100.0f);
 
-	this->constantBuffer->update(deviceContext, &cbData);
-	deviceContext->setConstantBuffer(vertexShader, this->constantBuffer);
-	deviceContext->setConstantBuffer(pixelShader, this->constantBuffer);
+	this->constantBuffer->update(context, &cbData);
 
-	deviceContext->setIndexBuffer(this->indexBuffer);
-	deviceContext->setVertexBuffer(this->vertexBuffer);
-	deviceContext->drawIndexedTriangleList(this->indexBuffer->getSizeIndexList(), 0, 0);
+	context->setInputLayout(vertexShader->getInputLayout());
+	context->setVertexShader(vertexShader);
+	context->setPixelShader(pixelShader);
+	context->setVertexBuffer(vertexBuffer);
+	context->setIndexBuffer(indexBuffer);
+	context->setConstantBuffer(vertexShader, constantBuffer);
+	context->setConstantBuffer(pixelShader, constantBuffer);
+
+	context->drawIndexedTriangleList(indexBuffer->getSizeIndexList(), 0, 0);
 }
+
+//void Cube::draw(int width, int height, VertexShader* vertexShader, PixelShader* pixelShader)
+//{
+//	//std::cout << "[DEBUG] Drawing Cube: " << this->getName() << std::endl;
+//	// Calculate half-size of orthographic projection
+//	float viewHalfWidth = width / 800.0f;  // since width use 400.0f
+//	float viewHalfHeight = height / 800.0f;
+//
+//	Vector3D pos = this->getLocalPosition();
+//	Vector3D scale = this->getLocalScale();
+//
+//	// AABB check for 2D ortho view (ignoring Z depth for now)
+//	//if (pos.m_x + scale.m_x < -viewHalfWidth || pos.m_x - scale.m_x > viewHalfWidth ||
+//	//	pos.m_y + scale.m_y < -viewHalfHeight || pos.m_y - scale.m_y > viewHalfHeight ||
+//	//	pos.m_z + scale.m_z < -10.0f || pos.m_z - scale.m_z > 10.0f) // New depth check
+//	//{
+//	//	// Skip rendering this cube
+//	//	return;
+//	//}
+//
+//	//existing code to draw the cube
+//	GraphicsEngine* graphEngine = GraphicsEngine::get();
+//	DeviceContext* deviceContext = graphEngine->getImmediateDeviceContext();
+//
+//	CBData cbData = {};
+//
+//	if (this->deltaPos > 1.0f)
+//		this->deltaPos = 0.0f;
+//	else
+//		this->deltaPos += this->deltaTime * 0.1f;
+//
+//	Matrix4x4 allMatrix; allMatrix.setIdentity();
+//	Matrix4x4 translationMatrix; translationMatrix.setTranslation(pos);
+//	Matrix4x4 scaleMatrix; scaleMatrix.setScale(scale);
+//	Vector3D rotation = this->getLocalRotation();
+//	Matrix4x4 zMatrix; zMatrix.setRotationZ(rotation.m_z);
+//	Matrix4x4 xMatrix; xMatrix.setRotationX(rotation.m_x);
+//	Matrix4x4 yMatrix; yMatrix.setRotationY(rotation.m_y);
+//	Matrix4x4 rotMatrix; rotMatrix.setIdentity();
+//	rotMatrix = rotMatrix.multiplyTo(xMatrix.multiplyTo(yMatrix.multiplyTo(zMatrix)));
+//	allMatrix = allMatrix.multiplyTo(scaleMatrix.multiplyTo(rotMatrix));
+//	allMatrix = allMatrix.multiplyTo(translationMatrix);
+//
+//	cbData.worldMatrix = allMatrix;
+//	cbData.viewMatrix.setIdentity();
+//	//cbData.projMatrix.setOrthoLH(width / 400.0f, height / 400.0f, -4.0f, 4.0f);
+//	//cbData.projMatrix.setOrthoLH(width / 400.0f, height / 400.0f, -10.0f, 10.0f);
+//	cbData.projMatrix.setPerspectiveFovLH(1.57f, (float)width / (float)height, 0.1f, 100.0f);
+//
+//	//this->constantBuffer = AppWindow::get()->m_cb;
+//
+//	this->constantBuffer->update(deviceContext, &cbData);
+//	deviceContext->setVertexShader(vertexShader);   // Set shaders
+//	deviceContext->setPixelShader(pixelShader);
+//
+//	deviceContext->setVertexBuffer(this->vertexBuffer);  // Set mesh
+//	deviceContext->setIndexBuffer(this->indexBuffer);
+//
+//	deviceContext->setConstantBuffer(vertexShader, this->constantBuffer);  // Set transformation
+//	deviceContext->setConstantBuffer(pixelShader, this->constantBuffer);
+//
+//	/*std::cout << "Cube " << this->getName()
+//		<< " Pos: " << pos.m_x << ", " << pos.m_y << ", " << pos.m_z
+//		<< " Scale: " << scale.m_x << ", " << scale.m_y << ", " << scale.m_z
+//		<< std::endl;
+//	std::cout << "Index Count: " << this->indexBuffer->getSizeIndexList() << std::endl;*/
+//	/*std::cout << "[Cube::draw] Drawing " << this->getName()
+//		<< " | Indices: " << this->indexBuffer->getSizeIndexList()
+//		<< " | vertexBuffer: " << (this->vertexBuffer ? "OK" : "NULL")
+//		<< " | indexBuffer: " << (this->indexBuffer ? "OK" : "NULL")
+//		<< std::endl;*/
+//
+//	deviceContext->drawIndexedTriangleList(this->indexBuffer->getSizeIndexList(), 0, 0);
+//}
 
 void Cube::setAnimSpeed(float speed)
 {

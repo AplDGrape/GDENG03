@@ -49,6 +49,8 @@ public:
 	virtual void onRightMouseDown(const Point& mouse_pos) override;
 	virtual void onRightMouseUp(const Point& mouse_pos) override;
 
+	static AppWindow* get();
+
 	UINT size_list;
 private:
 	SwapChain* m_swap_chain;
@@ -57,6 +59,8 @@ private:
 	PixelShader* m_ps;
 	ConstantBuffer* m_cb;
 	IndexBuffer* m_ib;
+
+	static AppWindow* sharedInstance;
 
 	//VertexBuffer* m_instanceBuffer = nullptr;
 private:

@@ -10,6 +10,7 @@
 #include <Windows.h>
 #include "InputSystem.h"
 
+#include "GameObjectManager.h"
 #include "MathUtils.h"
 #include "CubeMeshData.h"
 
@@ -38,8 +39,15 @@ struct constant
 	unsigned int m_time;
 };
 
+AppWindow* AppWindow::sharedInstance = nullptr;
+
+AppWindow* AppWindow::get() {
+	return sharedInstance;
+}
+
 AppWindow::AppWindow()
 {
+	sharedInstance = this;
 }
 
 void AppWindow::update()
@@ -101,6 +109,12 @@ void AppWindow::update()
 	world_cam.setTranslation(new_pos);
 
 	m_world_cam = world_cam;
+
+	/*Vector3D forward = world_cam.getZDirection();
+	std::cout << "[DEBUG] Camera forward (Z dir): "
+		<< forward.m_x << ", "
+		<< forward.m_y << ", "
+		<< forward.m_z << std::endl;*/
 
 	world_cam.getInverse();
 
@@ -239,6 +253,15 @@ void AppWindow::onCreate()
 	//m_vb->load((void*)list, sizeof(vertex), (UINT)size_list, shader_byte_code, size_shader);
 	m_vb->load(vertex_list, sizeof(vertex), size_list, shader_byte_code, size_shader);
 
+	for (int i = 0; i < 3; ++i) {
+		std::string name = "Cube_" + std::to_string(i);
+		Cube* cube = new Cube(name, shader_byte_code, size_shader);
+		cube->setPosition(Vector3D(-0.5f + i * 0.5f, 0.0f, 2.0f));
+		//cube->setPosition(Vector3D(-0.5f + i * 0.5f, 0, 0)); // spaced out on X
+		cube->setScale(Vector3D(0.3f, 0.3f, 0.3f));
+		GameObjectManager::getInstance()->addObject(cube);
+	}
+
 	GraphicsEngine::get()->releaseCompiledShader();
 
 	//Pixel Shader
@@ -250,19 +273,19 @@ void AppWindow::onCreate()
 	//m_vb->load(list, sizeof(vertex), size_list, shader_byte_code, size_shader);
 
 	//Render multiple cube (i.e. 100)
-	Cube* cubeObject = new Cube("Cube", shader_byte_code, size_shader);
+	//Cube* cubeObject = new Cube("Cube", shader_byte_code, size_shader);
 
-	for (int i = 0; i < 100; i++) {
-		float x = MathUtils::randomFloat(-0.75, 0.75f);
-		float y = MathUtils::randomFloat(-0.75, 0.75f);
-		float z = MathUtils::randomFloat(-0.75f, 0.75f); //For depth
+	//for (int i = 0; i < 100; i++) {
+	//	float x = MathUtils::randomFloat(-0.75, 0.75f);
+	//	float y = MathUtils::randomFloat(-0.75, 0.75f);
+	//	float z = MathUtils::randomFloat(-0.75f, 0.75f); //For depth
 
-		Cube* cubeObject = new Cube("Cube", shader_byte_code, size_shader);
-		cubeObject->setAnimSpeed(MathUtils::randomFloat(-3.75f, 3.75f));
-		cubeObject->setPosition(Vector3D(x, y, z/*0.0f*/));
-		cubeObject->setScale(Vector3D(0.25, 0.25, 0.25));
-		this->cubeList.push_back(cubeObject);
-	}
+	//	Cube* cubeObject = new Cube("Cube", shader_byte_code, size_shader);
+	//	cubeObject->setAnimSpeed(MathUtils::randomFloat(-3.75f, 3.75f));
+	//	cubeObject->setPosition(Vector3D(x, y, z/*0.0f*/));
+	//	cubeObject->setScale(Vector3D(0.25, 0.25, 0.25));
+	//	this->cubeList.push_back(cubeObject);
+	//}
 
 	// Added temporary plane
 	//Plane* plane = new Plane("MyPlane", shader_byte_code, size_shader);
@@ -302,6 +325,7 @@ void AppWindow::onUpdate()
 	//CLEAR THE RENDER TARGET
 	GraphicsEngine::get()->getImmediateDeviceContext()->clearRenderTargetColor(this->m_swap_chain,
 		0, 0.0, 0.0, 1);
+	GraphicsEngine::get()->getImmediateDeviceContext()->clearDepthStencilView(m_swap_chain);
 	//SET VIEWPORT OF RENDER TARGET IN WHICH WE HAVE TO DRAW
 	RECT rc = this->getClientWindowRect();
 	GraphicsEngine::get()->getImmediateDeviceContext()->setViewportSize(rc.right - rc.left, rc.bottom - rc.top);
@@ -365,6 +389,8 @@ void AppWindow::onUpdate()
 	GraphicsEngine::get()->getImmediateDeviceContext()->drawIndexedTriangleList(m_ib->getSizeIndexList(), 0, 0);
 	//GraphicsEngine::get()->getImmediateDeviceContext()->drawTriangleList(m_vb->getSizeVertexList(), 0);
 
+	GraphicsEngine::get()->getImmediateDeviceContext()->setInputLayout(m_vs->getInputLayout());
+
 	int width = rc.right - rc.left;
 	int height = rc.bottom - rc.top;
 
@@ -396,6 +422,9 @@ void AppWindow::onUpdate()
 	//Render ImGui
 	ImGui::Render();
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+
+	GameObjectManager::getInstance()->updateAll(EngineTime::getDeltaTime());
+	GameObjectManager::getInstance()->drawAll(width, height, m_vs, m_ps);
 
 	m_swap_chain->present(true);
 

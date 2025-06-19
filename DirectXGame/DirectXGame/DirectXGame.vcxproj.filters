@@ -120,6 +120,9 @@
     <ClCompile Include="..\..\..\..\..\Desktop\IMGUI\imgui_widgets.cpp">
       <Filter>GameEngine\GraphicsEngine\imgui</Filter>
     </ClCompile>
+    <ClCompile Include="GameObjectManager.cpp">
+      <Filter>GameEngine\Challenges</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AppWindow.h">
@@ -217,6 +220,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\Desktop\IMGUI\imstb_truetype.h">
       <Filter>GameEngine\GraphicsEngine\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObjectManager.h">
+      <Filter>GameEngine\Challenges</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

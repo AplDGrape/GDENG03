@@ -52,6 +52,32 @@ bool SwapChain::init(HWND hwnd, UINT width, UINT height)
 		return false;
 	}
 
+	// --- Create depth stencil buffer ---
+	D3D11_TEXTURE2D_DESC depthDesc = {};
+	depthDesc.Width = width;
+	depthDesc.Height = height;
+	depthDesc.MipLevels = 1;
+	depthDesc.ArraySize = 1;
+	depthDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	depthDesc.SampleDesc.Count = 1;
+	depthDesc.SampleDesc.Quality = 0;
+	depthDesc.Usage = D3D11_USAGE_DEFAULT;
+	depthDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+	depthDesc.CPUAccessFlags = 0;
+	depthDesc.MiscFlags = 0;
+
+	ID3D11Texture2D* depthBuffer = nullptr;
+	hr = device->CreateTexture2D(&depthDesc, nullptr, &depthBuffer);
+	if (FAILED(hr)) return false;
+
+	hr = device->CreateDepthStencilView(depthBuffer, nullptr, &m_dsv);
+	depthBuffer->Release();
+	if (FAILED(hr)) return false;
+
+	// --- Bind RTV and DSV to pipeline ---
+	GraphicsEngine::get()->getD3DDeviceContext()->OMSetRenderTargets(1, &m_rtv, m_dsv);
+
+
 	return true;
 }
 
@@ -64,6 +90,7 @@ bool SwapChain::present(bool vsync)
 bool SwapChain::release()
 {
 	m_swap_chain->Release();
+	if (m_dsv) { m_dsv->Release(); m_dsv = nullptr; }
 	delete this;
 	return true;
 }

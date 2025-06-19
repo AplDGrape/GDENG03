@@ -23,6 +23,8 @@ public:
 
 	//Testing
 	void drawIndexedInstanced(UINT indexCountPerInstance, UINT instanceCount, UINT startIndexLocation, INT baseVertexLocation, UINT startInstanceLocation);
+	void clearDepthStencilView(SwapChain* swap_chain);
+	void setInputLayout(ID3D11InputLayout* layout);
 
 	void setViewportSize(UINT width, UINT height);
 
