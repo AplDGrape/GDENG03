@@ -8,6 +8,7 @@
 #include <iostream>
 #include <Windows.h>
 
+#include "CircleObject.h"
 #include "MathUtils.h"
 #include "CubeMeshData.h"
 
@@ -214,6 +215,11 @@ void AppWindow::onCreate()
 		this->cubeList.push_back(cubeObject);
 	}
 
+	CircleObject* circle = new CircleObject("Circle", shader_byte_code, size_shader);
+	circle->setPosition(Vector3D(0, 0, -0.1f));
+	circle->setScale(Vector3D(0.5f, 0.5f, 0.5f));
+	this->cubeList2.push_back(circle);
+
 	//VertexBuffer* m_instanceBuffer = nullptr;
 	//m_instanceBuffer = GraphicsEngine::get()->createVertexBuffer();
 
@@ -238,6 +244,12 @@ void AppWindow::onUpdate()
 	Window::onUpdate();
 
 	EngineTime::update();
+
+	RECT windowRect = this->getClientWindowRect();
+	int width = windowRect.right - windowRect.left;
+	int height = windowRect.bottom - windowRect.top;
+
+	int renderedCount = 0;
 
 	//CLEAR THE RENDER TARGET
 	GraphicsEngine::get()->getImmediateDeviceContext()->clearRenderTargetColor(this->m_swap_chain,
@@ -301,22 +313,34 @@ void AppWindow::onUpdate()
 		RenderMultipleQuad::getInstance()->setRenderShape(true); // Set to quad
 	}
 
+	if (GetAsyncKeyState(VK_SPACE) & 0x8000)
+	{
+		// Create Circle
+		for (int i = 0; i < this->cubeList2.size(); i++) {
+			this->cubeList2[i]->update(EngineTime::getDeltaTime());
+			this->cubeList2[i]->draw(width, height, m_vs, m_ps);
+		}
+	}
+	if (GetAsyncKeyState(VK_ESCAPE) & 0x8000)
+	{
+		PostMessage(this->m_hwnd, WM_CLOSE, 0, 0); // Closes the window gracefully
+	}
+
 	//FINALLY DRAW THE TRIANGLE
 	//For animate part
 	//GraphicsEngine::get()->getImmediateDeviceContext()->drawTriangleStrip(m_vb->getSizeVertexList(), 0);
-	GraphicsEngine::get()->getImmediateDeviceContext()->drawIndexedTriangleList(m_ib->getSizeIndexList(), 0, 0);
+	//GraphicsEngine::get()->getImmediateDeviceContext()->drawIndexedTriangleList(m_ib->getSizeIndexList(), 0, 0);
 	//GraphicsEngine::get()->getImmediateDeviceContext()->drawTriangleList(m_vb->getSizeVertexList(), 0);
-
-	RECT windowRect = this->getClientWindowRect();
-	int width = windowRect.right - windowRect.left;
-	int height = windowRect.bottom - windowRect.top;
-
-	int renderedCount = 0;
 
 	/*for (int i = 0; i < this->cubeList.size(); i++) {
 		this->cubeList[i]->update(EngineTime::getDeltaTime());
 		this->cubeList[i]->draw(width, height, m_vs, m_ps);
 		renderedCount++;
+	}*/
+
+	/*for (int i = 0; i < this->cubeList2.size(); i++) {
+		this->cubeList2[i]->update(EngineTime::getDeltaTime());
+		this->cubeList2[i]->draw(width, height, m_vs, m_ps);
 	}*/
 
 	m_swap_chain->present(true);

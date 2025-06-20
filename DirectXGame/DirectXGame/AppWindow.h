@@ -51,5 +51,6 @@ private:
 
 private:
 	std::vector<Cube*> cubeList;
+	std::vector<AGameObject*> cubeList2;
 };
 
