@@ -109,6 +109,16 @@ void InputSystem::showCursor(bool show)
 	::ShowCursor(show);
 }
 
+bool InputSystem::isListenerRegistered(InputListener* listener)
+{
+	for (auto& l : m_listeners)
+	{
+		if (l == listener)
+			return true;
+	}
+	return false;
+}
+
 InputSystem* InputSystem::get()
 {
 	static InputSystem system;

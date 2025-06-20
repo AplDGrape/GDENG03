@@ -12,6 +12,9 @@ public:
 
 	bool present(bool vsync);
 
+	//
+	ID3D11RenderTargetView* getRenderTargetView();
+
 	//Release the swap chain
 	bool release();
 	~SwapChain();

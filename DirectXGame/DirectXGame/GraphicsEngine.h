@@ -65,6 +65,14 @@ private:
 	ID3DBlob* m_psblob = nullptr;
 	ID3D11VertexShader* m_vs = nullptr;
 	ID3D11PixelShader* m_ps = nullptr;
+//Post Processing stuff
+public:
+	ID3D11RenderTargetView* getOffscreenRTV() const { return m_offscreenRTV; }
+	ID3D11ShaderResourceView* getOffscreenSRV() const { return m_offscreenSRV; }
+private:
+	ID3D11Texture2D* m_offscreenTex = nullptr;
+	ID3D11RenderTargetView* m_offscreenRTV = nullptr;
+	ID3D11ShaderResourceView* m_offscreenSRV = nullptr;
 private:
 	friend class SwapChain;
 	friend class VertexBuffer;

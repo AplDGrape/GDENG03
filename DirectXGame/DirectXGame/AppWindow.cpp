@@ -248,19 +248,19 @@ void AppWindow::onCreate()
 	//m_vb->load(list, sizeof(vertex), size_list, shader_byte_code, size_shader);
 
 	//Render multiple cube (i.e. 100)
-	Cube* cubeObject = new Cube("Cube", shader_byte_code, size_shader);
+	//Cube* cubeObject = new Cube("Cube", shader_byte_code, size_shader);
 
-	for (int i = 0; i < 100; i++) {
-		float x = MathUtils::randomFloat(-0.75, 0.75f);
-		float y = MathUtils::randomFloat(-0.75, 0.75f);
-		float z = MathUtils::randomFloat(-0.75f, 0.75f); //For depth
+	//for (int i = 0; i < 100; i++) {
+	//	float x = MathUtils::randomFloat(-0.75, 0.75f);
+	//	float y = MathUtils::randomFloat(-0.75, 0.75f);
+	//	float z = MathUtils::randomFloat(-0.75f, 0.75f); //For depth
 
-		Cube* cubeObject = new Cube("Cube", shader_byte_code, size_shader);
-		cubeObject->setAnimSpeed(MathUtils::randomFloat(-3.75f, 3.75f));
-		cubeObject->setPosition(Vector3D(x, y, z/*0.0f*/));
-		cubeObject->setScale(Vector3D(0.25, 0.25, 0.25));
-		this->cubeList.push_back(cubeObject);
-	}
+	//	Cube* cubeObject = new Cube("Cube", shader_byte_code, size_shader);
+	//	cubeObject->setAnimSpeed(MathUtils::randomFloat(-3.75f, 3.75f));
+	//	cubeObject->setPosition(Vector3D(x, y, z/*0.0f*/));
+	//	cubeObject->setScale(Vector3D(0.25, 0.25, 0.25));
+	//	this->cubeList.push_back(cubeObject);
+	//}
 
 	// Added temporary plane
 	//Plane* plane = new Plane("MyPlane", shader_byte_code, size_shader);
@@ -277,6 +277,27 @@ void AppWindow::onCreate()
 
 	m_cb = GraphicsEngine::get()->createConstantBuffer();
 	m_cb->load(&cc, sizeof(constant));
+
+	//Post Process stuff
+	void* pp_byte_code = nullptr;
+	size_t pp_byte_size = 0;
+
+	// Post-process constant buffer setup
+	PostProcessData ppData = {};
+	ppData.resolution = Vector2D((float)(rc.right - rc.left), (float)(rc.bottom - rc.top));
+
+	m_postProcessCB = GraphicsEngine::get()->createConstantBuffer();
+	m_postProcessCB->load(&ppData, sizeof(PostProcessData));
+
+	GraphicsEngine::get()->compileVertexShader(L"VertexShader.hlsl", "vsmain", &pp_byte_code, &pp_byte_size);
+	m_postProcessVS = GraphicsEngine::get()->createVertexShader(pp_byte_code, pp_byte_size);
+
+	//Compile post-process pixel shader
+	GraphicsEngine::get()->compilePixelShader(L"PostProcessPS.hlsl", "main", &pp_byte_code, &pp_byte_size);
+	m_postProcessPS = GraphicsEngine::get()->createPixelShader(pp_byte_code, pp_byte_size);
+
+	//Full-screen quad
+	m_screenQuad = new ScreenQuad("PostProcessQuad", pp_byte_code, pp_byte_size);
 
 	//wireframe
 	m_wireframe_renderer = new WireframeRenderer();
@@ -298,8 +319,19 @@ void AppWindow::onUpdate()
 	InputSystem::get()->update();
 
 	//CLEAR THE RENDER TARGET
-	GraphicsEngine::get()->getImmediateDeviceContext()->clearRenderTargetColor(this->m_swap_chain,
-		0, 0.0, 0.0, 1);
+	/*GraphicsEngine::get()->getImmediateDeviceContext()->clearRenderTargetColor(this->m_swap_chain,
+		0, 0.0, 0.0, 1);*/
+
+	auto context = GraphicsEngine::get()->getImmediateDeviceContext();
+
+	//Use offscreen RTV for post-processing input
+	ID3D11RenderTargetView* rtv = GraphicsEngine::get()->getOffscreenRTV();
+	context->getNativeContext()->OMSetRenderTargets(1, &rtv, nullptr);
+
+	//Removes Ghosts Trails
+	float clearColor[4] = { 0.0f, 0.0f, 0.0f, 1.0f }; // Black with full alpha
+	context->getNativeContext()->ClearRenderTargetView(rtv, clearColor);
+
 	//SET VIEWPORT OF RENDER TARGET IN WHICH WE HAVE TO DRAW
 	RECT rc = this->getClientWindowRect();
 	GraphicsEngine::get()->getImmediateDeviceContext()->setViewportSize(rc.right - rc.left, rc.bottom - rc.top);
@@ -381,14 +413,37 @@ void AppWindow::onUpdate()
 	//	this->cubeList2[i]->draw(width, height, m_vs, m_ps);
 	//}
 
+	// ========== POST PROCESSING STAGE ==========
+
+	//Set back buffer as target for final output
+	GraphicsEngine::get()->getImmediateDeviceContext()->setRenderTargetView(m_swap_chain->getRenderTargetView());
+
+	//Bind offscreen texture as shader input
+	ID3D11ShaderResourceView* sceneSRV = GraphicsEngine::get()->getOffscreenSRV();
+	GraphicsEngine::get()->getD3DDeviceContext()->PSSetShaderResources(0, 1, &sceneSRV);
+
+	//Update and bind constant buffer for post-processing
+	PostProcessData ppData = {};
+	ppData.resolution = Vector2D((float)width, (float)height);
+	ppData.chromaAmount = m_chromaAmount;
+
+	m_postProcessCB->update(GraphicsEngine::get()->getImmediateDeviceContext(), &ppData);
+	GraphicsEngine::get()->getImmediateDeviceContext()->setConstantBuffer(m_postProcessPS, m_postProcessCB);
+
+	// Draw fullscreen quad with post-process shader
+	m_screenQuad->draw(width, height, m_postProcessVS, m_postProcessPS);
+
+	// ========== END POST PROCESSING ==========
+
 	//Start ImGui frame
 	ImGui_ImplDX11_NewFrame();
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
 
 	//UI code
-	ImGui::Begin("My ImGui Window");
-	ImGui::Text("Hello World!");
+	ImGui::Begin("Post Processing Settings");
+	ImGui::Text("Chromatic Aberration");
+	ImGui::SliderFloat("Chroma Amount", &m_chromaAmount, 0.0f, 10.0f, "%.2f");
 	ImGui::End();
 
 	//Render ImGui
@@ -482,6 +537,28 @@ void AppWindow::onKeyDown(int key)
 		m_forward = -0.1f;  // Move camera backward (zoom out)
 		std::cout << "Zoom out\n";
 	}
+	else if (key == 'M') // Toggle mouse control with M key
+	{
+		m_cursorEnabled = !m_cursorEnabled;
+
+		InputSystem::get()->showCursor(m_cursorEnabled);
+
+		if (m_cursorEnabled)
+		{
+			InputSystem::get()->addListener(this); // Resume camera control
+			// Optionally recenter cursor
+			int POVwidth = (this->getClientWindowRect().right - this->getClientWindowRect().left);
+			int POVheight = (this->getClientWindowRect().bottom - this->getClientWindowRect().top);
+			InputSystem::get()->setCursorPosition(Point(POVwidth / 2, POVheight / 2));
+		}
+		else
+		{
+			if (InputSystem::get()->isListenerRegistered(this))
+				InputSystem::get()->removeListener(this); // Stop camera control
+		}
+		std::cout << "Cursor Enabled: " << m_cursorEnabled << std::endl;
+	}
+
 }
 
 void AppWindow::onKeyUp(int key)
@@ -492,6 +569,9 @@ void AppWindow::onKeyUp(int key)
 
 void AppWindow::onMouseMove(const Point& mouse_pos)
 {
+	if (m_cursorEnabled || !InputSystem::get())
+		return;
+
 	int POVwidth = (this->getClientWindowRect().right - this->getClientWindowRect().left);
 	int POVheight = (this->getClientWindowRect().bottom - this->getClientWindowRect().top);
 

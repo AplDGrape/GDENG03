@@ -75,6 +75,11 @@ void DeviceContext::drawTriangleStrip(UINT vertex_count, UINT start_vertex_index
 	m_device_context->Draw(vertex_count, start_vertex_index);
 }
 
+void DeviceContext::setRenderTargetView(ID3D11RenderTargetView* rtv, ID3D11DepthStencilView* dsv)
+{
+	m_device_context->OMSetRenderTargets(1, &rtv, dsv);
+}
+
 void DeviceContext::setViewportSize(UINT width, UINT height)
 {
 	D3D11_VIEWPORT vp = {};

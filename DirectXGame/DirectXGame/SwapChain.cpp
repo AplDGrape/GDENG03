@@ -61,6 +61,11 @@ bool SwapChain::present(bool vsync)
 	return true;
 }
 
+ID3D11RenderTargetView* SwapChain::getRenderTargetView()
+{
+	return m_rtv;
+}
+
 bool SwapChain::release()
 {
 	m_swap_chain->Release();

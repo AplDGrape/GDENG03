@@ -54,6 +54,39 @@ bool GraphicsEngine::init()
 	m_dxgi_device->GetParent(__uuidof(IDXGIAdapter), (void**)&m_dxgi_adapter);
 	m_dxgi_adapter->GetParent(__uuidof(IDXGIFactory), (void**)&m_dxgi_factory);
 
+	//Post Processing stuff
+	//Create an offscreen render target texture for post-processing
+	D3D11_TEXTURE2D_DESC texDesc = {};
+	texDesc.Width = 800; //Screen width
+	texDesc.Height = 600; //Screen height
+	texDesc.MipLevels = 1;
+	texDesc.ArraySize = 1;
+	texDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	texDesc.SampleDesc.Count = 1;
+	texDesc.SampleDesc.Quality = 0;
+	texDesc.Usage = D3D11_USAGE_DEFAULT;
+	texDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+	texDesc.CPUAccessFlags = 0;
+	texDesc.MiscFlags = 0;
+
+	HRESULT hr = m_d3d_device->CreateTexture2D(&texDesc, nullptr, &m_offscreenTex);
+	if (FAILED(hr))
+	{
+		return false;
+	}
+
+	hr = m_d3d_device->CreateRenderTargetView(m_offscreenTex, nullptr, &m_offscreenRTV);
+	if (FAILED(hr))
+	{
+		return false;
+	}
+
+	hr = m_d3d_device->CreateShaderResourceView(m_offscreenTex, nullptr, &m_offscreenSRV);
+	if (FAILED(hr))
+	{
+		return false;
+	}
+
 	return true;
 }
 

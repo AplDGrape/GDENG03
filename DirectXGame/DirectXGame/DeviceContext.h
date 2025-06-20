@@ -24,6 +24,9 @@ public:
 	//Testing
 	void drawIndexedInstanced(UINT indexCountPerInstance, UINT instanceCount, UINT startIndexLocation, INT baseVertexLocation, UINT startInstanceLocation);
 
+	ID3D11DeviceContext* getNativeContext() const { return m_device_context; }
+	void setRenderTargetView(ID3D11RenderTargetView* rtv, ID3D11DepthStencilView* dsv = nullptr);
+
 	void setViewportSize(UINT width, UINT height);
 
 	void setVertexShader(VertexShader* vertex_shader);

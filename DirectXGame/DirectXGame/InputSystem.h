@@ -16,6 +16,9 @@ public:
 
 	void setCursorPosition(const Point& pos);
 	void showCursor(bool show);
+
+	bool isListenerRegistered(InputListener* listener);
+	std::vector<InputListener*> m_listeners;
 public:
 	static InputSystem* get();
 private:

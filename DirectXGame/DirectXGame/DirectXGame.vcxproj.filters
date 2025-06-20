@@ -46,6 +46,9 @@
     <Filter Include="GameEngine\GraphicsEngine\imgui">
       <UniqueIdentifier>{3b49fd12-3331-4a26-84c4-9931f1f16d1f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="GameEngine\PostProcess">
+      <UniqueIdentifier>{843616a8-6966-488c-ab8a-1ac2545c3d33}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -119,6 +122,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\Desktop\IMGUI\imgui_widgets.cpp">
       <Filter>GameEngine\GraphicsEngine\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="ScreenQuad.cpp">
+      <Filter>GameEngine\PostProcess</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -218,6 +224,12 @@
     <ClInclude Include="..\..\..\..\..\Desktop\IMGUI\imstb_truetype.h">
       <Filter>GameEngine\GraphicsEngine\imgui</Filter>
     </ClInclude>
+    <ClInclude Include="ScreenQuad.h">
+      <Filter>GameEngine\PostProcess</Filter>
+    </ClInclude>
+    <ClInclude Include="Vector2D.h">
+      <Filter>GameEngine\Math</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="VertexShader.hlsl">
@@ -228,6 +240,9 @@
     </FxCompile>
     <FxCompile Include="PixelShader.hlsl">
       <Filter>App</Filter>
+    </FxCompile>
+    <FxCompile Include="PostProcessPS.hlsl">
+      <Filter>GameEngine\PostProcess</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>

@@ -15,12 +15,23 @@
 #include <vector>
 #include "Cube.h"
 
+#include "Vector2D.h"
+#include "ScreenQuad.h"
+
 #include "imgui.h"
 #include "imgui_impl_dx11.h"
 #include "imgui_impl_win32.h"
 
 class WireframeRenderer;
 class AGameObject;
+class ScreenQuad;
+
+__declspec(align(16)) struct PostProcessData
+{
+	Vector2D resolution;
+	float chromaAmount = 2.0f;
+	float pad; //Padding to align to 16 bytes
+};
 
 class AppWindow: public Window, public InputListener
 {
@@ -49,6 +60,8 @@ public:
 	virtual void onRightMouseDown(const Point& mouse_pos) override;
 	virtual void onRightMouseUp(const Point& mouse_pos) override;
 
+	bool m_cursorEnabled = false;
+
 	UINT size_list;
 private:
 	SwapChain* m_swap_chain;
@@ -58,6 +71,7 @@ private:
 	ConstantBuffer* m_cb;
 	IndexBuffer* m_ib;
 
+	ConstantBuffer* m_postProcessCB = nullptr;
 	//VertexBuffer* m_instanceBuffer = nullptr;
 private:
 	float m_old_delta;
@@ -77,11 +91,19 @@ private:
 	Matrix4x4 m_world_cam;
 private:
 	WireframeRenderer* m_wireframe_renderer = nullptr;
+//Post Process
+private:
+	float m_chromaAmount = 2.0f;
 
+	ScreenQuad* m_screenQuad = nullptr;
+	VertexShader* m_postProcessVS;
+	PixelShader* m_postProcessPS;
+
+	ID3D11Texture2D* m_offscreenTexture = nullptr;
+	ID3D11RenderTargetView* m_offscreenRTV = nullptr;
+	ID3D11ShaderResourceView* m_offscreenSRV = nullptr;
 private:
 	std::vector<Cube*> cubeList;
 	std::vector<AGameObject*> cubeList2;
-
-	
 };
 
