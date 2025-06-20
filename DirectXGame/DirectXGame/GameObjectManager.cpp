@@ -1,4 +1,5 @@
 #include "GameObjectManager.h"
+#include <algorithm>
 
 GameObjectManager* GameObjectManager::instance = nullptr;
 
@@ -45,6 +46,10 @@ void GameObjectManager::updateAll(float deltaTime)
 
 void GameObjectManager::drawAll(int width, int height, VertexShader* vs, PixelShader* ps)
 {
+    std::sort(objectList.begin(), objectList.end(), [](AGameObject* a, AGameObject* b) {
+        return a->getLocalPosition().m_z > b->getLocalPosition().m_z;
+        });
+
     for (AGameObject* obj : objectList) {
         obj->draw(width, height, vs, ps);
         OutputDebugStringA(("[OK] Drew cube: " + obj->getName() + "\n").c_str());

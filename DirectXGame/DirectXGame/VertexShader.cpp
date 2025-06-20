@@ -7,6 +7,13 @@ VertexShader::VertexShader()
 
 void VertexShader::release()
 {
+    if (m_shader_byte_code)
+    {
+        free(m_shader_byte_code);
+        m_shader_byte_code = nullptr;
+        m_size_shader = 0;
+    }
+
     m_vs->Release();
     delete this;
 }
@@ -52,6 +59,12 @@ ID3D11VertexShader* VertexShader::getShader() const
 ID3D11InputLayout* VertexShader::getInputLayout() const
 {
     return m_inputLayout;
+}
+
+void VertexShader::getShaderBufferAndSize(void** byte_code, size_t* size)
+{
+    *byte_code = this->m_shader_byte_code;
+    *size = this->m_size_shader;
 }
 
 

@@ -82,6 +82,11 @@ private:
 	float m_scale_y = 1.0f;
 	float m_scale_z = 1.0f;
 
+	float m_obj_rot_x = 0.0f;
+	float m_obj_rot_y = 0.0f;
+	float m_obj_rot_z = 0.0f;
+	Vector3D m_obj_translate = Vector3D(0, 0, 0);
+
 	Matrix4x4 m_world_cam;
 private:
 	WireframeRenderer* m_wireframe_renderer = nullptr;

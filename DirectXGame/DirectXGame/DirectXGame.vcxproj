@@ -137,8 +137,10 @@
     <ClCompile Include="..\..\..\..\..\Desktop\IMGUI\imgui_widgets.cpp" />
     <ClCompile Include="AGameObject.cpp" />
     <ClCompile Include="AppWindow.cpp" />
+    <ClCompile Include="Capsule.cpp" />
     <ClCompile Include="ConstantBuffer.cpp" />
     <ClCompile Include="Cube.cpp" />
+    <ClCompile Include="DefaultShaderManager.cpp" />
     <ClCompile Include="DeviceContext.cpp" />
     <ClCompile Include="EngineTime.cpp" />
     <ClCompile Include="GameObjectManager.cpp" />
@@ -166,9 +168,11 @@
     <ClInclude Include="..\..\..\..\..\Desktop\IMGUI\imstb_truetype.h" />
     <ClInclude Include="AGameObject.h" />
     <ClInclude Include="AppWindow.h" />
+    <ClInclude Include="Capsule.h" />
     <ClInclude Include="ConstantBuffer.h" />
     <ClInclude Include="Cube.h" />
     <ClInclude Include="CubeMeshData.h" />
+    <ClInclude Include="DefaultShaderManager.h" />
     <ClInclude Include="DeviceContext.h" />
     <ClInclude Include="EngineTime.h" />
     <ClInclude Include="GameObjectManager.h" />

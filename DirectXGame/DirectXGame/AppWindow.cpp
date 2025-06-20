@@ -10,6 +10,8 @@
 #include <Windows.h>
 #include "InputSystem.h"
 
+#include "Capsule.h"
+#include "DefaultShaderManager.h"
 #include "GameObjectManager.h"
 #include "MathUtils.h"
 #include "CubeMeshData.h"
@@ -91,6 +93,20 @@ void AppWindow::update()
 
 	//cc.m_world.setIdentity();
 
+	// Apply object rotation
+	Matrix4x4 rotX, rotY, rotZ;
+	rotX.setRotationX(m_obj_rot_x);
+	rotY.setRotationY(m_obj_rot_y);
+	rotZ.setRotationZ(m_obj_rot_z);
+	Matrix4x4 rotation = rotZ.multiplyTo(rotY).multiplyTo(rotX);
+	cc.m_world = cc.m_world.multiplyTo(rotation);
+
+	// Apply object translation
+	Matrix4x4 trans;
+	trans.setIdentity();
+	trans.setTranslation(m_obj_translate);
+	cc.m_world *= trans;
+
 	Matrix4x4 world_cam;
 	world_cam.setIdentity();
 
@@ -155,6 +171,8 @@ void AppWindow::onCreate()
 	RenderMultipleQuad::initialize();
 	EngineTime::initialize();
 
+	DefaultShaderManager::initialize();
+
 	//IMGUI stuff
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
@@ -187,22 +205,22 @@ void AppWindow::onCreate()
 		
 		//RECT GREEN
 		//FRONT FACE
-		{Vector3D (-0.5f, -0.5f, -0.5f),	/*Vector3D (-0.32f,-0.11f, 0.0f),*/	Vector3D (1,0,0),	Vector3D(0.2f,0,0)}, //POS1
+		{Vector3D (-0.5f, -0.5f, -0.5f),	/*Vector3D (-0.32f,-0.11f, 0.0f),*/	Vector3D (1,1,1),	Vector3D(1,1,1)}, //POS1
 
-		{Vector3D (-0.5f,  0.5f, -0.5f),	/*Vector3D (-0.11f, 0.78f, 0.0f),*/	Vector3D (1,1,0),	Vector3D(0.2f,0.2f,0)}, //POS2
+		{Vector3D (-0.5f,  0.5f, -0.5f),	/*Vector3D (-0.11f, 0.78f, 0.0f),*/	Vector3D (1,1,1),	Vector3D(1,1,1)}, //POS2
 
-		{Vector3D ( 0.5f,  0.5f, -0.5f),	/*Vector3D (0.75f,-0.73f, 0.0f),*/	Vector3D (1,1,0),	Vector3D(0.2f,0.2f,0)},  //POS3
+		{Vector3D ( 0.5f,  0.5f, -0.5f),	/*Vector3D (0.75f,-0.73f, 0.0f),*/	Vector3D (1,1,1),	Vector3D(1,1,1)},  //POS3
 
-		{Vector3D ( 0.5f, -0.5f, -0.5f),	/*Vector3D (0.88f, 0.77f, 0.0f),*/	Vector3D (1,0,0),	Vector3D(0.2f,0,0)}, //POS4
+		{Vector3D ( 0.5f, -0.5f, -0.5f),	/*Vector3D (0.88f, 0.77f, 0.0f),*/	Vector3D (1,1,1),	Vector3D(1,1,1)}, //POS4
 
 		//BACK FACE
-		{Vector3D( 0.5f, -0.5f,  0.5f),	/*Vector3D (-0.32f,-0.11f, 0.0f),*/	Vector3D(0,1,0),	Vector3D(0,0.2f,0)}, //POS1
+		{Vector3D( 0.5f, -0.5f,  0.5f),	/*Vector3D (-0.32f,-0.11f, 0.0f),*/	Vector3D(1,1,1),	Vector3D(1,1,1)}, //POS1
 
-		{Vector3D( 0.5f,  0.5f,  0.5f),	/*Vector3D (-0.11f, 0.78f, 0.0f),*/	Vector3D(0,1,1),	Vector3D(0,0.2f,0.2f)}, //POS2
+		{Vector3D( 0.5f,  0.5f,  0.5f),	/*Vector3D (-0.11f, 0.78f, 0.0f),*/	Vector3D(1,1,1),	Vector3D(1,1,1)}, //POS2
 
-		{Vector3D(-0.5f,  0.5f,  0.5f),	/*Vector3D (0.75f,-0.73f, 0.0f),*/	Vector3D(0,1,1),	Vector3D(0,0.2f,0.2f)},  //POS3
+		{Vector3D(-0.5f,  0.5f,  0.5f),	/*Vector3D (0.75f,-0.73f, 0.0f),*/	Vector3D(1,1,1),	Vector3D(1,1,1)},  //POS3
 
-		{Vector3D(-0.5f, -0.5f,  0.5f),	/*Vector3D (0.88f, 0.77f, 0.0f),*/	Vector3D(0,1,0),	Vector3D(0,0.2f,0)} //POS4
+		{Vector3D(-0.5f, -0.5f,  0.5f),	/*Vector3D (0.88f, 0.77f, 0.0f),*/	Vector3D(1,1,1),	Vector3D(1,1,1)} //POS4
 	};
 
 	//const vertex* list = RenderMultipleQuad::getInstance()->getVertexList();
@@ -256,7 +274,7 @@ void AppWindow::onCreate()
 	for (int i = 0; i < 3; ++i) {
 		std::string name = "Cube_" + std::to_string(i);
 		Cube* cube = new Cube(name, shader_byte_code, size_shader);
-		cube->setPosition(Vector3D(-0.5f + i * 0.5f, 0.0f, 2.0f));
+		cube->setPosition(Vector3D(/*-0.5f + i * 0.5f*/0, 0.9f, 0.0f));
 		//cube->setPosition(Vector3D(-0.5f + i * 0.5f, 0, 0)); // spaced out on X
 		cube->setScale(Vector3D(0.3f, 0.3f, 0.3f));
 		GameObjectManager::getInstance()->addObject(cube);
@@ -296,6 +314,11 @@ void AppWindow::onCreate()
 
 	//VertexBuffer* m_instanceBuffer = nullptr;
 	//m_instanceBuffer = GraphicsEngine::get()->createVertexBuffer();
+
+	Capsule* capsule = new Capsule("Capsule_1", shader_byte_code, size_shader);
+	capsule->setPosition(Vector3D(1.0f, 0.0f, 2.5f));
+	capsule->setScale(Vector3D(1.0f, 1.5f, 1.0f));
+	GameObjectManager::getInstance()->addObject(capsule);
 
 	constant cc;
 	cc.m_time = 0;
@@ -450,6 +473,7 @@ void AppWindow::onDestroy()
 	m_ps->release();
 
 	RenderMultipleQuad::destroy();
+	DefaultShaderManager::destroy();
 
 	//IMGUI
 	ImGui_ImplDX11_Shutdown();
@@ -528,6 +552,34 @@ void AppWindow::onKeyDown(int key)
 		m_scale_z += 0.1f;
 		std::cout << "Scale Z: " << m_scale_z << std::endl;
 	}
+	// Object Rotation
+	else if (key == 'U') m_obj_rot_x += 0.1f; // Rotate X
+	else if (key == 'I') m_obj_rot_y += 0.1f; // Rotate Y
+	else if (key == 'O') m_obj_rot_z += 0.1f; // Rotate Z
+	// Object Translation
+	else if (key == '1') m_obj_translate.m_x += 0.1f; // Translate X
+	else if (key == '2') m_obj_translate.m_y += 0.1f; // Translate Y
+	else if (key == '3') m_obj_translate.m_z += 0.1f; // Translate Z
+	else if (key == '4') m_obj_translate.m_x -= 0.1f; // Translate -X
+	else if (key == '5') m_obj_translate.m_y -= 0.1f; // Translate -X
+	else if (key == '6') m_obj_translate.m_z -= 0.1f; // Translate -X
+	else if (key == 'P') // Press P to spawn capsule
+	{
+		void* shaderByteCode = nullptr;
+		size_t sizeShader = 0;
+		GraphicsEngine::get()->compileVertexShader(L"VertexShader.hlsl", "vsmain", &shaderByteCode, &sizeShader);
+
+		static int capsuleCounter = 0;
+		std::string name = "Capsule_" + std::to_string(capsuleCounter++);
+		Capsule* capsule = new Capsule(name, shaderByteCode, sizeShader);
+		capsule->setPosition(Vector3D(0, 0, 2));
+		capsule->setScale(Vector3D(0.5f, 1.0f, 0.5f));
+		GameObjectManager::getInstance()->addObject(capsule);
+
+		GraphicsEngine::get()->releaseCompiledShader();
+		OutputDebugStringA(("[INFO] Spawned: " + name + "\n").c_str());
+	}
+	std::cout << "Translate: (" << m_obj_translate.m_x << ", " << m_obj_translate.m_y << ", " << m_obj_translate.m_z << ")\n";
 }
 
 void AppWindow::onKeyUp(int key)

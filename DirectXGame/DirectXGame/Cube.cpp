@@ -5,6 +5,7 @@
 #include "AppWindow.h"
 //#include "CubeMeshData.h"
 #include <iostream>
+#include "DefaultShaderManager.h"
 
 Cube::Cube(string name, void* shaderByteCode, size_t sizeShader):AGameObject(name)
 {
@@ -46,6 +47,12 @@ Cube::Cube(string name, void* shaderByteCode, size_t sizeShader):AGameObject(nam
 
 		{Vector3D(-0.5f, -0.5f,  0.5f),	/*Vector3D (0.88f, 0.77f, 0.0f),*/	Vector3D(0,1,0),	Vector3D(0,0.2f,0)} //POS4
 	};
+
+	void* shader_byte_code = nullptr;
+	size_t size_shader = 0;
+	// Get shader bytecode from the default shader
+	VertexShader* vs = DefaultShaderManager::getVertexShader();
+	vs->getShaderBufferAndSize(&shader_byte_code, &size_shader);
 
 	this->vertexBuffer = GraphicsEngine::get()->createVertexBuffer();
 	this->vertexBuffer->load(quadlist, sizeof(Vertex), ARRAYSIZE(quadlist), shaderByteCode, sizeShader);

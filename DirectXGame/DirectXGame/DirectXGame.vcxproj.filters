@@ -123,6 +123,12 @@
     <ClCompile Include="GameObjectManager.cpp">
       <Filter>GameEngine\Challenges</Filter>
     </ClCompile>
+    <ClCompile Include="DefaultShaderManager.cpp">
+      <Filter>GameEngine\Challenges</Filter>
+    </ClCompile>
+    <ClCompile Include="Capsule.cpp">
+      <Filter>GameEngine\Challenges</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AppWindow.h">
@@ -222,6 +228,12 @@
       <Filter>GameEngine\GraphicsEngine\imgui</Filter>
     </ClInclude>
     <ClInclude Include="GameObjectManager.h">
+      <Filter>GameEngine\Challenges</Filter>
+    </ClInclude>
+    <ClInclude Include="DefaultShaderManager.h">
+      <Filter>GameEngine\Challenges</Filter>
+    </ClInclude>
+    <ClInclude Include="Capsule.h">
       <Filter>GameEngine\Challenges</Filter>
     </ClInclude>
   </ItemGroup>
