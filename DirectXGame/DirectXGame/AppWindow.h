@@ -94,6 +94,7 @@ private:
 //Post Process
 private:
 	float m_chromaAmount = 2.0f;
+	Vector3D m_prev_cam_pos = Vector3D(0, 0, -2);
 
 	ScreenQuad* m_screenQuad = nullptr;
 	VertexShader* m_postProcessVS;

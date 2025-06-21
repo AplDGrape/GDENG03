@@ -13,17 +13,6 @@
 #include "MathUtils.h"
 #include "CubeMeshData.h"
 
-//struct vec3
-//{
-//	float x, y, z;
-//};
-//
-//struct vertex
-//{
-//	vec3 position;
-//	vec3 color;
-//};
-
 struct InstanceData
 {
 	Matrix4x4 transform;
@@ -58,26 +47,6 @@ void AppWindow::update()
 	//cc.m_world.setTranslation(Vector3D::lerp(Vector3D(-2, -2, 0), Vector3D(2, 2, 0), m_delta_pos));
 	
 	m_delta_scale += m_delta_time / 0.5f;
-	
-	//cc.m_world.setScale(Vector3D::lerp(Vector3D(0.5, 0.5, 0), Vector3D(1.0f, 1.0f, 0), (sin(m_delta_scale)+1.0f)/2.0f));
-
-	//temp.setTranslation(Vector3D::lerp(Vector3D(-1.5f, -1.5f, 0), Vector3D(1.5f, 1.5f, 0), m_delta_pos));
-
-	//cc.m_world *= temp;
-
-	/*cc.m_world.setScale(Vector3D(m_scale_cube, m_scale_cube, m_scale_cube));
-
-	temp.setIdentity();
-	temp.setRotationZ(0.0f);
-	cc.m_world *= temp;
-
-	temp.setIdentity();
-	temp.setRotationY(m_rot_y);
-	cc.m_world *= temp;
-
-	temp.setIdentity();
-	temp.setRotationX(m_rot_x);
-	cc.m_world *= temp;*/
 
 	cc.m_world.setIdentity();
 
@@ -93,28 +62,27 @@ void AppWindow::update()
 	world_cam *= temp;
 
 	Vector3D new_pos = m_world_cam.getTranslation() + world_cam.getZDirection() * (m_forward * 0.3f);
-
 	new_pos = new_pos + world_cam.getXDirection() * (m_rightward * 0.3f);
-
 	world_cam.setTranslation(new_pos);
-
 	m_world_cam = world_cam;
 
 	world_cam.getInverse();
-
 	cc.m_view = world_cam;
-	/*cc.m_proj.setOrthoLH
-	(
-		(this->getClientWindowRect().right - this->getClientWindowRect().left)/400.0f,
-		(this->getClientWindowRect().bottom - this->getClientWindowRect().top)/400.0f,
-		-4.0f,
-		4.0f
-	);*/
 	
+	//Post Process - Tracking camera speed
+	Vector3D current_pos = m_world_cam.getTranslation();
+	Vector3D velocity = (current_pos - m_prev_cam_pos) / m_delta_time;
+	float speed = velocity.length();
+	m_prev_cam_pos = current_pos;
+
+	//Still fixing this ehe
+	/*m_chromaAmount = 1.0f + speed * 0.5f;
+	if (m_chromaAmount > 10.0f)
+		m_chromaAmount = 10.0f;*/
+
 	int POVwidth = (this->getClientWindowRect().right - this->getClientWindowRect().left);
 	int POVheight = (this->getClientWindowRect().bottom - this->getClientWindowRect().top);
 
-	//cc.m_proj.setPerspectiveFovLH(1.57f, ((float)POVwidth / (float)POVheight), 0.1f, 100.0f);
 	//Adjusted for zoom in and zoom out
 	cc.m_proj.setPerspectiveFovLH(1.57f - m_forward * 0.1f, ((float)POVwidth / (float)POVheight), 0.1f, 100.0f);
 
@@ -262,16 +230,6 @@ void AppWindow::onCreate()
 	//	this->cubeList.push_back(cubeObject);
 	//}
 
-	// Added temporary plane
-	//Plane* plane = new Plane("MyPlane", shader_byte_code, size_shader);
-	//plane->setPosition(Vector3D(0, -0.51f, 0.1f));
-	//plane->setScale(Vector3D(5.0f, 1.0f, 5.0f));
-	////plane->setRotation(Vector3D(0, 0, 0)); // Lay flat rotation
-	//this->cubeList2.push_back(plane); // reusing cubeList for general drawables
-
-	//VertexBuffer* m_instanceBuffer = nullptr;
-	//m_instanceBuffer = GraphicsEngine::get()->createVertexBuffer();
-
 	constant cc;
 	cc.m_time = 0;
 
@@ -338,11 +296,6 @@ void AppWindow::onUpdate()
 	//SET THE DEFAULT SHADER IN THE GRAPHICS PIPELINE TO BE ABLE TO DRAW
 	//GraphicsEngine::get()->setShaders();
 
-	//constant cc;
-	//cc.m_time = ::GetTickCount();
-	////cc.m_time = static_cast<unsigned int>(EngineTime::getTime() * 1000); // milliseconds
-	//m_cb->update(GraphicsEngine::get()->getImmediateDeviceContext(), &cc);
-
 	update();
 
 	// Check if "-" key is pressed, decrease time by 1 second
@@ -405,12 +358,6 @@ void AppWindow::onUpdate()
 	//	this->cubeList[i]->update(EngineTime::getDeltaTime());
 	//	this->cubeList[i]->draw(width, height, m_vs, m_ps);
 	//	renderedCount++;
-	//}
-
-	//// Render plane objects
-	//for (int i = 0; i < this->cubeList2.size(); i++) {
-	//	this->cubeList2[i]->update(EngineTime::getDeltaTime());
-	//	this->cubeList2[i]->draw(width, height, m_vs, m_ps);
 	//}
 
 	// ========== POST PROCESSING STAGE ==========
@@ -503,22 +450,22 @@ void AppWindow::onKeyDown(int key)
 	if (key == 'W')
 	{
 		//m_rot_x += 0.707f * m_delta_time;
-		m_forward = 0.5f;
+		m_forward = 0.05f;
 	}
 	else if (key == 'S')
 	{
 		//m_rot_x -= 0.707f * m_delta_time;
-		m_forward = -0.5f;
+		m_forward = -0.05f;
 	}
 	else if (key == 'A')
 	{
 		//m_rot_y += 0.707f * m_delta_time;
-		m_rightward = -0.5f;
+		m_rightward = -0.05f;
 	}
 	else if (key == 'D')
 	{
 		//m_rot_y -= 0.707f * m_delta_time;
-		m_rightward = 0.5f;
+		m_rightward = 0.05f;
 	}
 	else if (key == VK_ESCAPE)
 	{
