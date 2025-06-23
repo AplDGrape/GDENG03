@@ -71,41 +71,8 @@ void AppWindow::update()
 	
 	//Post Process - Tracking camera speed
 	Vector3D current_pos = m_world_cam.getTranslation();
-	//Vector3D velocity = (current_pos - m_prev_cam_pos) / m_delta_time;
-	//float speed = velocity.length();
-	//m_prev_cam_pos = current_pos;
 
-	// Avoid division by zero
-	//if (m_delta_time > 0.0001f)
-	//{
-	//	Vector3D velocity = (current_pos - m_prev_cam_pos) / m_delta_time;
-	//	float speed = velocity.length();
-
-	//	//Still fixing this ehe
-	//	if (m_cursorEnabled)
-	//		m_chromaAmount = 1.0f + speed * 0.5f;
-	//	if (m_chromaAmount > 10.0f)
-	//		m_chromaAmount = 10.0f;
-
-	//	m_prev_cam_pos = current_pos;
-	//}
-	//else 
-	//{
-	//	m_chromaAmount = 1.0f;
-	//}
-	/*if (!m_cursorEnabled)
-	{
-		if (m_delta_time > 0.0001f)
-		{
-			Vector3D velocity = (current_pos - m_prev_cam_pos) / m_delta_time;
-			float speed = velocity.length();
-
-			m_chromaAmount = 1.0f + speed * 0.5f;
-			if (m_chromaAmount > 10.0f)
-				m_chromaAmount = 10.0f;
-		}
-	}*/
-
+	// Get toggle & Avoid division by zero
 	if (use_auto_chroma && m_delta_time > 0.0001f)
 	{
 		Vector3D velocity = (current_pos - m_prev_cam_pos) / m_delta_time;
@@ -423,7 +390,7 @@ void AppWindow::onUpdate()
 	io.MouseDown[1] = (GetAsyncKeyState(VK_RBUTTON) & 0x8000) != 0;
 
 	//UI code
-	ImGui::SetNextWindowSize(ImVec2(0, 0), ImGuiCond_Always);
+	ImGui::SetNextWindowSize(ImVec2(0, 0), ImGuiCond_Always); //Adjust UI to fit what's inside
 	ImGui::Begin("Post Processing Settings");
 	ImGui::Checkbox("Auto Chromatic", &use_auto_chroma);
 	//ImGui::Text("Chromatic Aberration");
