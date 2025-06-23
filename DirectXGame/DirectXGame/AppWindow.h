@@ -93,6 +93,9 @@ private:
 	WireframeRenderer* m_wireframe_renderer = nullptr;
 //Post Process
 private:
+	bool m_key_m_pressed = false;
+	bool use_auto_chroma = false;
+
 	float m_chromaAmount = 2.0f;
 	Vector3D m_prev_cam_pos = Vector3D(0, 0, -2);
 

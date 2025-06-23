@@ -78,6 +78,30 @@ void InputSystem::update()
 					}
 				}
 			}
+			//if ((m_keys_state[i] & 0x80) && !(m_old_keys_state[i] & 0x80)) // Key down event
+			//{
+			//	for (auto* listener : m_set_listeners)
+			//	{
+			//		if (i == VK_LBUTTON)
+			//			listener->onLeftMouseDown(Point(current_mouse_pos.x, current_mouse_pos.y));
+			//		else if (i == VK_RBUTTON)
+			//			listener->onRightMouseDown(Point(current_mouse_pos.x, current_mouse_pos.y));
+			//		else
+			//			listener->onKeyDown(i);
+			//	}
+			//}
+			//else if (!(m_keys_state[i] & 0x80) && (m_old_keys_state[i] & 0x80)) // Key up event
+			//{
+			//	for (auto* listener : m_set_listeners)
+			//	{
+			//		if (i == VK_LBUTTON)
+			//			listener->onLeftMouseUp(Point(current_mouse_pos.x, current_mouse_pos.y));
+			//		else if (i == VK_RBUTTON)
+			//			listener->onRightMouseUp(Point(current_mouse_pos.x, current_mouse_pos.y));
+			//		else
+			//			listener->onKeyUp(i);
+			//	}
+			//}
 		}
 		//Store current keys state to old keys state buffer
 		::memcpy(m_old_keys_state, m_keys_state, sizeof(unsigned char) * 256);

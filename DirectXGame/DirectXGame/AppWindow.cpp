@@ -71,15 +71,50 @@ void AppWindow::update()
 	
 	//Post Process - Tracking camera speed
 	Vector3D current_pos = m_world_cam.getTranslation();
-	Vector3D velocity = (current_pos - m_prev_cam_pos) / m_delta_time;
-	float speed = velocity.length();
-	m_prev_cam_pos = current_pos;
+	//Vector3D velocity = (current_pos - m_prev_cam_pos) / m_delta_time;
+	//float speed = velocity.length();
+	//m_prev_cam_pos = current_pos;
 
-	//Still fixing this ehe
-	/*m_chromaAmount = 1.0f + speed * 0.5f;
-	if (m_chromaAmount > 10.0f)
-		m_chromaAmount = 10.0f;*/
+	// Avoid division by zero
+	//if (m_delta_time > 0.0001f)
+	//{
+	//	Vector3D velocity = (current_pos - m_prev_cam_pos) / m_delta_time;
+	//	float speed = velocity.length();
 
+	//	//Still fixing this ehe
+	//	if (m_cursorEnabled)
+	//		m_chromaAmount = 1.0f + speed * 0.5f;
+	//	if (m_chromaAmount > 10.0f)
+	//		m_chromaAmount = 10.0f;
+
+	//	m_prev_cam_pos = current_pos;
+	//}
+	//else 
+	//{
+	//	m_chromaAmount = 1.0f;
+	//}
+	/*if (!m_cursorEnabled)
+	{
+		if (m_delta_time > 0.0001f)
+		{
+			Vector3D velocity = (current_pos - m_prev_cam_pos) / m_delta_time;
+			float speed = velocity.length();
+
+			m_chromaAmount = 1.0f + speed * 0.5f;
+			if (m_chromaAmount > 10.0f)
+				m_chromaAmount = 10.0f;
+		}
+	}*/
+
+	if (use_auto_chroma && m_delta_time > 0.0001f)
+	{
+		Vector3D velocity = (current_pos - m_prev_cam_pos) / m_delta_time;
+		float speed = velocity.length();
+
+		m_chromaAmount = 1.0f + speed * 0.5f;
+		if (m_chromaAmount > 10.0f)
+			m_chromaAmount = 10.0f;
+	}
 	int POVwidth = (this->getClientWindowRect().right - this->getClientWindowRect().left);
 	int POVheight = (this->getClientWindowRect().bottom - this->getClientWindowRect().top);
 
@@ -369,6 +404,36 @@ void AppWindow::onUpdate()
 	ID3D11ShaderResourceView* sceneSRV = GraphicsEngine::get()->getOffscreenSRV();
 	GraphicsEngine::get()->getD3DDeviceContext()->PSSetShaderResources(0, 1, &sceneSRV);
 
+	//Start ImGui frame
+	ImGui_ImplDX11_NewFrame();
+	ImGui_ImplWin32_NewFrame();
+	ImGui::NewFrame();
+
+	//static bool use_auto_chroma = false;
+	ImGuiIO& io = ImGui::GetIO();
+
+	// Update mouse position
+	POINT p;
+	GetCursorPos(&p);
+	ScreenToClient(this->m_hwnd, &p);
+	io.MousePos = ImVec2((float)p.x, (float)p.y);
+
+	// Update mouse buttons
+	io.MouseDown[0] = (GetAsyncKeyState(VK_LBUTTON) & 0x8000) != 0;
+	io.MouseDown[1] = (GetAsyncKeyState(VK_RBUTTON) & 0x8000) != 0;
+
+	//UI code
+	ImGui::SetNextWindowSize(ImVec2(0, 0), ImGuiCond_Always);
+	ImGui::Begin("Post Processing Settings");
+	ImGui::Checkbox("Auto Chromatic", &use_auto_chroma);
+	//ImGui::Text("Chromatic Aberration");
+	ImGui::SliderFloat("Chroma Amount", &m_chromaAmount, 0.0f, 10.0f, "%.2f");
+	ImGui::End();
+
+	//Render ImGui
+	ImGui::Render();
+	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+
 	//Update and bind constant buffer for post-processing
 	PostProcessData ppData = {};
 	ppData.resolution = Vector2D((float)width, (float)height);
@@ -381,21 +446,6 @@ void AppWindow::onUpdate()
 	m_screenQuad->draw(width, height, m_postProcessVS, m_postProcessPS);
 
 	// ========== END POST PROCESSING ==========
-
-	//Start ImGui frame
-	ImGui_ImplDX11_NewFrame();
-	ImGui_ImplWin32_NewFrame();
-	ImGui::NewFrame();
-
-	//UI code
-	ImGui::Begin("Post Processing Settings");
-	ImGui::Text("Chromatic Aberration");
-	ImGui::SliderFloat("Chroma Amount", &m_chromaAmount, 0.0f, 10.0f, "%.2f");
-	ImGui::End();
-
-	//Render ImGui
-	ImGui::Render();
-	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 
 	m_swap_chain->present(true);
 
@@ -484,9 +534,10 @@ void AppWindow::onKeyDown(int key)
 		m_forward = -0.1f;  // Move camera backward (zoom out)
 		std::cout << "Zoom out\n";
 	}
-	else if (key == 'M') // Toggle mouse control with M key
+	else if (key == 'M' && !m_key_m_pressed) // Toggle mouse control with M key
 	{
 		m_cursorEnabled = !m_cursorEnabled;
+		m_key_m_pressed = true;
 
 		InputSystem::get()->showCursor(m_cursorEnabled);
 
@@ -512,6 +563,11 @@ void AppWindow::onKeyUp(int key)
 {
 	m_forward = 0.0f;
 	m_rightward = 0.0f;
+
+	if (key == 'M')
+	{
+		m_key_m_pressed = false;
+	}
 }
 
 void AppWindow::onMouseMove(const Point& mouse_pos)
