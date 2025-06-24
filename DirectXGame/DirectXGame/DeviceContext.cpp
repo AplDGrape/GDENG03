@@ -6,6 +6,7 @@
 #include "ConstantBuffer.h"
 #include "VertexShader.h"
 #include "PixelShader.h"
+#include "GraphicsEngine.h"
 
 DeviceContext::DeviceContext(ID3D11DeviceContext* device_context) :m_device_context(device_context)
 {
@@ -47,6 +48,28 @@ void DeviceContext::setVertexBuffers(VertexBuffer* vertex_buffer1, VertexBuffer*
 void DeviceContext::drawIndexedInstanced(UINT indexCountPerInstance, UINT instanceCount, UINT startIndexLocation, INT baseVertexLocation, UINT startInstanceLocation)
 {
 	m_device_context->DrawIndexedInstanced(indexCountPerInstance, instanceCount, startIndexLocation, baseVertexLocation, startInstanceLocation);
+}
+
+void DeviceContext::enableDepthTest(bool enable)
+{
+	if (enable)
+	{
+		// Re-enable default depth-stencil state
+		this->m_device_context->OMSetDepthStencilState(nullptr, 0);
+	}
+	else
+	{
+		// Disable depth test by creating a depth-stencil state with depth testing off
+		D3D11_DEPTH_STENCIL_DESC desc = {};
+		desc.DepthEnable = false;
+		desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
+		desc.DepthFunc = D3D11_COMPARISON_ALWAYS;
+
+		ID3D11DepthStencilState* depthDisabledState = nullptr;
+		GraphicsEngine::get()->getD3DDevice()->CreateDepthStencilState(&desc, &depthDisabledState);
+		this->m_device_context->OMSetDepthStencilState(depthDisabledState, 0);
+		if (depthDisabledState) depthDisabledState->Release();
+	}
 }
 
 void DeviceContext::setIndexBuffer(IndexBuffer* index_buffer)

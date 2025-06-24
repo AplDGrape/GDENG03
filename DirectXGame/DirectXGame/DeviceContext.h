@@ -23,6 +23,7 @@ public:
 
 	//Testing
 	void drawIndexedInstanced(UINT indexCountPerInstance, UINT instanceCount, UINT startIndexLocation, INT baseVertexLocation, UINT startInstanceLocation);
+	void enableDepthTest(bool enable);
 
 	ID3D11DeviceContext* getNativeContext() const { return m_device_context; }
 	void setRenderTargetView(ID3D11RenderTargetView* rtv, ID3D11DepthStencilView* dsv = nullptr);

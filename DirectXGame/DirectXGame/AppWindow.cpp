@@ -412,9 +412,12 @@ void AppWindow::onUpdate()
 
 	ImGui::End();
 
-	//Render ImGui
-	ImGui::Render();
-	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+	// Disable depth testing before UI render
+	GraphicsEngine::get()->getImmediateDeviceContext()->enableDepthTest(false);
+
+	////Render ImGui
+	//ImGui::Render();
+	//ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 
 	//Update and bind constant buffer for post-processing
 	PostProcessData ppData = {};
@@ -428,6 +431,10 @@ void AppWindow::onUpdate()
 
 	// Draw fullscreen quad with post-process shader
 	m_screenQuad->draw(width, height, m_postProcessVS, m_postProcessPS);
+
+	//Render ImGui
+	ImGui::Render();
+	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 
 	// ========== END POST PROCESSING ==========
 
