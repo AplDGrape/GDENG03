@@ -42,7 +42,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
@@ -129,12 +129,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\..\Desktop\IMGUI\imgui.cpp" />
-    <ClCompile Include="..\..\..\..\..\Desktop\IMGUI\imgui_demo.cpp" />
-    <ClCompile Include="..\..\..\..\..\Desktop\IMGUI\imgui_draw.cpp" />
-    <ClCompile Include="..\..\..\..\..\Desktop\IMGUI\imgui_impl_dx11.cpp" />
-    <ClCompile Include="..\..\..\..\..\Desktop\IMGUI\imgui_impl_win32.cpp" />
-    <ClCompile Include="..\..\..\..\..\Desktop\IMGUI\imgui_widgets.cpp" />
     <ClCompile Include="AGameObject.cpp" />
     <ClCompile Include="AppWindow.cpp" />
     <ClCompile Include="ConstantBuffer.cpp" />
@@ -142,6 +136,12 @@
     <ClCompile Include="DeviceContext.cpp" />
     <ClCompile Include="EngineTime.cpp" />
     <ClCompile Include="GraphicsEngine.cpp" />
+    <ClCompile Include="imgui.cpp" />
+    <ClCompile Include="imgui_demo.cpp" />
+    <ClCompile Include="imgui_draw.cpp" />
+    <ClCompile Include="imgui_impl_dx11.cpp" />
+    <ClCompile Include="imgui_impl_win32.cpp" />
+    <ClCompile Include="imgui_widgets.cpp" />
     <ClCompile Include="IndexBuffer.cpp" />
     <ClCompile Include="InputSystem.cpp" />
     <ClCompile Include="main.cpp" />
@@ -156,14 +156,6 @@
     <ClCompile Include="WireframeRenderer.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\..\..\Desktop\IMGUI\imconfig.h" />
-    <ClInclude Include="..\..\..\..\..\Desktop\IMGUI\imgui.h" />
-    <ClInclude Include="..\..\..\..\..\Desktop\IMGUI\imgui_impl_dx11.h" />
-    <ClInclude Include="..\..\..\..\..\Desktop\IMGUI\imgui_impl_win32.h" />
-    <ClInclude Include="..\..\..\..\..\Desktop\IMGUI\imgui_internal.h" />
-    <ClInclude Include="..\..\..\..\..\Desktop\IMGUI\imstb_rectpack.h" />
-    <ClInclude Include="..\..\..\..\..\Desktop\IMGUI\imstb_textedit.h" />
-    <ClInclude Include="..\..\..\..\..\Desktop\IMGUI\imstb_truetype.h" />
     <ClInclude Include="AGameObject.h" />
     <ClInclude Include="AppWindow.h" />
     <ClInclude Include="ConstantBuffer.h" />
@@ -172,6 +164,14 @@
     <ClInclude Include="DeviceContext.h" />
     <ClInclude Include="EngineTime.h" />
     <ClInclude Include="GraphicsEngine.h" />
+    <ClInclude Include="imconfig.h" />
+    <ClInclude Include="imgui.h" />
+    <ClInclude Include="imgui_impl_dx11.h" />
+    <ClInclude Include="imgui_impl_win32.h" />
+    <ClInclude Include="imgui_internal.h" />
+    <ClInclude Include="imstb_rectpack.h" />
+    <ClInclude Include="imstb_textedit.h" />
+    <ClInclude Include="imstb_truetype.h" />
     <ClInclude Include="IndexBuffer.h" />
     <ClInclude Include="InputListener.h" />
     <ClInclude Include="InputSystem.h" />
@@ -214,7 +214,7 @@
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\..\..\..\Desktop\IMGUI\imgui.ini" />
+    <None Include="imgui.ini" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

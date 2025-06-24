@@ -30,6 +30,9 @@ __declspec(align(16)) struct PostProcessData
 {
 	Vector2D resolution;
 	float chromaAmount = 2.0f;
+	float vignetteStrength = 0.5f;  // New: Controls vignette intensity
+	float vignetteRadius = 0.8f;    // New: Controls vignette size
+	float vignetteSmoothness = 0.3f; // New: Controls vignette edge softness
 	float pad; //Padding to align to 16 bytes
 };
 
@@ -87,6 +90,11 @@ private:
 	float m_scale_cube = 1;
 	float m_forward = 0.0f;
 	float m_rightward = 0.0f;
+
+	// New vignette variables
+	float m_vignetteStrength = 0.5f;
+	float m_vignetteRadius = 0.8f;
+	float m_vignetteSmoothness = 0.3f;
 
 	Matrix4x4 m_world_cam;
 private:

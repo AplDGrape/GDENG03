@@ -246,6 +246,10 @@ void AppWindow::onCreate()
 	PostProcessData ppData = {};
 	ppData.resolution = Vector2D((float)(rc.right - rc.left), (float)(rc.bottom - rc.top));
 
+	ppData.vignetteStrength = m_vignetteStrength;
+	ppData.vignetteRadius = m_vignetteRadius;
+	ppData.vignetteSmoothness = m_vignetteSmoothness;
+
 	m_postProcessCB = GraphicsEngine::get()->createConstantBuffer();
 	m_postProcessCB->load(&ppData, sizeof(PostProcessData));
 
@@ -279,8 +283,8 @@ void AppWindow::onUpdate()
 	InputSystem::get()->update();
 
 	//CLEAR THE RENDER TARGET
-	/*GraphicsEngine::get()->getImmediateDeviceContext()->clearRenderTargetColor(this->m_swap_chain,
-		0, 0.0, 0.0, 1);*/
+	GraphicsEngine::get()->getImmediateDeviceContext()->clearRenderTargetColor(this->m_swap_chain,
+		0, 0.0, 0.0, 1);
 
 	auto context = GraphicsEngine::get()->getImmediateDeviceContext();
 
@@ -367,6 +371,9 @@ void AppWindow::onUpdate()
 	//Set back buffer as target for final output
 	GraphicsEngine::get()->getImmediateDeviceContext()->setRenderTargetView(m_swap_chain->getRenderTargetView());
 
+	float redClearColor[4] = { 1.0f, 0.0f, 0.0f, 1.0f }; // Clear color for post-processing
+	GraphicsEngine::get()->getD3DDeviceContext()->ClearRenderTargetView(m_swap_chain->getRenderTargetView(), redClearColor);
+
 	//Bind offscreen texture as shader input
 	ID3D11ShaderResourceView* sceneSRV = GraphicsEngine::get()->getOffscreenSRV();
 	GraphicsEngine::get()->getD3DDeviceContext()->PSSetShaderResources(0, 1, &sceneSRV);
@@ -395,6 +402,14 @@ void AppWindow::onUpdate()
 	ImGui::Checkbox("Auto Chromatic", &use_auto_chroma);
 	//ImGui::Text("Chromatic Aberration");
 	ImGui::SliderFloat("Chroma Amount", &m_chromaAmount, 0.0f, 10.0f, "%.2f");
+
+	// New vignette controls
+	ImGui::Separator();
+	ImGui::Text("Vignette Settings");
+	ImGui::SliderFloat("Vignette Strength", &m_vignetteStrength, 0.0f, 1.0f, "%.2f");
+	ImGui::SliderFloat("Vignette Radius", &m_vignetteRadius, 0.1f, 1.5f, "%.2f");
+	ImGui::SliderFloat("Vignette Smoothness", &m_vignetteSmoothness, 0.0f, 0.5f, "%.2f");
+
 	ImGui::End();
 
 	//Render ImGui
@@ -405,7 +420,9 @@ void AppWindow::onUpdate()
 	PostProcessData ppData = {};
 	ppData.resolution = Vector2D((float)width, (float)height);
 	ppData.chromaAmount = m_chromaAmount;
-
+	ppData.vignetteStrength = m_vignetteStrength;      // New
+	ppData.vignetteRadius = m_vignetteRadius;          // New
+	ppData.vignetteSmoothness = m_vignetteSmoothness;  // New
 	m_postProcessCB->update(GraphicsEngine::get()->getImmediateDeviceContext(), &ppData);
 	GraphicsEngine::get()->getImmediateDeviceContext()->setConstantBuffer(m_postProcessPS, m_postProcessCB);
 

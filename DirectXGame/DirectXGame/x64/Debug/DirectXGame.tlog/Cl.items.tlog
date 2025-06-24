@@ -1,8 +1,25 @@
-C:\Users\Francis Apolinar\source\repos\DirectXGame\DirectXGame\AppWindow.cpp;C:\Users\Francis Apolinar\source\repos\DirectXGame\DirectXGame\x64\Debug\AppWindow.obj
-C:\Users\Francis Apolinar\source\repos\DirectXGame\DirectXGame\DeviceContext.cpp;C:\Users\Francis Apolinar\source\repos\DirectXGame\DirectXGame\x64\Debug\DeviceContext.obj
-C:\Users\Francis Apolinar\source\repos\DirectXGame\DirectXGame\GraphicsEngine.cpp;C:\Users\Francis Apolinar\source\repos\DirectXGame\DirectXGame\x64\Debug\GraphicsEngine.obj
-C:\Users\Francis Apolinar\source\repos\DirectXGame\DirectXGame\main.cpp;C:\Users\Francis Apolinar\source\repos\DirectXGame\DirectXGame\x64\Debug\main.obj
-C:\Users\Francis Apolinar\source\repos\DirectXGame\DirectXGame\SwapChain.cpp;C:\Users\Francis Apolinar\source\repos\DirectXGame\DirectXGame\x64\Debug\SwapChain.obj
-C:\Users\Francis Apolinar\source\repos\DirectXGame\DirectXGame\VertexBuffer.cpp;C:\Users\Francis Apolinar\source\repos\DirectXGame\DirectXGame\x64\Debug\VertexBuffer.obj
-C:\Users\Francis Apolinar\source\repos\DirectXGame\DirectXGame\VertexShader.cpp;C:\Users\Francis Apolinar\source\repos\DirectXGame\DirectXGame\x64\Debug\VertexShader.obj
-C:\Users\Francis Apolinar\source\repos\DirectXGame\DirectXGame\Window.cpp;C:\Users\Francis Apolinar\source\repos\DirectXGame\DirectXGame\x64\Debug\Window.obj
+C:\Users\kassi\OneDrive\Documents\GitHub\GDENG3\Camera\GDENG03\DirectXGame\DirectXGame\AGameObject.cpp;C:\Users\kassi\OneDrive\Documents\GitHub\GDENG3\Camera\GDENG03\DirectXGame\DirectXGame\x64\Debug\AGameObject.obj
+C:\Users\kassi\OneDrive\Documents\GitHub\GDENG3\Camera\GDENG03\DirectXGame\DirectXGame\AppWindow.cpp;C:\Users\kassi\OneDrive\Documents\GitHub\GDENG3\Camera\GDENG03\DirectXGame\DirectXGame\x64\Debug\AppWindow.obj
+C:\Users\kassi\OneDrive\Documents\GitHub\GDENG3\Camera\GDENG03\DirectXGame\DirectXGame\ConstantBuffer.cpp;C:\Users\kassi\OneDrive\Documents\GitHub\GDENG3\Camera\GDENG03\DirectXGame\DirectXGame\x64\Debug\ConstantBuffer.obj
+C:\Users\kassi\OneDrive\Documents\GitHub\GDENG3\Camera\GDENG03\DirectXGame\DirectXGame\Cube.cpp;C:\Users\kassi\OneDrive\Documents\GitHub\GDENG3\Camera\GDENG03\DirectXGame\DirectXGame\x64\Debug\Cube.obj
+C:\Users\kassi\OneDrive\Documents\GitHub\GDENG3\Camera\GDENG03\DirectXGame\DirectXGame\DeviceContext.cpp;C:\Users\kassi\OneDrive\Documents\GitHub\GDENG3\Camera\GDENG03\DirectXGame\DirectXGame\x64\Debug\DeviceContext.obj
+C:\Users\kassi\OneDrive\Documents\GitHub\GDENG3\Camera\GDENG03\DirectXGame\DirectXGame\EngineTime.cpp;C:\Users\kassi\OneDrive\Documents\GitHub\GDENG3\Camera\GDENG03\DirectXGame\DirectXGame\x64\Debug\EngineTime.obj
+C:\Users\kassi\OneDrive\Documents\GitHub\GDENG3\Camera\GDENG03\DirectXGame\DirectXGame\GraphicsEngine.cpp;C:\Users\kassi\OneDrive\Documents\GitHub\GDENG3\Camera\GDENG03\DirectXGame\DirectXGame\x64\Debug\GraphicsEngine.obj
+C:\Users\kassi\OneDrive\Documents\GitHub\GDENG3\Camera\GDENG03\DirectXGame\DirectXGame\imgui.cpp;C:\Users\kassi\OneDrive\Documents\GitHub\GDENG3\Camera\GDENG03\DirectXGame\DirectXGame\x64\Debug\imgui.obj
+C:\Users\kassi\OneDrive\Documents\GitHub\GDENG3\Camera\GDENG03\DirectXGame\DirectXGame\imgui_demo.cpp;C:\Users\kassi\OneDrive\Documents\GitHub\GDENG3\Camera\GDENG03\DirectXGame\DirectXGame\x64\Debug\imgui_demo.obj
+C:\Users\kassi\OneDrive\Documents\GitHub\GDENG3\Camera\GDENG03\DirectXGame\DirectXGame\imgui_draw.cpp;C:\Users\kassi\OneDrive\Documents\GitHub\GDENG3\Camera\GDENG03\DirectXGame\DirectXGame\x64\Debug\imgui_draw.obj
+C:\Users\kassi\OneDrive\Documents\GitHub\GDENG3\Camera\GDENG03\DirectXGame\DirectXGame\imgui_impl_dx11.cpp;C:\Users\kassi\OneDrive\Documents\GitHub\GDENG3\Camera\GDENG03\DirectXGame\DirectXGame\x64\Debug\imgui_impl_dx11.obj
+C:\Users\kassi\OneDrive\Documents\GitHub\GDENG3\Camera\GDENG03\DirectXGame\DirectXGame\imgui_impl_win32.cpp;C:\Users\kassi\OneDrive\Documents\GitHub\GDENG3\Camera\GDENG03\DirectXGame\DirectXGame\x64\Debug\imgui_impl_win32.obj
+C:\Users\kassi\OneDrive\Documents\GitHub\GDENG3\Camera\GDENG03\DirectXGame\DirectXGame\imgui_widgets.cpp;C:\Users\kassi\OneDrive\Documents\GitHub\GDENG3\Camera\GDENG03\DirectXGame\DirectXGame\x64\Debug\imgui_widgets.obj
+C:\Users\kassi\OneDrive\Documents\GitHub\GDENG3\Camera\GDENG03\DirectXGame\DirectXGame\IndexBuffer.cpp;C:\Users\kassi\OneDrive\Documents\GitHub\GDENG3\Camera\GDENG03\DirectXGame\DirectXGame\x64\Debug\IndexBuffer.obj
+C:\Users\kassi\OneDrive\Documents\GitHub\GDENG3\Camera\GDENG03\DirectXGame\DirectXGame\InputSystem.cpp;C:\Users\kassi\OneDrive\Documents\GitHub\GDENG3\Camera\GDENG03\DirectXGame\DirectXGame\x64\Debug\InputSystem.obj
+C:\Users\kassi\OneDrive\Documents\GitHub\GDENG3\Camera\GDENG03\DirectXGame\DirectXGame\main.cpp;C:\Users\kassi\OneDrive\Documents\GitHub\GDENG3\Camera\GDENG03\DirectXGame\DirectXGame\x64\Debug\main.obj
+C:\Users\kassi\OneDrive\Documents\GitHub\GDENG3\Camera\GDENG03\DirectXGame\DirectXGame\PixelShader.cpp;C:\Users\kassi\OneDrive\Documents\GitHub\GDENG3\Camera\GDENG03\DirectXGame\DirectXGame\x64\Debug\PixelShader.obj
+C:\Users\kassi\OneDrive\Documents\GitHub\GDENG3\Camera\GDENG03\DirectXGame\DirectXGame\Plane.cpp;C:\Users\kassi\OneDrive\Documents\GitHub\GDENG3\Camera\GDENG03\DirectXGame\DirectXGame\x64\Debug\Plane.obj
+C:\Users\kassi\OneDrive\Documents\GitHub\GDENG3\Camera\GDENG03\DirectXGame\DirectXGame\RenderMultipleQuad.cpp;C:\Users\kassi\OneDrive\Documents\GitHub\GDENG3\Camera\GDENG03\DirectXGame\DirectXGame\x64\Debug\RenderMultipleQuad.obj
+C:\Users\kassi\OneDrive\Documents\GitHub\GDENG3\Camera\GDENG03\DirectXGame\DirectXGame\ScreenQuad.cpp;C:\Users\kassi\OneDrive\Documents\GitHub\GDENG3\Camera\GDENG03\DirectXGame\DirectXGame\x64\Debug\ScreenQuad.obj
+C:\Users\kassi\OneDrive\Documents\GitHub\GDENG3\Camera\GDENG03\DirectXGame\DirectXGame\SwapChain.cpp;C:\Users\kassi\OneDrive\Documents\GitHub\GDENG3\Camera\GDENG03\DirectXGame\DirectXGame\x64\Debug\SwapChain.obj
+C:\Users\kassi\OneDrive\Documents\GitHub\GDENG3\Camera\GDENG03\DirectXGame\DirectXGame\VertexBuffer.cpp;C:\Users\kassi\OneDrive\Documents\GitHub\GDENG3\Camera\GDENG03\DirectXGame\DirectXGame\x64\Debug\VertexBuffer.obj
+C:\Users\kassi\OneDrive\Documents\GitHub\GDENG3\Camera\GDENG03\DirectXGame\DirectXGame\VertexShader.cpp;C:\Users\kassi\OneDrive\Documents\GitHub\GDENG3\Camera\GDENG03\DirectXGame\DirectXGame\x64\Debug\VertexShader.obj
+C:\Users\kassi\OneDrive\Documents\GitHub\GDENG3\Camera\GDENG03\DirectXGame\DirectXGame\Window.cpp;C:\Users\kassi\OneDrive\Documents\GitHub\GDENG3\Camera\GDENG03\DirectXGame\DirectXGame\x64\Debug\Window.obj
+C:\Users\kassi\OneDrive\Documents\GitHub\GDENG3\Camera\GDENG03\DirectXGame\DirectXGame\WireframeRenderer.cpp;C:\Users\kassi\OneDrive\Documents\GitHub\GDENG3\Camera\GDENG03\DirectXGame\DirectXGame\x64\Debug\WireframeRenderer.obj
