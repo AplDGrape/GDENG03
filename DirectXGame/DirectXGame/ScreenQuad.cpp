@@ -11,10 +11,10 @@ ScreenQuad::ScreenQuad(std::string name, const void* shaderByteCode, size_t size
     : AGameObject(name)
 {
     FSVertex vertices[] = {
-        {{-1.0f, -1.0f, 0.0f}, {0, 1, 0}},
-        {{-1.0f,  1.0f, 0.0f}, {0, 0, 0}},
-        {{ 1.0f,  1.0f, 0.0f}, {1, 0, 0}},
-        {{ 1.0f, -1.0f, 0.0f}, {1, 1, 0}}
+        {{-2.0f, -2.0f, 0.0f}, {0, 1, 0}},
+        {{-2.0f,  2.0f, 0.0f}, {0, 0, 0}},
+        {{ 2.0f,  2.0f, 0.0f}, {1, 0, 0}},
+        {{ 2.0f, -2.0f, 0.0f}, {1, 1, 0}}
     };
 
     unsigned int indices[] = {
@@ -27,6 +27,11 @@ ScreenQuad::ScreenQuad(std::string name, const void* shaderByteCode, size_t size
 
     m_ib = GraphicsEngine::get()->createIndexBuffer();
     m_ib->load(indices, ARRAYSIZE(indices));
+
+    /*CBData cbData = {};
+    cbData.time = 0;
+    m_cb = GraphicsEngine::get()->createConstantBuffer();
+    m_cb->load(&cbData, sizeof(CBData));*/
 }
 
 void ScreenQuad::update(float deltaTime) {}
@@ -34,6 +39,12 @@ void ScreenQuad::update(float deltaTime) {}
 void ScreenQuad::draw(int width, int height, VertexShader* vs, PixelShader* ps)
 {
     auto context = GraphicsEngine::get()->getImmediateDeviceContext();
+
+    /*CBData cbData = {};
+    m_cb->update(context, &cbData);
+
+    context->setConstantBuffer(vs, m_cb);
+    context->setConstantBuffer(ps, m_cb);*/
 
     context->setVertexShader(vs);
     context->setPixelShader(ps);
@@ -48,4 +59,5 @@ ScreenQuad::~ScreenQuad()
 {
     m_vb->release();
     m_ib->release();
+    //m_cb->release();
 }

@@ -2,6 +2,7 @@
 #include "AGameObject.h"
 #include "VertexBuffer.h"
 #include "IndexBuffer.h"
+#include "ConstantBuffer.h"
 #include "DeviceContext.h"
 
 class ScreenQuad : public AGameObject
@@ -16,4 +17,5 @@ public:
 private:
     VertexBuffer* m_vb;
     IndexBuffer* m_ib;
+    ConstantBuffer* m_cb;
 };
