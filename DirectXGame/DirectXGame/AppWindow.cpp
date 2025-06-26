@@ -38,8 +38,8 @@ struct constant
 	Matrix4x4 m_view;
 	Matrix4x4 m_proj;
 	//unsigned int m_time;
-	float m_time;
-	float padding[3];
+	float m_time = 0.0f;
+	float padding[3] = { 0.0f, 0.0f, 0.0f };
 };
 
 AppWindow::AppWindow()
@@ -267,19 +267,19 @@ void AppWindow::onCreate()
 	}
 
 	// Added temporary plane
-	//Plane* plane = new Plane("MyPlane", shader_byte_code, size_shader);
-	//plane->setPosition(Vector3D(0, -0.51f, 0.1f));
-	//plane->setScale(Vector3D(5.0f, 1.0f, 5.0f));
-	////plane->setRotation(Vector3D(0, 0, 0)); // Lay flat rotation
-	//this->cubeList2.push_back(plane); // reusing cubeList for general drawables
+	Plane* plane = new Plane("MyPlane", shader_byte_code, size_shader);
+	/*plane->setPosition(Vector3D(0, -0.51f, 0.1f));
+	plane->setScale(Vector3D(5.0f, 1.0f, 5.0f));*/
+	//plane->setRotation(Vector3D(0, 0, 0)); // Lay flat rotation
+	this->cubeList2.push_back(plane); // reusing cubeList for general drawables
 
 	//VertexBuffer* m_instanceBuffer = nullptr;
 	//m_instanceBuffer = GraphicsEngine::get()->createVertexBuffer();
 
-	SimplePlane* plane = new SimplePlane("GroundPlane", shader_byte_code, size_shader);
+	/*SimplePlane* plane = new SimplePlane("GroundPlane", shader_byte_code, size_shader);
 	plane->setPosition(Vector3D(0, -0.51f, 0));
 	plane->setScale(Vector3D(5.0f, 1.0f, 5.0f));
-	this->cubeList2.push_back(plane);
+	this->cubeList2.push_back(plane);*/
 
 	constant cc;
 	cc.m_time = 0;
@@ -384,17 +384,17 @@ void AppWindow::onUpdate()
 	//	renderedCount++;
 	//}
 
-	//// Render plane objects
-	//for (int i = 0; i < this->cubeList2.size(); i++) {
-	//	this->cubeList2[i]->update(EngineTime::getDeltaTime());
-	//	this->cubeList2[i]->draw(width, height, m_vs, m_ps);
-	//}
+	// Render plane objects
+	for (int i = 0; i < this->cubeList2.size(); i++) {
+		this->cubeList2[i]->update(EngineTime::getDeltaTime());
+		this->cubeList2[i]->draw(width, height, m_vs, m_ps);
+	}
 
-	for (auto obj : this->cubeList2)
+	/*for (auto obj : this->cubeList2)
 	{
 		obj->update(EngineTime::getDeltaTime());
 		obj->draw(width, height, m_vs, m_ps);
-	}
+	}*/
 
 	//Start ImGui frame
 	ImGui_ImplDX11_NewFrame();

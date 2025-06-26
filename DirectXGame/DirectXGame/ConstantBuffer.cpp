@@ -1,6 +1,7 @@
 #include "ConstantBuffer.h"
 #include "GraphicsEngine.h"
 #include "DeviceContext.h"
+#include <iostream>
 
 ConstantBuffer::ConstantBuffer()
 {
@@ -8,7 +9,11 @@ ConstantBuffer::ConstantBuffer()
 
 bool ConstantBuffer::load(void* buffer, UINT size_buffer)
 {
-	if (m_buffer)m_buffer->Release();
+	//if (m_buffer)m_buffer->Release();
+	if (this->m_buffer)
+	{
+		this->m_buffer->Release();
+	}
 
 	D3D11_BUFFER_DESC buff_desc = {};
 	buff_desc.Usage = D3D11_USAGE_DEFAULT;
@@ -22,6 +27,7 @@ bool ConstantBuffer::load(void* buffer, UINT size_buffer)
 
 	if (FAILED(GraphicsEngine::get()->m_d3d_device->CreateBuffer(&buff_desc, &init_data, &m_buffer)))
 	{
+		std::cout << "Failed to create constant buffer";
 		return false;
 	}
 
@@ -35,8 +41,15 @@ void ConstantBuffer::update(DeviceContext* context, void* buffer)
 
 bool ConstantBuffer::release()
 {
-	if (m_buffer)m_buffer->Release();
-	delete this;
+	/*if (m_buffer)m_buffer->Release();
+	delete this;*/
+
+	if (this->m_buffer)
+	{
+		this->m_buffer->Release();
+		delete this;
+	}
+
 	return true;
 }
 

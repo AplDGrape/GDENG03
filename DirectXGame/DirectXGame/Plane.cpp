@@ -63,7 +63,15 @@ void Plane::draw(int width, int height, VertexShader* vertexShader, PixelShader*
 
     cbData.worldMatrix = worldMatrix;
     cbData.viewMatrix.setIdentity();
-    cbData.projMatrix.setOrthoLH(width / 400.0f, height / 400.0f, -4.0f, 4.0f);
+    //cbData.projMatrix.setOrthoLH(width / 400.0f, height / 400.0f, -4.0f, 4.0f);
+    //cbData.projMatrix.setOrthoLH(2.0f, 2.0f, -10.0f, 10.0f);
+    cbData.projMatrix.setPerspectiveFovLH(
+        1.57f, // ~90 degrees
+        (float)width / (float)height,
+        0.1f,
+        100.0f
+    );
+    cbData.time = 0.0f;
 
     constantBuffer->update(ctx, &cbData);
     ctx->setConstantBuffer(vertexShader, constantBuffer);

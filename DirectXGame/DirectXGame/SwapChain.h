@@ -12,6 +12,9 @@ public:
 
 	bool present(bool vsync);
 
+	ID3D11RenderTargetView* getRenderTargetView();
+	ID3D11DepthStencilView* getDepthStencilView();
+
 	//Release the swap chain
 	bool release();
 	~SwapChain();
@@ -20,7 +23,7 @@ private:
 	ID3D11RenderTargetView* m_rtv;
 
 	ID3D11Texture2D* m_depth_buffer = nullptr;
-	ID3D11DepthStencilView* m_dsv = nullptr;
+	ID3D11DepthStencilView* m_dsv;
 private:
 	friend class DeviceContext;
 };
