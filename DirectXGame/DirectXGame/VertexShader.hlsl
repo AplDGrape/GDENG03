@@ -20,7 +20,9 @@ cbuffer constant: register(b0)
 	row_major float4x4 m_world;
 	row_major float4x4 m_view;
 	row_major float4x4 m_proj;
-	unsigned int m_time;
+	//unsigned int m_time;
+	float m_time;
+	float3 padding;
 };
 
 VS_OUTPUT vsmain( VS_INPUT input )

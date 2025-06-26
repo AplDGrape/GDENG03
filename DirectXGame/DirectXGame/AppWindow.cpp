@@ -13,6 +13,8 @@
 #include "MathUtils.h"
 #include "CubeMeshData.h"
 
+#include "SimplePlane.h"
+
 //struct vec3
 //{
 //	float x, y, z;
@@ -35,7 +37,9 @@ struct constant
 	Matrix4x4 m_world;
 	Matrix4x4 m_view;
 	Matrix4x4 m_proj;
-	unsigned int m_time;
+	//unsigned int m_time;
+	float m_time;
+	float padding[3];
 };
 
 AppWindow::AppWindow()
@@ -272,6 +276,11 @@ void AppWindow::onCreate()
 	//VertexBuffer* m_instanceBuffer = nullptr;
 	//m_instanceBuffer = GraphicsEngine::get()->createVertexBuffer();
 
+	SimplePlane* plane = new SimplePlane("GroundPlane", shader_byte_code, size_shader);
+	plane->setPosition(Vector3D(0, -0.51f, 0));
+	plane->setScale(Vector3D(5.0f, 1.0f, 5.0f));
+	this->cubeList2.push_back(plane);
+
 	constant cc;
 	cc.m_time = 0;
 
@@ -381,15 +390,28 @@ void AppWindow::onUpdate()
 	//	this->cubeList2[i]->draw(width, height, m_vs, m_ps);
 	//}
 
+	for (auto obj : this->cubeList2)
+	{
+		obj->update(EngineTime::getDeltaTime());
+		obj->draw(width, height, m_vs, m_ps);
+	}
+
 	//Start ImGui frame
 	ImGui_ImplDX11_NewFrame();
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
 
-	//UI code
-	ImGui::Begin("My ImGui Window");
-	ImGui::Text("Hello World!");
-	ImGui::End();
+	// Only allow UI interaction when mouse is visible
+	if (m_mouseVisible)
+	{
+		ImGui::SetNextWindowPos(ImVec2(10, 10), ImGuiCond_FirstUseEver);
+		ImGui::Begin("My ImGui Window", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
+		ImGui::Text("Full mouse control!");
+		/*ImGui::DragFloat("Rotate X", &m_rot_x, 0.01f);
+		ImGui::DragFloat("Rotate Y", &m_rot_y, 0.01f);
+		ImGui::SliderFloat("Scale Cube", &m_scale_cube, 0.1f, 2.0f);*/
+		ImGui::End();
+	}
 
 	//Render ImGui
 	ImGui::Render();
@@ -445,53 +467,99 @@ void AppWindow::onKillFocus()
 
 void AppWindow::onKeyDown(int key)
 {
-	if (key == 'W')
+	//if (key == 'W')
+	//{
+	//	//m_rot_x += 0.707f * m_delta_time;
+	//	m_forward = 0.5f;
+	//}
+	//else if (key == 'S')
+	//{
+	//	//m_rot_x -= 0.707f * m_delta_time;
+	//	m_forward = -0.5f;
+	//}
+	//else if (key == 'A')
+	//{
+	//	//m_rot_y += 0.707f * m_delta_time;
+	//	m_rightward = -0.5f;
+	//}
+	//else if (key == 'D')
+	//{
+	//	//m_rot_y -= 0.707f * m_delta_time;
+	//	m_rightward = 0.5f;
+	//}
+	if (key == 'M' && !m_mKeyDown)
 	{
-		//m_rot_x += 0.707f * m_delta_time;
-		m_forward = 0.5f;
+		m_mouseVisible = !m_mouseVisible;
+		InputSystem::get()->showCursor(m_mouseVisible);
+		m_mKeyDown = true;
+
+		if (m_mouseVisible)
+		{
+			std::cout << "Mouse unlocked.\n";
+		}
+		else
+		{
+			std::cout << "Mouse locked.\n";
+			// Reset cursor to center when locking again
+			RECT rc = this->getClientWindowRect();
+			InputSystem::get()->setCursorPosition(Point((rc.right - rc.left) / 2, (rc.bottom - rc.top) / 2));
+		}
 	}
-	else if (key == 'S')
+
+	if (!m_mouseVisible)
 	{
-		//m_rot_x -= 0.707f * m_delta_time;
-		m_forward = -0.5f;
+		if (key == 'W') m_forward = 0.05f;
+		else if (key == 'S') m_forward = -0.05f;
+		else if (key == 'A') m_rightward = -0.05f;
+		else if (key == 'D') m_rightward = 0.05f;
+		else if (key == 'Z')
+		{
+			m_forward = 0.1f;
+			if (!m_zKeyDown) // Only print once per press
+			{
+				std::cout << "Zoom in\n";
+				m_zKeyDown = true;
+			}
+		}
+		else if (key == 'C')
+		{
+			m_forward = -0.1f;
+			if (!m_cKeyDown) // Only print once per press
+			{
+				std::cout << "Zoom out\n";
+				m_cKeyDown = true;
+			}
+		}
 	}
-	else if (key == 'A')
-	{
-		//m_rot_y += 0.707f * m_delta_time;
-		m_rightward = -0.5f;
-	}
-	else if (key == 'D')
-	{
-		//m_rot_y -= 0.707f * m_delta_time;
-		m_rightward = 0.5f;
-	}
-	else if (key == VK_ESCAPE)
+
+	if (key == VK_ESCAPE)
 	{
 		//Sends a close message to the window
 		PostMessage(this->m_hwnd, WM_CLOSE, 0, 0);
-	}
-	//Zoom in
-	else if (key == 'Z')
-	{
-		m_forward = 0.1f;  // Move camera forward (zoom in)
-		std::cout << "Zoom in\n";
-	}
-	//Zoom out
-	else if (key == 'C')
-	{
-		m_forward = -0.1f;  // Move camera backward (zoom out)
-		std::cout << "Zoom out\n";
 	}
 }
 
 void AppWindow::onKeyUp(int key)
 {
-	m_forward = 0.0f;
-	m_rightward = 0.0f;
+	if (key == 'M')
+		m_mKeyDown = false;
+	if (key == 'Z') 
+		m_zKeyDown = false;
+	if (key == 'C') 
+		m_cKeyDown = false;
+
+	if (!m_mouseVisible)
+	{
+		m_forward = 0.0f;
+		m_rightward = 0.0f;
+	}
 }
 
 void AppWindow::onMouseMove(const Point& mouse_pos)
 {
+	if (m_mouseVisible)
+		return;
+
 	int POVwidth = (this->getClientWindowRect().right - this->getClientWindowRect().left);
 	int POVheight = (this->getClientWindowRect().bottom - this->getClientWindowRect().top);
 

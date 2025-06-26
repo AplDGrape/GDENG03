@@ -52,6 +52,25 @@ bool SwapChain::init(HWND hwnd, UINT width, UINT height)
 		return false;
 	}
 
+	// Create Depth Buffer
+	D3D11_TEXTURE2D_DESC depthDesc = {};
+	depthDesc.Width = width;
+	depthDesc.Height = height;
+	depthDesc.MipLevels = 1;
+	depthDesc.ArraySize = 1;
+	depthDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	depthDesc.SampleDesc.Count = 1;
+	depthDesc.SampleDesc.Quality = 0;
+	depthDesc.Usage = D3D11_USAGE_DEFAULT;
+	depthDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+
+	hr = device->CreateTexture2D(&depthDesc, nullptr, &m_depth_buffer);
+	if (FAILED(hr)) return false;
+
+	// Create Depth Stencil View
+	hr = device->CreateDepthStencilView(m_depth_buffer, nullptr, &m_dsv);
+	if (FAILED(hr)) return false;
+
 	return true;
 }
 
@@ -64,6 +83,12 @@ bool SwapChain::present(bool vsync)
 bool SwapChain::release()
 {
 	m_swap_chain->Release();
+
+	if (m_dsv) m_dsv->Release();
+	if (m_depth_buffer) m_depth_buffer->Release();
+	if (m_rtv) m_rtv->Release();
+	if (m_swap_chain) m_swap_chain->Release();
+
 	delete this;
 	return true;
 }

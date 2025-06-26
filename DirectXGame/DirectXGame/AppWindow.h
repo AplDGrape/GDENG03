@@ -60,6 +60,11 @@ private:
 
 	//VertexBuffer* m_instanceBuffer = nullptr;
 private:
+	bool m_mouseVisible = false;
+	bool m_mKeyDown = false;
+	bool m_zKeyDown = false;
+	bool m_cKeyDown = false;
+
 	float m_old_delta;
 	float m_new_delta;
 	float m_delta_time;
