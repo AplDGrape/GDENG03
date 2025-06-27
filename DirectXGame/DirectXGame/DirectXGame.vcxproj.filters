@@ -46,6 +46,9 @@
     <Filter Include="GameEngine\GraphicsEngine\imgui">
       <UniqueIdentifier>{3b49fd12-3331-4a26-84c4-9931f1f16d1f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="GameEngine\Camera">
+      <UniqueIdentifier>{52250ae6-b81b-44d2-9b04-71b4e36fa817}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -122,6 +125,9 @@
     </ClCompile>
     <ClCompile Include="SimplePlane.cpp">
       <Filter>GameEngine\Challenges</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>GameEngine\Camera</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -223,6 +229,9 @@
     </ClInclude>
     <ClInclude Include="SimplePlane.h">
       <Filter>GameEngine\Challenges</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>GameEngine\Camera</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

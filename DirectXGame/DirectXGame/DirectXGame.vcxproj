@@ -137,6 +137,7 @@
     <ClCompile Include="..\..\..\..\..\Desktop\IMGUI\imgui_widgets.cpp" />
     <ClCompile Include="AGameObject.cpp" />
     <ClCompile Include="AppWindow.cpp" />
+    <ClCompile Include="Camera.cpp" />
     <ClCompile Include="ConstantBuffer.cpp" />
     <ClCompile Include="Cube.cpp" />
     <ClCompile Include="DeviceContext.cpp" />
@@ -166,6 +167,7 @@
     <ClInclude Include="..\..\..\..\..\Desktop\IMGUI\imstb_truetype.h" />
     <ClInclude Include="AGameObject.h" />
     <ClInclude Include="AppWindow.h" />
+    <ClInclude Include="Camera.h" />
     <ClInclude Include="ConstantBuffer.h" />
     <ClInclude Include="Cube.h" />
     <ClInclude Include="CubeMeshData.h" />

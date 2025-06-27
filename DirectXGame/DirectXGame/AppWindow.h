@@ -14,6 +14,7 @@
 
 #include <vector>
 #include "Cube.h"
+#include "Camera.h"
 
 #include "imgui.h"
 #include "imgui_impl_dx11.h"
@@ -64,6 +65,7 @@ private:
 	bool m_mKeyDown = false;
 	bool m_zKeyDown = false;
 	bool m_cKeyDown = false;
+	bool m_tKeyDown = false;
 
 	float m_old_delta;
 	float m_new_delta;
@@ -80,6 +82,7 @@ private:
 	float m_rightward = 0.0f;
 
 	Matrix4x4 m_world_cam;
+	Camera m_camera;
 private:
 	WireframeRenderer* m_wireframe_renderer = nullptr;
 

@@ -2,6 +2,7 @@
 #include <memory>
 #include "Vector3D.h"
 #include "Vector4D.h"
+#include <cmath>
 
 class Matrix4x4
 {
@@ -184,6 +185,22 @@ public:
 		m_mat[1][1] = 2.0f / height;
 		m_mat[2][2] = 1.0f / (far_plane - near_plane);
 		m_mat[3][2] = -(near_plane / (far_plane - near_plane));
+	}
+
+	void setLookAtLH(const Vector3D& eye, const Vector3D& target, const Vector3D& up)
+	{
+		Vector3D zaxis = (target - eye).normalize();             // Forward
+		Vector3D xaxis = up.cross(zaxis).normalize();            // Right
+		Vector3D yaxis = zaxis.cross(xaxis);                     // Up (recomputed to ensure orthogonality)
+
+		m_mat[0][0] = xaxis.m_x; m_mat[0][1] = yaxis.m_x; m_mat[0][2] = zaxis.m_x; m_mat[0][3] = 0.0f;
+		m_mat[1][0] = xaxis.m_y; m_mat[1][1] = yaxis.m_y; m_mat[1][2] = zaxis.m_y; m_mat[1][3] = 0.0f;
+		m_mat[2][0] = xaxis.m_z; m_mat[2][1] = yaxis.m_z; m_mat[2][2] = zaxis.m_z; m_mat[2][3] = 0.0f;
+
+		m_mat[3][0] = -xaxis.dot(eye);
+		m_mat[3][1] = -yaxis.dot(eye);
+		m_mat[3][2] = -zaxis.dot(eye);
+		m_mat[3][3] = 1.0f;
 	}
 
 	~Matrix4x4()

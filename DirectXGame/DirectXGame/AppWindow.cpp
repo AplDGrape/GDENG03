@@ -1,4 +1,4 @@
-#include "AppWindow.h"
+﻿#include "AppWindow.h"
 #include "RenderMultipleQuad.h"
 #include "Cube.h"
 #include "Plane.h"
@@ -51,7 +51,8 @@ void AppWindow::update()
 	constant cc;
 	cc.m_time = ::GetTickCount();
 	//cc.m_time = static_cast<unsigned int>(EngineTime::getTime() * 1000); // milliseconds
-	
+	m_camera.update();
+
 	m_delta_pos += m_delta_time / 4.0f;
 
 	if (m_delta_pos > 1.0f)
@@ -84,8 +85,9 @@ void AppWindow::update()
 	cc.m_world *= temp;*/
 
 	cc.m_world.setIdentity();
+	cc.m_world.setScale(Vector3D(m_scale_cube, m_scale_cube, m_scale_cube));
 
-	Matrix4x4 world_cam;
+	/*Matrix4x4 world_cam;
 	world_cam.setIdentity();
 
 	temp.setIdentity();
@@ -106,7 +108,15 @@ void AppWindow::update()
 
 	world_cam.getInverse();
 
-	cc.m_view = world_cam;
+	cc.m_view = world_cam;*/
+
+	// Apply movement input to the camera
+	m_camera.moveForward(m_forward);
+	m_camera.strafeRight(m_rightward);
+
+	// Use camera matrices
+	cc.m_view = m_camera.getViewMatrix();
+
 	/*cc.m_proj.setOrthoLH
 	(
 		(this->getClientWindowRect().right - this->getClientWindowRect().left)/400.0f,
@@ -120,7 +130,10 @@ void AppWindow::update()
 
 	//cc.m_proj.setPerspectiveFovLH(1.57f, ((float)POVwidth / (float)POVheight), 0.1f, 100.0f);
 	//Adjusted for zoom in and zoom out
-	cc.m_proj.setPerspectiveFovLH(1.57f - m_forward * 0.1f, ((float)POVwidth / (float)POVheight), 0.1f, 100.0f);
+	//cc.m_proj.setPerspectiveFovLH(1.57f - m_forward * 0.1f, ((float)POVwidth / (float)POVheight), 0.1f, 100.0f);
+
+	m_camera.updateProjectionMatrix(m_camera.getFOV(), ((float)POVwidth / (float)POVheight), 0.1f, 100.0f);
+	cc.m_proj = m_camera.getProjectionMatrix();
 
 	m_cb->update(GraphicsEngine::get()->getImmediateDeviceContext(), &cc);
 
@@ -139,6 +152,9 @@ void AppWindow::onCreate()
 
 	RECT rc = this->getClientWindowRect();
 	m_swap_chain->init(this->m_hwnd, rc.right - rc.left, rc.bottom - rc.top);
+
+	float aspect = (float)(rc.right - rc.left) / (rc.bottom - rc.top);
+	m_camera.updateProjectionMatrix(1.57f, aspect, 0.1f, 100.0f);
 
 	RenderMultipleQuad::initialize();
 	EngineTime::initialize();
@@ -267,25 +283,32 @@ void AppWindow::onCreate()
 	}
 
 	// Added temporary plane
-	Plane* plane = new Plane("MyPlane", shader_byte_code, size_shader);
-	/*plane->setPosition(Vector3D(0, -0.51f, 0.1f));
-	plane->setScale(Vector3D(5.0f, 1.0f, 5.0f));*/
-	//plane->setRotation(Vector3D(0, 0, 0)); // Lay flat rotation
-	this->cubeList2.push_back(plane); // reusing cubeList for general drawables
+	//Plane* plane = new Plane("MyPlane", shader_byte_code, size_shader);
+	///*plane->setPosition(Vector3D(0, -0.51f, 0.1f));
+	//plane->setScale(Vector3D(5.0f, 1.0f, 5.0f));*/
+	////plane->setRotation(Vector3D(0, 0, 0)); // Lay flat rotation
+	//this->cubeList2.push_back(plane);
 
 	//VertexBuffer* m_instanceBuffer = nullptr;
 	//m_instanceBuffer = GraphicsEngine::get()->createVertexBuffer();
 
-	/*SimplePlane* plane = new SimplePlane("GroundPlane", shader_byte_code, size_shader);
+	SimplePlane* plane = new SimplePlane("GroundPlane", shader_byte_code, size_shader);
 	plane->setPosition(Vector3D(0, -0.51f, 0));
 	plane->setScale(Vector3D(5.0f, 1.0f, 5.0f));
-	this->cubeList2.push_back(plane);*/
+	this->cubeList2.push_back(plane);
 
-	constant cc;
-	cc.m_time = 0;
+	constant cc = {};
+	//cc.m_time = 0;
+	//m_cb->load(&cc, sizeof(constant));
 
 	m_cb = GraphicsEngine::get()->createConstantBuffer();
 	m_cb->load(&cc, sizeof(constant));
+
+	cc.m_time = ::GetTickCount();
+	cc.m_view = m_camera.getViewMatrix();
+	cc.m_proj = m_camera.getProjectionMatrix();
+	cc.m_world.setIdentity();
+	m_cb->update(GraphicsEngine::get()->getImmediateDeviceContext(), &cc);
 
 	//wireframe
 	m_wireframe_renderer = new WireframeRenderer();
@@ -347,10 +370,10 @@ void AppWindow::onUpdate()
 	GraphicsEngine::get()->getImmediateDeviceContext()->setIndexBuffer(m_ib);
 
 	//Wireframe
-	if (GetAsyncKeyState('T') & 0x1) //Press T to toggle
-	{
-		m_wireframe_renderer->toggle(); //Toggles with this line
-	}
+	//if (GetAsyncKeyState('T') & 0x1) //Press T to toggle
+	//{
+	//	m_wireframe_renderer->toggle(); //Toggles with this line
+	//}
 
 	m_wireframe_renderer->set(GraphicsEngine::get()->getD3DDeviceContext());
 
@@ -390,11 +413,11 @@ void AppWindow::onUpdate()
 		this->cubeList2[i]->draw(width, height, m_vs, m_ps);
 	}
 
-	/*for (auto obj : this->cubeList2)
+	for (auto obj : this->cubeList2)
 	{
 		obj->update(EngineTime::getDeltaTime());
 		obj->draw(width, height, m_vs, m_ps);
-	}*/
+	}
 
 	//Start ImGui frame
 	ImGui_ImplDX11_NewFrame();
@@ -505,16 +528,37 @@ void AppWindow::onKeyDown(int key)
 			InputSystem::get()->setCursorPosition(Point((rc.right - rc.left) / 2, (rc.bottom - rc.top) / 2));
 		}
 	}
+	if (key == 'T' && !m_tKeyDown)
+	{
+		m_wireframe_renderer->toggle(); // Toggles wireframe mode
+		m_tKeyDown = true;
+	}
 
 	if (!m_mouseVisible)
 	{
-		if (key == 'W') m_forward = 0.05f;
-		else if (key == 'S') m_forward = -0.05f;
-		else if (key == 'A') m_rightward = -0.05f;
-		else if (key == 'D') m_rightward = 0.05f;
+		if (key == 'W')
+		{
+			//m_forward = 0.05f;
+			m_camera.moveForward(1.0f);
+		}
+		else if (key == 'S')
+		{
+			//m_forward = -0.05f;
+			m_camera.moveForward(-1.0f);
+		}
+		else if (key == 'A')
+		{
+			//m_rightward = -0.05f;
+			m_camera.strafeRight(1.0f);
+		}
+		else if (key == 'D')
+		{
+			//m_rightward = 0.05f;
+			m_camera.strafeRight(-1.0f);
+		}
 		else if (key == 'Z')
 		{
-			m_forward = 0.1f;
+			m_camera.zoomIn(0.05f);
 			if (!m_zKeyDown) // Only print once per press
 			{
 				std::cout << "Zoom in\n";
@@ -523,7 +567,7 @@ void AppWindow::onKeyDown(int key)
 		}
 		else if (key == 'C')
 		{
-			m_forward = -0.1f;
+			m_camera.zoomOut(0.05f);
 			if (!m_cKeyDown) // Only print once per press
 			{
 				std::cout << "Zoom out\n";
@@ -547,6 +591,8 @@ void AppWindow::onKeyUp(int key)
 		m_zKeyDown = false;
 	if (key == 'C') 
 		m_cKeyDown = false;
+	if (key == 'T')
+		m_tKeyDown = false;
 
 	if (!m_mouseVisible)
 	{
@@ -560,13 +606,23 @@ void AppWindow::onMouseMove(const Point& mouse_pos)
 	if (m_mouseVisible)
 		return;
 
-	int POVwidth = (this->getClientWindowRect().right - this->getClientWindowRect().left);
+	/*int POVwidth = (this->getClientWindowRect().right - this->getClientWindowRect().left);
 	int POVheight = (this->getClientWindowRect().bottom - this->getClientWindowRect().top);
 
 	m_rot_x += (mouse_pos.m_y - (POVheight / 2.0f)) * m_delta_time * 0.1f;
 	m_rot_y += (mouse_pos.m_x - (POVwidth / 2.0f))* m_delta_time * 0.1f;
 
-	InputSystem::get()->setCursorPosition(Point(POVwidth / 2.0f, POVheight / 2.0f));
+	InputSystem::get()->setCursorPosition(Point(POVwidth / 2.0f, POVheight / 2.0f));*/
+
+	int width = getClientWindowRect().right - getClientWindowRect().left;
+	int height = getClientWindowRect().bottom - getClientWindowRect().top;
+
+	float yawDelta = (mouse_pos.m_x - width / 2.0f) * m_delta_time * 0.1f;
+	float pitchDelta = -(mouse_pos.m_y - height / 2.0f) * m_delta_time * 0.1f;
+
+	m_camera.rotate(pitchDelta, yawDelta);
+
+	InputSystem::get()->setCursorPosition(Point(width / 2, height / 2));
 }
 
 void AppWindow::onLeftMouseDown(const Point& mouse_pos)

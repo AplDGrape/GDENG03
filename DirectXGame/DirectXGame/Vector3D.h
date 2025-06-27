@@ -1,4 +1,6 @@
 #pragma once
+#include <cmath>
+
 class Vector3D
 {
 public:
@@ -35,6 +37,35 @@ public:
 		return v;
 	}
 
+	// Normalize this vector (returns a new vector)
+	Vector3D normalize() const
+	{
+		float length = sqrt(m_x * m_x + m_y * m_y + m_z * m_z);
+		if (length == 0) return Vector3D(0, 0, 0); // avoid division by zero
+		return Vector3D(m_x / length, m_y / length, m_z / length);
+	}
+
+	// Dot product with another vector
+	float dot(const Vector3D& other) const
+	{
+		return m_x * other.m_x + m_y * other.m_y + m_z * other.m_z;
+	}
+
+	// Cross product with another vector
+	Vector3D cross(const Vector3D& other) const
+	{
+		return Vector3D(
+			m_y * other.m_z - m_z * other.m_y,
+			m_z * other.m_x - m_x * other.m_z,
+			m_x * other.m_y - m_y * other.m_x
+		);
+	}
+
+	float length() const
+	{
+		return sqrt(m_x * m_x + m_y * m_y + m_z * m_z);
+	}
+
 	Vector3D operator*(float num)
 	{
 		return Vector3D(m_x * num, m_y * num, m_z * num);
@@ -44,6 +75,11 @@ public:
 	Vector3D operator+(Vector3D vector)
 	{
 		return Vector3D(m_x + vector.m_x, m_y + vector.m_y, m_z + vector.m_z);
+	}
+
+	Vector3D operator-(const Vector3D& other) const
+	{
+		return Vector3D(m_x - other.m_x, m_y - other.m_y, m_z - other.m_z);
 	}
 
 	~Vector3D()
