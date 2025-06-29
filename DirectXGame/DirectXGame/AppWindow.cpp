@@ -292,10 +292,10 @@ void AppWindow::onCreate()
 	//VertexBuffer* m_instanceBuffer = nullptr;
 	//m_instanceBuffer = GraphicsEngine::get()->createVertexBuffer();
 
-	SimplePlane* plane = new SimplePlane("GroundPlane", shader_byte_code, size_shader);
+	/*SimplePlane* plane = new SimplePlane("GroundPlane", shader_byte_code, size_shader);
 	plane->setPosition(Vector3D(0, -0.51f, 0));
 	plane->setScale(Vector3D(5.0f, 1.0f, 5.0f));
-	this->cubeList2.push_back(plane);
+	this->cubeList2.push_back(plane);*/
 
 	constant cc = {};
 	//cc.m_time = 0;
@@ -627,22 +627,26 @@ void AppWindow::onMouseMove(const Point& mouse_pos)
 
 void AppWindow::onLeftMouseDown(const Point& mouse_pos)
 {
-	m_scale_cube = 0.5f;
+	if (!m_mouseVisible)
+		m_scale_cube = 0.5f;
 }
 
 void AppWindow::onLeftMouseUp(const Point& mouse_pos)
 {
-	m_scale_cube = 1.0f;
+	if (!m_mouseVisible)
+		m_scale_cube = 1.0f;
 }
 
 void AppWindow::onRightMouseDown(const Point& mouse_pos)
 {
-	m_scale_cube = 2.0f;
+	if (!m_mouseVisible)
+		m_scale_cube = 2.0f;
 }
 
 void AppWindow::onRightMouseUp(const Point& mouse_pos)
 {
-	m_scale_cube = 1.0f;
+	if (!m_mouseVisible)
+		m_scale_cube = 1.0f;
 }
 
 AppWindow::~AppWindow()
