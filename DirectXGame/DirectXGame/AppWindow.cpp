@@ -15,6 +15,11 @@
 
 #include "SimplePlane.h"
 
+#include <imgui_node_editor.h>
+namespace ed = ax::NodeEditor;
+
+//static ed::EditorContext* editorContext = nullptr;
+
 //struct vec3
 //{
 //	float x, y, z;
@@ -163,6 +168,7 @@ void AppWindow::onCreate()
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
 	ImGuiIO& io = ImGui::GetIO(); (void)io;
+	//ImGui::GetIO().FontGlobalScale = 0.5f;
 	ImGui::StyleColorsDark();
 
 	ImGui_ImplWin32_Init(this->m_hwnd); // use your HWND
@@ -427,14 +433,82 @@ void AppWindow::onUpdate()
 	// Only allow UI interaction when mouse is visible
 	if (m_mouseVisible)
 	{
-		ImGui::SetNextWindowPos(ImVec2(10, 10), ImGuiCond_FirstUseEver);
-		ImGui::Begin("My ImGui Window", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
-		ImGui::Text("Full mouse control!");
-		/*ImGui::DragFloat("Rotate X", &m_rot_x, 0.01f);
-		ImGui::DragFloat("Rotate Y", &m_rot_y, 0.01f);
-		ImGui::SliderFloat("Scale Cube", &m_scale_cube, 0.1f, 2.0f);*/
+		//ImGui::SetNextWindowPos(ImVec2(10, 10), ImGuiCond_FirstUseEver);
+		//ImGui::Begin("My ImGui Window", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
+		//ImGui::Text("Full mouse control!");
+		///*ImGui::DragFloat("Rotate X", &m_rot_x, 0.01f);
+		//ImGui::DragFloat("Rotate Y", &m_rot_y, 0.01f);
+		//ImGui::SliderFloat("Scale Cube", &m_scale_cube, 0.1f, 2.0f);*/
+		//ImGui::End();
+		
+		// Blueprint-style editor (imgui-node-editor)
+		static ax::NodeEditor::EditorContext* editorContext = nullptr;
+
+		if (!editorContext)
+		{
+			ax::NodeEditor::Config config;
+			config.SettingsFile = "BlueprintNodeEditor.json";
+			editorContext = ax::NodeEditor::CreateEditor(&config);
+		}
+
+		ImGui::SetNextWindowSize(ImVec2(800, 600), ImGuiCond_Once);
+		ImGui::Begin("Blueprint Editor");
+
+		ax::NodeEditor::SetCurrentEditor(editorContext);
+		ax::NodeEditor::Begin("MyEditor", ImVec2(0.0f, 0.0f));
+
+		// Node A
+		ax::NodeEditor::BeginNode(1);
+		ImGui::Text("Node A");
+		ImGui::BeginGroup();
+		ax::NodeEditor::BeginPin(1, ax::NodeEditor::PinKind::Input);
+		ImGui::Text("-> In");
+		ax::NodeEditor::EndPin();
+		ImGui::EndGroup();
+
+		ImGui::Dummy(ImVec2(0, 10));
+
+		ImGui::BeginGroup();
+		ax::NodeEditor::BeginPin(2, ax::NodeEditor::PinKind::Output);
+		ImGui::Text("Out ->");
+		ax::NodeEditor::EndPin();
+		ImGui::EndGroup();
+		ax::NodeEditor::EndNode();
+
+		// Node B
+		ax::NodeEditor::BeginNode(2);
+		ImGui::Text("Node B");
+		ImGui::BeginGroup();
+		ax::NodeEditor::BeginPin(3, ax::NodeEditor::PinKind::Input);
+		ImGui::Text("-> In");
+		ax::NodeEditor::EndPin();
+		ImGui::EndGroup();
+
+		ImGui::Dummy(ImVec2(0, 10));
+
+		ImGui::BeginGroup();
+		ax::NodeEditor::BeginPin(4, ax::NodeEditor::PinKind::Output);
+		ImGui::Text("Out ->");
+		ax::NodeEditor::EndPin();
+		ImGui::EndGroup();
+		ax::NodeEditor::EndNode();
+
+		// Optional Link
+		ax::NodeEditor::Link(100, 2, 3); // from Node A Out to Node B In
+
+		ax::NodeEditor::End();
+
+		static bool firstTime = true;
+		if (firstTime)
+		{
+			ax::NodeEditor::NavigateToContent();
+			firstTime = false;
+		}
+
 		ImGui::End();
 	}
+
+	//printf("ImGui Version: %s\n", ImGui::GetVersion());
 
 	//Render ImGui
 	ImGui::Render();
@@ -443,9 +517,6 @@ void AppWindow::onUpdate()
 	m_swap_chain->present(true);
 
 	//m_swap_chain->present(false);
-
-	//int x = RenderMultipleQuad::getInstance()->getX();
-	//std::cout << "My X " << x << std::endl;
 	
 	m_old_delta = m_new_delta;
 	m_new_delta = ::GetTickCount();
@@ -470,6 +541,12 @@ void AppWindow::onDestroy()
 	ImGui_ImplWin32_Shutdown();
 	ImGui::DestroyContext();
 
+	/*if (editorContext)
+	{
+		ax::NodeEditor::DestroyEditor(editorContext);
+		editorContext = nullptr;
+	}*/
+
 	//wireframe
 	m_wireframe_renderer->release();
 	delete m_wireframe_renderer;
@@ -490,26 +567,6 @@ void AppWindow::onKillFocus()
 
 void AppWindow::onKeyDown(int key)
 {
-	//if (key == 'W')
-	//{
-	//	//m_rot_x += 0.707f * m_delta_time;
-	//	m_forward = 0.5f;
-	//}
-	//else if (key == 'S')
-	//{
-	//	//m_rot_x -= 0.707f * m_delta_time;
-	//	m_forward = -0.5f;
-	//}
-	//else if (key == 'A')
-	//{
-	//	//m_rot_y += 0.707f * m_delta_time;
-	//	m_rightward = -0.5f;
-	//}
-	//else if (key == 'D')
-	//{
-	//	//m_rot_y -= 0.707f * m_delta_time;
-	//	m_rightward = 0.5f;
-	//}
 	if (key == 'M' && !m_mKeyDown)
 	{
 		m_mouseVisible = !m_mouseVisible;

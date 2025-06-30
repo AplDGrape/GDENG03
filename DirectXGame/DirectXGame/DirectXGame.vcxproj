@@ -104,7 +104,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)\external\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\external\imgui-node-editor\imgui;$(ProjectDir)\external\imgui-node-editor;$(ProjectDir)\external\imgui-new;$(ProjectDir)\external\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -129,12 +129,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\..\Desktop\IMGUI\imgui.cpp" />
-    <ClCompile Include="..\..\..\..\..\Desktop\IMGUI\imgui_demo.cpp" />
-    <ClCompile Include="..\..\..\..\..\Desktop\IMGUI\imgui_draw.cpp" />
-    <ClCompile Include="..\..\..\..\..\Desktop\IMGUI\imgui_impl_dx11.cpp" />
-    <ClCompile Include="..\..\..\..\..\Desktop\IMGUI\imgui_impl_win32.cpp" />
-    <ClCompile Include="..\..\..\..\..\Desktop\IMGUI\imgui_widgets.cpp" />
     <ClCompile Include="AGameObject.cpp" />
     <ClCompile Include="AppWindow.cpp" />
     <ClCompile Include="Camera.cpp" />
@@ -142,6 +136,17 @@
     <ClCompile Include="Cube.cpp" />
     <ClCompile Include="DeviceContext.cpp" />
     <ClCompile Include="EngineTime.cpp" />
+    <ClCompile Include="external\imgui-node-editor\crude_json.cpp" />
+    <ClCompile Include="external\imgui-node-editor\imgui\imgui.cpp" />
+    <ClCompile Include="external\imgui-node-editor\imgui\imgui_demo.cpp" />
+    <ClCompile Include="external\imgui-node-editor\imgui\imgui_draw.cpp" />
+    <ClCompile Include="external\imgui-node-editor\imgui\imgui_impl_dx11.cpp" />
+    <ClCompile Include="external\imgui-node-editor\imgui\imgui_impl_win32.cpp" />
+    <ClCompile Include="external\imgui-node-editor\imgui\imgui_tables.cpp" />
+    <ClCompile Include="external\imgui-node-editor\imgui\imgui_widgets.cpp" />
+    <ClCompile Include="external\imgui-node-editor\imgui_canvas.cpp" />
+    <ClCompile Include="external\imgui-node-editor\imgui_node_editor.cpp" />
+    <ClCompile Include="external\imgui-node-editor\imgui_node_editor_api.cpp" />
     <ClCompile Include="GraphicsEngine.cpp" />
     <ClCompile Include="IndexBuffer.cpp" />
     <ClCompile Include="InputSystem.cpp" />
@@ -157,14 +162,6 @@
     <ClCompile Include="WireframeRenderer.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\..\..\Desktop\IMGUI\imconfig.h" />
-    <ClInclude Include="..\..\..\..\..\Desktop\IMGUI\imgui.h" />
-    <ClInclude Include="..\..\..\..\..\Desktop\IMGUI\imgui_impl_dx11.h" />
-    <ClInclude Include="..\..\..\..\..\Desktop\IMGUI\imgui_impl_win32.h" />
-    <ClInclude Include="..\..\..\..\..\Desktop\IMGUI\imgui_internal.h" />
-    <ClInclude Include="..\..\..\..\..\Desktop\IMGUI\imstb_rectpack.h" />
-    <ClInclude Include="..\..\..\..\..\Desktop\IMGUI\imstb_textedit.h" />
-    <ClInclude Include="..\..\..\..\..\Desktop\IMGUI\imstb_truetype.h" />
     <ClInclude Include="AGameObject.h" />
     <ClInclude Include="AppWindow.h" />
     <ClInclude Include="Camera.h" />
@@ -173,6 +170,22 @@
     <ClInclude Include="CubeMeshData.h" />
     <ClInclude Include="DeviceContext.h" />
     <ClInclude Include="EngineTime.h" />
+    <ClInclude Include="external\imgui-node-editor\crude_json.h" />
+    <ClInclude Include="external\imgui-node-editor\imgui\imconfig.h" />
+    <ClInclude Include="external\imgui-node-editor\imgui\imgui.h" />
+    <ClInclude Include="external\imgui-node-editor\imgui\imgui_impl_dx11.h" />
+    <ClInclude Include="external\imgui-node-editor\imgui\imgui_impl_win32.h" />
+    <ClInclude Include="external\imgui-node-editor\imgui\imgui_internal.h" />
+    <ClInclude Include="external\imgui-node-editor\imgui\imstb_rectpack.h" />
+    <ClInclude Include="external\imgui-node-editor\imgui\imstb_textedit.h" />
+    <ClInclude Include="external\imgui-node-editor\imgui\imstb_truetype.h" />
+    <ClInclude Include="external\imgui-node-editor\imgui_bezier_math.h" />
+    <ClInclude Include="external\imgui-node-editor\imgui_canvas.h" />
+    <ClInclude Include="external\imgui-node-editor\imgui_extra_math.h" />
+    <ClInclude Include="external\imgui-node-editor\imgui_node_editor.h">
+      <DeploymentContent>false</DeploymentContent>
+    </ClInclude>
+    <ClInclude Include="external\imgui-node-editor\imgui_node_editor_internal.h" />
     <ClInclude Include="GraphicsEngine.h" />
     <ClInclude Include="IndexBuffer.h" />
     <ClInclude Include="InputListener.h" />
@@ -212,7 +225,9 @@
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\..\..\..\Desktop\IMGUI\imgui.ini" />
+    <None Include="external\imgui-node-editor\imgui_bezier_math.inl" />
+    <None Include="external\imgui-node-editor\imgui_extra_math.inl" />
+    <None Include="external\imgui-node-editor\imgui_node_editor_internal.inl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

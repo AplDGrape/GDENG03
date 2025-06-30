@@ -49,6 +49,12 @@
     <Filter Include="GameEngine\Camera">
       <UniqueIdentifier>{52250ae6-b81b-44d2-9b04-71b4e36fa817}</UniqueIdentifier>
     </Filter>
+    <Filter Include="GameEngine\GraphicsEngine\imgui-new">
+      <UniqueIdentifier>{d0053b54-5915-444c-804d-f3266aa4a608}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GameEngine\GraphicsEngine\imgui-node-editor">
+      <UniqueIdentifier>{89e47363-c0e8-4302-bbff-f87baea4fd52}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -105,29 +111,44 @@
     <ClCompile Include="InputSystem.cpp">
       <Filter>GameEngine\InputSystem</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Desktop\IMGUI\imgui.cpp">
-      <Filter>GameEngine\GraphicsEngine\imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Desktop\IMGUI\imgui_demo.cpp">
-      <Filter>GameEngine\GraphicsEngine\imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Desktop\IMGUI\imgui_draw.cpp">
-      <Filter>GameEngine\GraphicsEngine\imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Desktop\IMGUI\imgui_impl_dx11.cpp">
-      <Filter>GameEngine\GraphicsEngine\imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Desktop\IMGUI\imgui_impl_win32.cpp">
-      <Filter>GameEngine\GraphicsEngine\imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Desktop\IMGUI\imgui_widgets.cpp">
-      <Filter>GameEngine\GraphicsEngine\imgui</Filter>
-    </ClCompile>
     <ClCompile Include="SimplePlane.cpp">
       <Filter>GameEngine\Challenges</Filter>
     </ClCompile>
     <ClCompile Include="Camera.cpp">
       <Filter>GameEngine\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="external\imgui-node-editor\imgui_node_editor.cpp">
+      <Filter>GameEngine\GraphicsEngine\imgui-node-editor</Filter>
+    </ClCompile>
+    <ClCompile Include="external\imgui-node-editor\imgui_canvas.cpp">
+      <Filter>GameEngine\GraphicsEngine\imgui-node-editor</Filter>
+    </ClCompile>
+    <ClCompile Include="external\imgui-node-editor\imgui\imgui.cpp">
+      <Filter>GameEngine\GraphicsEngine\imgui-new</Filter>
+    </ClCompile>
+    <ClCompile Include="external\imgui-node-editor\imgui\imgui_demo.cpp">
+      <Filter>GameEngine\GraphicsEngine\imgui-new</Filter>
+    </ClCompile>
+    <ClCompile Include="external\imgui-node-editor\imgui\imgui_draw.cpp">
+      <Filter>GameEngine\GraphicsEngine\imgui-new</Filter>
+    </ClCompile>
+    <ClCompile Include="external\imgui-node-editor\imgui\imgui_impl_win32.cpp">
+      <Filter>GameEngine\GraphicsEngine\imgui-new</Filter>
+    </ClCompile>
+    <ClCompile Include="external\imgui-node-editor\imgui\imgui_tables.cpp">
+      <Filter>GameEngine\GraphicsEngine\imgui-new</Filter>
+    </ClCompile>
+    <ClCompile Include="external\imgui-node-editor\imgui\imgui_widgets.cpp">
+      <Filter>GameEngine\GraphicsEngine\imgui-new</Filter>
+    </ClCompile>
+    <ClCompile Include="external\imgui-node-editor\imgui\imgui_impl_dx11.cpp">
+      <Filter>GameEngine\GraphicsEngine\imgui-new</Filter>
+    </ClCompile>
+    <ClCompile Include="external\imgui-node-editor\crude_json.cpp">
+      <Filter>GameEngine\GraphicsEngine\imgui-node-editor</Filter>
+    </ClCompile>
+    <ClCompile Include="external\imgui-node-editor\imgui_node_editor_api.cpp">
+      <Filter>GameEngine\GraphicsEngine\imgui-node-editor</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -203,35 +224,53 @@
     <ClInclude Include="Vector4D.h">
       <Filter>GameEngine\Math</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\Desktop\IMGUI\imconfig.h">
-      <Filter>GameEngine\GraphicsEngine\imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\Desktop\IMGUI\imgui.h">
-      <Filter>GameEngine\GraphicsEngine\imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\Desktop\IMGUI\imgui_impl_dx11.h">
-      <Filter>GameEngine\GraphicsEngine\imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\Desktop\IMGUI\imgui_impl_win32.h">
-      <Filter>GameEngine\GraphicsEngine\imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\Desktop\IMGUI\imgui_internal.h">
-      <Filter>GameEngine\GraphicsEngine\imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\Desktop\IMGUI\imstb_rectpack.h">
-      <Filter>GameEngine\GraphicsEngine\imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\Desktop\IMGUI\imstb_textedit.h">
-      <Filter>GameEngine\GraphicsEngine\imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\Desktop\IMGUI\imstb_truetype.h">
-      <Filter>GameEngine\GraphicsEngine\imgui</Filter>
-    </ClInclude>
     <ClInclude Include="SimplePlane.h">
       <Filter>GameEngine\Challenges</Filter>
     </ClInclude>
     <ClInclude Include="Camera.h">
       <Filter>GameEngine\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="external\imgui-node-editor\crude_json.h">
+      <Filter>GameEngine\GraphicsEngine\imgui-node-editor</Filter>
+    </ClInclude>
+    <ClInclude Include="external\imgui-node-editor\imgui_node_editor.h">
+      <Filter>GameEngine\GraphicsEngine\imgui-node-editor</Filter>
+    </ClInclude>
+    <ClInclude Include="external\imgui-node-editor\imgui_bezier_math.h">
+      <Filter>GameEngine\GraphicsEngine\imgui-node-editor</Filter>
+    </ClInclude>
+    <ClInclude Include="external\imgui-node-editor\imgui_canvas.h">
+      <Filter>GameEngine\GraphicsEngine\imgui-node-editor</Filter>
+    </ClInclude>
+    <ClInclude Include="external\imgui-node-editor\imgui_extra_math.h">
+      <Filter>GameEngine\GraphicsEngine\imgui-node-editor</Filter>
+    </ClInclude>
+    <ClInclude Include="external\imgui-node-editor\imgui_node_editor_internal.h">
+      <Filter>GameEngine\GraphicsEngine\imgui-node-editor</Filter>
+    </ClInclude>
+    <ClInclude Include="external\imgui-node-editor\imgui\imconfig.h">
+      <Filter>GameEngine\GraphicsEngine\imgui-new</Filter>
+    </ClInclude>
+    <ClInclude Include="external\imgui-node-editor\imgui\imgui.h">
+      <Filter>GameEngine\GraphicsEngine\imgui-new</Filter>
+    </ClInclude>
+    <ClInclude Include="external\imgui-node-editor\imgui\imgui_impl_win32.h">
+      <Filter>GameEngine\GraphicsEngine\imgui-new</Filter>
+    </ClInclude>
+    <ClInclude Include="external\imgui-node-editor\imgui\imgui_internal.h">
+      <Filter>GameEngine\GraphicsEngine\imgui-new</Filter>
+    </ClInclude>
+    <ClInclude Include="external\imgui-node-editor\imgui\imstb_rectpack.h">
+      <Filter>GameEngine\GraphicsEngine\imgui-new</Filter>
+    </ClInclude>
+    <ClInclude Include="external\imgui-node-editor\imgui\imstb_textedit.h">
+      <Filter>GameEngine\GraphicsEngine\imgui-new</Filter>
+    </ClInclude>
+    <ClInclude Include="external\imgui-node-editor\imgui\imstb_truetype.h">
+      <Filter>GameEngine\GraphicsEngine\imgui-new</Filter>
+    </ClInclude>
+    <ClInclude Include="external\imgui-node-editor\imgui\imgui_impl_dx11.h">
+      <Filter>GameEngine\GraphicsEngine\imgui-new</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -246,8 +285,14 @@
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\..\..\..\Desktop\IMGUI\imgui.ini">
-      <Filter>GameEngine\GraphicsEngine\imgui</Filter>
+    <None Include="external\imgui-node-editor\imgui_bezier_math.inl">
+      <Filter>GameEngine\GraphicsEngine\imgui-node-editor</Filter>
+    </None>
+    <None Include="external\imgui-node-editor\imgui_extra_math.inl">
+      <Filter>GameEngine\GraphicsEngine\imgui-node-editor</Filter>
+    </None>
+    <None Include="external\imgui-node-editor\imgui_node_editor_internal.inl">
+      <Filter>GameEngine\GraphicsEngine\imgui-node-editor</Filter>
     </None>
   </ItemGroup>
 </Project>

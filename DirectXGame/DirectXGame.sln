@@ -7,20 +7,32 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DirectXGame", "DirectXGame\
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{724F4C50-80FF-47CF-A478-6BF66983F60F}"
 	ProjectSection(SolutionItems) = preProject
-		DirectXGame\external\imgui\imconfig.h = DirectXGame\external\imgui\imconfig.h
-		DirectXGame\external\imgui\imgui.cpp = DirectXGame\external\imgui\imgui.cpp
-		DirectXGame\external\imgui\imgui.h = DirectXGame\external\imgui\imgui.h
-		DirectXGame\external\imgui\imgui_demo.cpp = DirectXGame\external\imgui\imgui_demo.cpp
-		DirectXGame\external\imgui\imgui_draw.cpp = DirectXGame\external\imgui\imgui_draw.cpp
-		DirectXGame\external\imgui\imgui_impl_dx11.cpp = DirectXGame\external\imgui\imgui_impl_dx11.cpp
-		DirectXGame\external\imgui\imgui_impl_dx11.h = DirectXGame\external\imgui\imgui_impl_dx11.h
-		DirectXGame\external\imgui\imgui_impl_win32.cpp = DirectXGame\external\imgui\imgui_impl_win32.cpp
-		DirectXGame\external\imgui\imgui_impl_win32.h = DirectXGame\external\imgui\imgui_impl_win32.h
-		DirectXGame\external\imgui\imgui_internal.h = DirectXGame\external\imgui\imgui_internal.h
-		DirectXGame\external\imgui\imgui_widgets.cpp = DirectXGame\external\imgui\imgui_widgets.cpp
-		DirectXGame\external\imgui\imstb_rectpack.h = DirectXGame\external\imgui\imstb_rectpack.h
-		DirectXGame\external\imgui\imstb_textedit.h = DirectXGame\external\imgui\imstb_textedit.h
-		DirectXGame\external\imgui\imstb_truetype.h = DirectXGame\external\imgui\imstb_truetype.h
+		DirectXGame\external\imgui-node-editor\crude_json.h = DirectXGame\external\imgui-node-editor\crude_json.h
+		DirectXGame\external\imgui-new\imconfig.h = DirectXGame\external\imgui-new\imconfig.h
+		DirectXGame\external\imgui-new\imgui.cpp = DirectXGame\external\imgui-new\imgui.cpp
+		DirectXGame\external\imgui-new\imgui.h = DirectXGame\external\imgui-new\imgui.h
+		DirectXGame\external\imgui-node-editor\imgui_bezier_math.h = DirectXGame\external\imgui-node-editor\imgui_bezier_math.h
+		DirectXGame\external\imgui-node-editor\imgui_bezier_math.inl = DirectXGame\external\imgui-node-editor\imgui_bezier_math.inl
+		DirectXGame\external\imgui-node-editor\imgui_canvas.cpp = DirectXGame\external\imgui-node-editor\imgui_canvas.cpp
+		DirectXGame\external\imgui-node-editor\imgui_canvas.h = DirectXGame\external\imgui-node-editor\imgui_canvas.h
+		DirectXGame\external\imgui-new\imgui_demo.cpp = DirectXGame\external\imgui-new\imgui_demo.cpp
+		DirectXGame\external\imgui-new\imgui_draw.cpp = DirectXGame\external\imgui-new\imgui_draw.cpp
+		DirectXGame\external\imgui-node-editor\imgui_extra_math.h = DirectXGame\external\imgui-node-editor\imgui_extra_math.h
+		DirectXGame\external\imgui-node-editor\imgui_extra_math.inl = DirectXGame\external\imgui-node-editor\imgui_extra_math.inl
+		DirectXGame\external\imgui-new\imgui_impl_dx11.cpp = DirectXGame\external\imgui-new\imgui_impl_dx11.cpp
+		DirectXGame\external\imgui-new\imgui_impl_dx11.h = DirectXGame\external\imgui-new\imgui_impl_dx11.h
+		DirectXGame\external\imgui-new\imgui_impl_win32.cpp = DirectXGame\external\imgui-new\imgui_impl_win32.cpp
+		DirectXGame\external\imgui-new\imgui_impl_win32.h = DirectXGame\external\imgui-new\imgui_impl_win32.h
+		DirectXGame\external\imgui-new\imgui_internal.h = DirectXGame\external\imgui-new\imgui_internal.h
+		DirectXGame\external\imgui-node-editor\imgui_node_editor.cpp = DirectXGame\external\imgui-node-editor\imgui_node_editor.cpp
+		DirectXGame\external\imgui-node-editor\imgui_node_editor.h = DirectXGame\external\imgui-node-editor\imgui_node_editor.h
+		DirectXGame\external\imgui-node-editor\imgui_node_editor_internal.h = DirectXGame\external\imgui-node-editor\imgui_node_editor_internal.h
+		DirectXGame\external\imgui-node-editor\imgui_node_editor_internal.inl = DirectXGame\external\imgui-node-editor\imgui_node_editor_internal.inl
+		DirectXGame\external\imgui-new\imgui_tables.cpp = DirectXGame\external\imgui-new\imgui_tables.cpp
+		DirectXGame\external\imgui-new\imgui_widgets.cpp = DirectXGame\external\imgui-new\imgui_widgets.cpp
+		DirectXGame\external\imgui-new\imstb_rectpack.h = DirectXGame\external\imgui-new\imstb_rectpack.h
+		DirectXGame\external\imgui-new\imstb_textedit.h = DirectXGame\external\imgui-new\imstb_textedit.h
+		DirectXGame\external\imgui-new\imstb_truetype.h = DirectXGame\external\imgui-new\imstb_truetype.h
 	EndProjectSection
 EndProject
 Global
