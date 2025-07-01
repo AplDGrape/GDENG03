@@ -4,6 +4,10 @@
 
 #include "Window.h"
 #include "EngineTime.h"
+#include "imgui.h"
+
+//Declared for handling mouse and key events in IMGUI
+extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 Window* window = nullptr;
 
@@ -14,6 +18,9 @@ Window::Window()
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
+    if (ImGui_ImplWin32_WndProcHandler(hwnd, msg, wparam, lparam))
+        return true;
+
     switch (msg)
     {
     case WM_CREATE:
