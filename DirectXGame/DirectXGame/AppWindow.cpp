@@ -36,6 +36,27 @@ struct InstanceData
 	Matrix4x4 transform;
 };
 
+enum class MathOpType
+{
+	Add,
+	Subtract,
+	Multiply,
+	Divide
+};
+
+struct MathNode
+{
+	int id;
+	MathOpType type;
+	int inputA_id;
+	int inputB_id;
+	int output_id;
+
+	float inputA = 0.0f;
+	float inputB = 0.0f;
+	float result = 0.0f;
+};
+
 __declspec(align(16))
 struct constant
 {
@@ -50,6 +71,8 @@ struct constant
 AppWindow::AppWindow()
 {
 }
+
+void DrawMathNode(MathNode& node);
 
 void AppWindow::update()
 {
@@ -432,17 +455,11 @@ void AppWindow::onUpdate()
 
 	// Only allow UI interaction when mouse is visible
 	if (m_mouseVisible)
-	{
-		//ImGui::SetNextWindowPos(ImVec2(10, 10), ImGuiCond_FirstUseEver);
-		//ImGui::Begin("My ImGui Window", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
-		//ImGui::Text("Full mouse control!");
-		///*ImGui::DragFloat("Rotate X", &m_rot_x, 0.01f);
-		//ImGui::DragFloat("Rotate Y", &m_rot_y, 0.01f);
-		//ImGui::SliderFloat("Scale Cube", &m_scale_cube, 0.1f, 2.0f);*/
-		//ImGui::End();
-		
+	{		
 		// Blueprint-style editor (imgui-node-editor)
 		static ax::NodeEditor::EditorContext* editorContext = nullptr;
+		static std::vector<MathNode> mathNodes;
+		static int nextId = 10;
 
 		if (!editorContext)
 		{
@@ -454,47 +471,59 @@ void AppWindow::onUpdate()
 		ImGui::SetNextWindowSize(ImVec2(800, 600), ImGuiCond_Once);
 		ImGui::Begin("Blueprint Editor");
 
+		// Add node creation buttons
+		if (ImGui::Button("Add Node"))
+		{
+			MathNode node;
+			node.id = nextId++;
+			node.inputA_id = nextId++;
+			node.inputB_id = nextId++;
+			node.output_id = nextId++;
+			node.type = MathOpType::Add;
+			mathNodes.push_back(node);
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("Subtract Node"))
+		{
+			MathNode node;
+			node.id = nextId++;
+			node.inputA_id = nextId++;
+			node.inputB_id = nextId++;
+			node.output_id = nextId++;
+			node.type = MathOpType::Subtract;
+			mathNodes.push_back(node);
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("Multiply Node"))
+		{
+			MathNode node;
+			node.id = nextId++;
+			node.inputA_id = nextId++;
+			node.inputB_id = nextId++;
+			node.output_id = nextId++;
+			node.type = MathOpType::Multiply;
+			mathNodes.push_back(node);
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("Divide Node"))
+		{
+			MathNode node;
+			node.id = nextId++;
+			node.inputA_id = nextId++;
+			node.inputB_id = nextId++;
+			node.output_id = nextId++;
+			node.type = MathOpType::Divide;
+			mathNodes.push_back(node);
+		}
+
+		// Start drawing editor
 		ax::NodeEditor::SetCurrentEditor(editorContext);
 		ax::NodeEditor::Begin("MyEditor", ImVec2(0.0f, 0.0f));
 
-		// Node A
-		ax::NodeEditor::BeginNode(1);
-		ImGui::Text("Node A");
-		ImGui::BeginGroup();
-		ax::NodeEditor::BeginPin(1, ax::NodeEditor::PinKind::Input);
-		ImGui::Text("-> In");
-		ax::NodeEditor::EndPin();
-		ImGui::EndGroup();
-
-		ImGui::Dummy(ImVec2(0, 10));
-
-		ImGui::BeginGroup();
-		ax::NodeEditor::BeginPin(2, ax::NodeEditor::PinKind::Output);
-		ImGui::Text("Out ->");
-		ax::NodeEditor::EndPin();
-		ImGui::EndGroup();
-		ax::NodeEditor::EndNode();
-
-		// Node B
-		ax::NodeEditor::BeginNode(2);
-		ImGui::Text("Node B");
-		ImGui::BeginGroup();
-		ax::NodeEditor::BeginPin(3, ax::NodeEditor::PinKind::Input);
-		ImGui::Text("-> In");
-		ax::NodeEditor::EndPin();
-		ImGui::EndGroup();
-
-		ImGui::Dummy(ImVec2(0, 10));
-
-		ImGui::BeginGroup();
-		ax::NodeEditor::BeginPin(4, ax::NodeEditor::PinKind::Output);
-		ImGui::Text("Out ->");
-		ax::NodeEditor::EndPin();
-		ImGui::EndGroup();
-		ax::NodeEditor::EndNode();
-
-		// Optional Link
-		ax::NodeEditor::Link(100, 2, 3); // from Node A Out to Node B In
+		for (auto& node : mathNodes)
+		{
+			DrawMathNode(node);
+		}
 
 		ax::NodeEditor::End();
 
@@ -704,6 +733,48 @@ void AppWindow::onRightMouseUp(const Point& mouse_pos)
 {
 	if (!m_mouseVisible)
 		m_scale_cube = 1.0f;
+}
+
+void DrawMathNode(MathNode& node)
+{
+	ax::NodeEditor::BeginNode(node.id);
+
+	std::string nodeLabel;
+	switch (node.type)
+	{
+	case MathOpType::Add: nodeLabel = "Addition"; break;
+	case MathOpType::Subtract: nodeLabel = "Subtraction"; break;
+	case MathOpType::Multiply: nodeLabel = "Multiplication"; break;
+	case MathOpType::Divide: nodeLabel = "Division"; break;
+	}
+
+	ImGui::Text("%s", nodeLabel.c_str());
+
+	ImGui::PushItemWidth(80.0f);
+
+	ax::NodeEditor::BeginPin(node.inputA_id, ax::NodeEditor::PinKind::Input);
+	ImGui::DragFloat("A", &node.inputA, 0.1f);
+	ax::NodeEditor::EndPin();
+
+	ax::NodeEditor::BeginPin(node.inputB_id, ax::NodeEditor::PinKind::Input);
+	ImGui::DragFloat("B", &node.inputB, 0.1f);
+	ax::NodeEditor::EndPin();
+
+	ax::NodeEditor::BeginPin(node.output_id, ax::NodeEditor::PinKind::Output);
+	switch (node.type)
+	{
+	case MathOpType::Add: node.result = node.inputA + node.inputB; break;
+	case MathOpType::Subtract: node.result = node.inputA - node.inputB; break;
+	case MathOpType::Multiply: node.result = node.inputA * node.inputB; break;
+	case MathOpType::Divide: node.result = node.inputB != 0.0f ? node.inputA / node.inputB : 0.0f; break;
+	}
+
+	ImGui::Text("= %.2f", node.result);
+	ax::NodeEditor::EndPin();
+
+	ImGui::PopItemWidth();
+
+	ax::NodeEditor::EndNode();
 }
 
 AppWindow::~AppWindow()
