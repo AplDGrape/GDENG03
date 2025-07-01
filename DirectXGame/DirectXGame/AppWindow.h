@@ -66,6 +66,7 @@ private:
 	bool m_zKeyDown = false;
 	bool m_cKeyDown = false;
 	bool m_tKeyDown = false;
+	bool m_pKeyDown = false;
 
 	float m_old_delta;
 	float m_new_delta;
@@ -86,6 +87,7 @@ private:
 private:
 	WireframeRenderer* m_wireframe_renderer = nullptr;
 
+	bool m_showCredits = false;
 private:
 	std::vector<Cube*> cubeList;
 	std::vector<AGameObject*> cubeList2;

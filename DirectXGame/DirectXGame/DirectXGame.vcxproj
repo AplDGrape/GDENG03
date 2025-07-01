@@ -129,12 +129,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\..\Desktop\IMGUI\imgui.cpp" />
-    <ClCompile Include="..\..\..\..\..\Desktop\IMGUI\imgui_demo.cpp" />
-    <ClCompile Include="..\..\..\..\..\Desktop\IMGUI\imgui_draw.cpp" />
-    <ClCompile Include="..\..\..\..\..\Desktop\IMGUI\imgui_impl_dx11.cpp" />
-    <ClCompile Include="..\..\..\..\..\Desktop\IMGUI\imgui_impl_win32.cpp" />
-    <ClCompile Include="..\..\..\..\..\Desktop\IMGUI\imgui_widgets.cpp" />
     <ClCompile Include="AGameObject.cpp" />
     <ClCompile Include="AppWindow.cpp" />
     <ClCompile Include="Camera.cpp" />
@@ -142,6 +136,12 @@
     <ClCompile Include="Cube.cpp" />
     <ClCompile Include="DeviceContext.cpp" />
     <ClCompile Include="EngineTime.cpp" />
+    <ClCompile Include="external\imgui\imgui.cpp" />
+    <ClCompile Include="external\imgui\imgui_demo.cpp" />
+    <ClCompile Include="external\imgui\imgui_draw.cpp" />
+    <ClCompile Include="external\imgui\imgui_impl_dx11.cpp" />
+    <ClCompile Include="external\imgui\imgui_impl_win32.cpp" />
+    <ClCompile Include="external\imgui\imgui_widgets.cpp" />
     <ClCompile Include="GraphicsEngine.cpp" />
     <ClCompile Include="IndexBuffer.cpp" />
     <ClCompile Include="InputSystem.cpp" />
@@ -157,14 +157,6 @@
     <ClCompile Include="WireframeRenderer.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\..\..\Desktop\IMGUI\imconfig.h" />
-    <ClInclude Include="..\..\..\..\..\Desktop\IMGUI\imgui.h" />
-    <ClInclude Include="..\..\..\..\..\Desktop\IMGUI\imgui_impl_dx11.h" />
-    <ClInclude Include="..\..\..\..\..\Desktop\IMGUI\imgui_impl_win32.h" />
-    <ClInclude Include="..\..\..\..\..\Desktop\IMGUI\imgui_internal.h" />
-    <ClInclude Include="..\..\..\..\..\Desktop\IMGUI\imstb_rectpack.h" />
-    <ClInclude Include="..\..\..\..\..\Desktop\IMGUI\imstb_textedit.h" />
-    <ClInclude Include="..\..\..\..\..\Desktop\IMGUI\imstb_truetype.h" />
     <ClInclude Include="AGameObject.h" />
     <ClInclude Include="AppWindow.h" />
     <ClInclude Include="Camera.h" />
@@ -173,6 +165,14 @@
     <ClInclude Include="CubeMeshData.h" />
     <ClInclude Include="DeviceContext.h" />
     <ClInclude Include="EngineTime.h" />
+    <ClInclude Include="external\imgui\imconfig.h" />
+    <ClInclude Include="external\imgui\imgui.h" />
+    <ClInclude Include="external\imgui\imgui_impl_dx11.h" />
+    <ClInclude Include="external\imgui\imgui_impl_win32.h" />
+    <ClInclude Include="external\imgui\imgui_internal.h" />
+    <ClInclude Include="external\imgui\imstb_rectpack.h" />
+    <ClInclude Include="external\imgui\imstb_textedit.h" />
+    <ClInclude Include="external\imgui\imstb_truetype.h" />
     <ClInclude Include="GraphicsEngine.h" />
     <ClInclude Include="IndexBuffer.h" />
     <ClInclude Include="InputListener.h" />
@@ -212,7 +212,7 @@
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\..\..\..\Desktop\IMGUI\imgui.ini" />
+    <None Include="external\imgui\imgui.ini" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

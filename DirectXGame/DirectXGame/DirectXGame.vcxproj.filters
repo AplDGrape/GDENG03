@@ -105,29 +105,29 @@
     <ClCompile Include="InputSystem.cpp">
       <Filter>GameEngine\InputSystem</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Desktop\IMGUI\imgui.cpp">
-      <Filter>GameEngine\GraphicsEngine\imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Desktop\IMGUI\imgui_demo.cpp">
-      <Filter>GameEngine\GraphicsEngine\imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Desktop\IMGUI\imgui_draw.cpp">
-      <Filter>GameEngine\GraphicsEngine\imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Desktop\IMGUI\imgui_impl_dx11.cpp">
-      <Filter>GameEngine\GraphicsEngine\imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Desktop\IMGUI\imgui_impl_win32.cpp">
-      <Filter>GameEngine\GraphicsEngine\imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Desktop\IMGUI\imgui_widgets.cpp">
-      <Filter>GameEngine\GraphicsEngine\imgui</Filter>
-    </ClCompile>
     <ClCompile Include="SimplePlane.cpp">
       <Filter>GameEngine\Challenges</Filter>
     </ClCompile>
     <ClCompile Include="Camera.cpp">
       <Filter>GameEngine\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="external\imgui\imgui.cpp">
+      <Filter>GameEngine\GraphicsEngine\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="external\imgui\imgui_demo.cpp">
+      <Filter>GameEngine\GraphicsEngine\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="external\imgui\imgui_draw.cpp">
+      <Filter>GameEngine\GraphicsEngine\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="external\imgui\imgui_impl_dx11.cpp">
+      <Filter>GameEngine\GraphicsEngine\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="external\imgui\imgui_impl_win32.cpp">
+      <Filter>GameEngine\GraphicsEngine\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="external\imgui\imgui_widgets.cpp">
+      <Filter>GameEngine\GraphicsEngine\imgui</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -203,35 +203,35 @@
     <ClInclude Include="Vector4D.h">
       <Filter>GameEngine\Math</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\Desktop\IMGUI\imconfig.h">
-      <Filter>GameEngine\GraphicsEngine\imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\Desktop\IMGUI\imgui.h">
-      <Filter>GameEngine\GraphicsEngine\imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\Desktop\IMGUI\imgui_impl_dx11.h">
-      <Filter>GameEngine\GraphicsEngine\imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\Desktop\IMGUI\imgui_impl_win32.h">
-      <Filter>GameEngine\GraphicsEngine\imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\Desktop\IMGUI\imgui_internal.h">
-      <Filter>GameEngine\GraphicsEngine\imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\Desktop\IMGUI\imstb_rectpack.h">
-      <Filter>GameEngine\GraphicsEngine\imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\Desktop\IMGUI\imstb_textedit.h">
-      <Filter>GameEngine\GraphicsEngine\imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\Desktop\IMGUI\imstb_truetype.h">
-      <Filter>GameEngine\GraphicsEngine\imgui</Filter>
-    </ClInclude>
     <ClInclude Include="SimplePlane.h">
       <Filter>GameEngine\Challenges</Filter>
     </ClInclude>
     <ClInclude Include="Camera.h">
       <Filter>GameEngine\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="external\imgui\imconfig.h">
+      <Filter>GameEngine\GraphicsEngine\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="external\imgui\imgui.h">
+      <Filter>GameEngine\GraphicsEngine\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="external\imgui\imgui_impl_dx11.h">
+      <Filter>GameEngine\GraphicsEngine\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="external\imgui\imgui_impl_win32.h">
+      <Filter>GameEngine\GraphicsEngine\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="external\imgui\imgui_internal.h">
+      <Filter>GameEngine\GraphicsEngine\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="external\imgui\imstb_rectpack.h">
+      <Filter>GameEngine\GraphicsEngine\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="external\imgui\imstb_textedit.h">
+      <Filter>GameEngine\GraphicsEngine\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="external\imgui\imstb_truetype.h">
+      <Filter>GameEngine\GraphicsEngine\imgui</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -246,7 +246,7 @@
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\..\..\..\Desktop\IMGUI\imgui.ini">
+    <None Include="external\imgui\imgui.ini">
       <Filter>GameEngine\GraphicsEngine\imgui</Filter>
     </None>
   </ItemGroup>

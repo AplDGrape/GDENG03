@@ -292,10 +292,12 @@ void AppWindow::onCreate()
 	//VertexBuffer* m_instanceBuffer = nullptr;
 	//m_instanceBuffer = GraphicsEngine::get()->createVertexBuffer();
 
-	SimplePlane* plane = new SimplePlane("GroundPlane", shader_byte_code, size_shader);
+	/*SimplePlane* plane = new SimplePlane("GroundPlane", shader_byte_code, size_shader);
 	plane->setPosition(Vector3D(0, -0.51f, 0));
 	plane->setScale(Vector3D(5.0f, 1.0f, 5.0f));
-	this->cubeList2.push_back(plane);
+	this->cubeList2.push_back(plane);*/
+
+	m_showCredits = false;
 
 	constant cc = {};
 	//cc.m_time = 0;
@@ -436,6 +438,38 @@ void AppWindow::onUpdate()
 		ImGui::End();
 	}
 
+	//Credits
+	if (m_showCredits)
+	{
+		ImGui::SetNextWindowSize(ImVec2(500, 300), ImGuiCond_FirstUseEver);
+		ImGui::Begin("Credits");
+
+		ImGui::Text("Game Title: My DX11 Project");
+		ImGui::Separator();
+		ImGui::Text("Scene Editor Version: 1.0");
+		ImGui::Separator();
+		ImGui::Text("Developed by:");
+		ImGui::BulletText("Francis Raphael D. Apolinar");
+		ImGui::Spacing();
+		ImGui::Text("Special Thanks:");
+		ImGui::BulletText("IMGUI");
+
+		ImGui::Spacing();
+		ImGui::Text("Press P again to close this screen or");
+		ImGui::Text("	click the close button.		");
+
+		ImGui::Spacing();
+		ImGui::Separator();
+		ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 10.0f);
+		ImGui::SetCursorPosX((ImGui::GetWindowSize().x - 80.0f) / 2.0f); // center button
+		if (ImGui::Button("Close", ImVec2(80, 0)))
+		{
+			m_showCredits = false;
+		}
+
+		ImGui::End();
+	}
+
 	//Render ImGui
 	ImGui::Render();
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
@@ -533,6 +567,11 @@ void AppWindow::onKeyDown(int key)
 		m_wireframe_renderer->toggle(); // Toggles wireframe mode
 		m_tKeyDown = true;
 	}
+	if (key == 'P' && !m_pKeyDown) // Press 'P' to show/hide credits
+	{
+		m_showCredits = !m_showCredits;
+		m_pKeyDown = true;
+	}
 
 	if (!m_mouseVisible)
 	{
@@ -593,6 +632,8 @@ void AppWindow::onKeyUp(int key)
 		m_cKeyDown = false;
 	if (key == 'T')
 		m_tKeyDown = false;
+	if (key == 'P')
+		m_pKeyDown = false;
 
 	if (!m_mouseVisible)
 	{
@@ -627,22 +668,26 @@ void AppWindow::onMouseMove(const Point& mouse_pos)
 
 void AppWindow::onLeftMouseDown(const Point& mouse_pos)
 {
-	m_scale_cube = 0.5f;
+	if (!m_mouseVisible)
+		m_scale_cube = 0.5f;
 }
 
 void AppWindow::onLeftMouseUp(const Point& mouse_pos)
 {
-	m_scale_cube = 1.0f;
+	if (!m_mouseVisible)
+		m_scale_cube = 1.0f;
 }
 
 void AppWindow::onRightMouseDown(const Point& mouse_pos)
 {
-	m_scale_cube = 2.0f;
+	if (!m_mouseVisible)
+		m_scale_cube = 2.0f;
 }
 
 void AppWindow::onRightMouseUp(const Point& mouse_pos)
 {
-	m_scale_cube = 1.0f;
+	if (!m_mouseVisible)
+		m_scale_cube = 1.0f;
 }
 
 AppWindow::~AppWindow()
