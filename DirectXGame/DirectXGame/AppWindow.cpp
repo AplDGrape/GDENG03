@@ -15,9 +15,6 @@
 
 #include "SimplePlane.h"
 
-#include <imgui_node_editor.h>
-namespace ed = ax::NodeEditor;
-
 //static ed::EditorContext* editorContext = nullptr;
 
 //struct vec3
@@ -41,20 +38,30 @@ enum class MathOpType
 	Add,
 	Subtract,
 	Multiply,
-	Divide
+	Divide,
+	TransformCube // Get transformation
 };
 
 struct MathNode
 {
 	int id;
 	MathOpType type;
-	int inputA_id;
-	int inputB_id;
-	int output_id;
+	uint16_t inputA_id;
+	uint16_t inputB_id;
+	uint16_t output_id;
 
-	float inputA = 0.0f;
-	float inputB = 0.0f;
-	float result = 0.0f;
+	/*uint16_t inputA = 0;
+	uint16_t inputB = 0;
+	uint16_t result = 0;*/
+	int16_t inputA = 0;
+	int16_t inputB = 0;
+	int16_t result = 0;
+
+	// For Transform Cube type
+	Vector3D position;
+	Vector3D rotation;
+	Vector3D movement;
+	bool applyToCube = false;
 };
 
 __declspec(align(16))
@@ -115,28 +122,45 @@ void AppWindow::update()
 	cc.m_world.setIdentity();
 	cc.m_world.setScale(Vector3D(m_scale_cube, m_scale_cube, m_scale_cube));
 
-	/*Matrix4x4 world_cam;
-	world_cam.setIdentity();
+	Vector3D blueprintPos(0, 0, 0);
+	Vector3D blueprintRot(0, 0, 0);
+	bool applyBlueprintTransform = false;
 
-	temp.setIdentity();
-	temp.setRotationX(m_rot_x);
-	world_cam *= temp;
+	// Find a transform node with applyToCube enabled
+	for (auto& node : mathNodes)
+	{
+		if (node.type == MathOpType::TransformCube && node.applyToCube)
+		{
+			blueprintPos = node.position;
+			blueprintRot = node.rotation;
+			applyBlueprintTransform = true;
+			break;
+		}
+	}
 
-	temp.setIdentity();
-	temp.setRotationY(m_rot_y);
-	world_cam *= temp;
+	if (applyBlueprintTransform)
+	{
+		cc.m_world.setIdentity();
+		cc.m_world.setScale(Vector3D(m_scale_cube, m_scale_cube, m_scale_cube));
 
-	Vector3D new_pos = m_world_cam.getTranslation() + world_cam.getZDirection() * (m_forward * 0.3f);
+		// Apply rotation from blueprint
+		temp.setIdentity();
+		temp.setRotationZ(blueprintRot.m_z);
+		cc.m_world *= temp;
 
-	new_pos = new_pos + world_cam.getXDirection() * (m_rightward * 0.3f);
+		temp.setIdentity();
+		temp.setRotationY(blueprintRot.m_y);
+		cc.m_world *= temp;
 
-	world_cam.setTranslation(new_pos);
+		temp.setIdentity();
+		temp.setRotationX(blueprintRot.m_x);
+		cc.m_world *= temp;
 
-	m_world_cam = world_cam;
-
-	world_cam.getInverse();
-
-	cc.m_view = world_cam;*/
+		// Apply translation from blueprint
+		temp.setIdentity();
+		temp.setTranslation(blueprintPos);
+		cc.m_world *= temp;
+	}
 
 	// Apply movement input to the camera
 	m_camera.moveForward(m_forward);
@@ -350,6 +374,17 @@ void AppWindow::onCreate()
 	GraphicsEngine::get()->releaseCompiledShader();
 }
 
+int GetNewPinID(std::vector<int>& freePinIds, int& nextId)
+{
+	if (!freePinIds.empty())
+	{
+		int id = freePinIds.back();
+		freePinIds.pop_back();
+		return id;
+	}
+	return nextId++;
+}
+
 void AppWindow::onUpdate()
 {
 	Window::onUpdate();
@@ -457,9 +492,6 @@ void AppWindow::onUpdate()
 	if (m_mouseVisible)
 	{		
 		// Blueprint-style editor (imgui-node-editor)
-		static ax::NodeEditor::EditorContext* editorContext = nullptr;
-		static std::vector<MathNode> mathNodes;
-		static int nextId = 10;
 
 		if (!editorContext)
 		{
@@ -475,10 +507,10 @@ void AppWindow::onUpdate()
 		if (ImGui::Button("Add Node"))
 		{
 			MathNode node;
-			node.id = nextId++;
-			node.inputA_id = nextId++;
-			node.inputB_id = nextId++;
-			node.output_id = nextId++;
+			node.id = GetNewPinID(freePinIds, nextId);
+			node.inputA_id = GetNewPinID(freePinIds, nextId);
+			node.inputB_id = GetNewPinID(freePinIds, nextId);
+			node.output_id = GetNewPinID(freePinIds, nextId);
 			node.type = MathOpType::Add;
 			mathNodes.push_back(node);
 		}
@@ -486,10 +518,10 @@ void AppWindow::onUpdate()
 		if (ImGui::Button("Subtract Node"))
 		{
 			MathNode node;
-			node.id = nextId++;
-			node.inputA_id = nextId++;
-			node.inputB_id = nextId++;
-			node.output_id = nextId++;
+			node.id = GetNewPinID(freePinIds, nextId);
+			node.inputA_id = GetNewPinID(freePinIds, nextId);
+			node.inputB_id = GetNewPinID(freePinIds, nextId);
+			node.output_id = GetNewPinID(freePinIds, nextId);
 			node.type = MathOpType::Subtract;
 			mathNodes.push_back(node);
 		}
@@ -497,10 +529,10 @@ void AppWindow::onUpdate()
 		if (ImGui::Button("Multiply Node"))
 		{
 			MathNode node;
-			node.id = nextId++;
-			node.inputA_id = nextId++;
-			node.inputB_id = nextId++;
-			node.output_id = nextId++;
+			node.id = GetNewPinID(freePinIds, nextId);
+			node.inputA_id = GetNewPinID(freePinIds, nextId);
+			node.inputB_id = GetNewPinID(freePinIds, nextId);
+			node.output_id = GetNewPinID(freePinIds, nextId);
 			node.type = MathOpType::Multiply;
 			mathNodes.push_back(node);
 		}
@@ -508,12 +540,35 @@ void AppWindow::onUpdate()
 		if (ImGui::Button("Divide Node"))
 		{
 			MathNode node;
-			node.id = nextId++;
-			node.inputA_id = nextId++;
-			node.inputB_id = nextId++;
-			node.output_id = nextId++;
+			node.id = GetNewPinID(freePinIds, nextId);
+			node.inputA_id = GetNewPinID(freePinIds, nextId);
+			node.inputB_id = GetNewPinID(freePinIds, nextId);
+			node.output_id = GetNewPinID(freePinIds, nextId);
 			node.type = MathOpType::Divide;
 			mathNodes.push_back(node);
+		}
+		if (ImGui::Button("Transform Cube Node"))
+		{
+			MathNode node;
+			node.id = GetNewPinID(freePinIds, nextId);
+			node.inputA_id = GetNewPinID(freePinIds, nextId);
+			node.inputB_id = GetNewPinID(freePinIds, nextId);
+			node.output_id = GetNewPinID(freePinIds, nextId);
+			node.type = MathOpType::TransformCube;
+			node.position = Vector3D(0, 0, 0);
+			node.rotation = Vector3D(0, 0, 0);
+			node.movement = Vector3D(0, 0, 0);
+			node.applyToCube = false;
+			mathNodes.push_back(node);
+		}
+		if (ImGui::Button("Delete Last Node") && !mathNodes.empty())
+		{
+			MathNode& node = mathNodes.back();
+			freePinIds.push_back(node.id);
+			freePinIds.push_back(node.inputA_id);
+			freePinIds.push_back(node.inputB_id);
+			freePinIds.push_back(node.output_id);
+			mathNodes.pop_back();
 		}
 
 		// Start drawing editor
@@ -739,6 +794,21 @@ void DrawMathNode(MathNode& node)
 {
 	ax::NodeEditor::BeginNode(node.id);
 
+	// Handle Cube transformation, rotation, position
+	if (node.type == MathOpType::TransformCube)
+	{
+		ImGui::Text("Transform Cube");
+
+		ImGui::DragFloat3("Position", &node.position.m_x, 0.1f);
+		ImGui::DragFloat3("Rotation", &node.rotation.m_x, 0.1f);
+		ImGui::DragFloat3("Movement", &node.movement.m_x, 0.1f);
+		ImGui::Checkbox("Apply", &node.applyToCube);
+
+		ax::NodeEditor::EndNode();
+		return;
+	}
+
+	// Handle math operation nodes (Add, Subtract, Multiply, Divide)
 	std::string nodeLabel;
 	switch (node.type)
 	{
@@ -748,16 +818,17 @@ void DrawMathNode(MathNode& node)
 	case MathOpType::Divide: nodeLabel = "Division"; break;
 	}
 
+	ImGui::PushID(node.id); // To get separate nodes
 	ImGui::Text("%s", nodeLabel.c_str());
 
 	ImGui::PushItemWidth(80.0f);
 
 	ax::NodeEditor::BeginPin(node.inputA_id, ax::NodeEditor::PinKind::Input);
-	ImGui::DragFloat("A", &node.inputA, 0.1f);
+	ImGui::DragScalar("A", ImGuiDataType_U16, &node.inputA, 1.0f);
 	ax::NodeEditor::EndPin();
 
 	ax::NodeEditor::BeginPin(node.inputB_id, ax::NodeEditor::PinKind::Input);
-	ImGui::DragFloat("B", &node.inputB, 0.1f);
+	ImGui::DragScalar("B", ImGuiDataType_U16, &node.inputB, 1.0f);
 	ax::NodeEditor::EndPin();
 
 	ax::NodeEditor::BeginPin(node.output_id, ax::NodeEditor::PinKind::Output);
@@ -766,13 +837,16 @@ void DrawMathNode(MathNode& node)
 	case MathOpType::Add: node.result = node.inputA + node.inputB; break;
 	case MathOpType::Subtract: node.result = node.inputA - node.inputB; break;
 	case MathOpType::Multiply: node.result = node.inputA * node.inputB; break;
-	case MathOpType::Divide: node.result = node.inputB != 0.0f ? node.inputA / node.inputB : 0.0f; break;
+	case MathOpType::Divide: node.result = node.inputB != 0 ? node.inputA / node.inputB : 0; break;
+
 	}
 
-	ImGui::Text("= %.2f", node.result);
+	//ImGui::Text("= %u", node.result); // %u for unsigned integer
+	ImGui::Text("= %d", node.result);
 	ax::NodeEditor::EndPin();
 
 	ImGui::PopItemWidth();
+	ImGui::PopID();
 
 	ax::NodeEditor::EndNode();
 }

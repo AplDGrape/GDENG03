@@ -20,6 +20,12 @@
 #include "imgui_impl_dx11.h"
 #include "imgui_impl_win32.h"
 
+#include <imgui_node_editor.h>
+namespace ed = ax::NodeEditor;
+#include <cstdint> //UINT16_T Variable Declaration
+
+struct MathNode;
+
 class WireframeRenderer;
 class AGameObject;
 
@@ -90,6 +96,11 @@ private:
 	std::vector<Cube*> cubeList;
 	std::vector<AGameObject*> cubeList2;
 
-	
+// Blueprint
+private:
+	std::vector<MathNode> mathNodes;
+	int nextId = 10;
+	std::vector<int> freePinIds;
+	ax::NodeEditor::EditorContext* editorContext = nullptr;
 };
 
