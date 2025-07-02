@@ -26,6 +26,13 @@ namespace ed = ax::NodeEditor;
 
 struct MathNode;
 
+struct Link
+{
+	int id;
+	int startPinId; // Output pin
+	int endPinId;   // Input pin
+};
+
 class WireframeRenderer;
 class AGameObject;
 
@@ -57,6 +64,9 @@ public:
 	virtual void onRightMouseUp(const Point& mouse_pos) override;
 
 	UINT size_list;
+
+	/*std::vector<MathNode> mathNodes;
+	std::vector<Link> links;*/
 private:
 	SwapChain* m_swap_chain;
 	VertexBuffer* m_vb;
@@ -101,6 +111,9 @@ private:
 	std::vector<MathNode> mathNodes;
 	int nextId = 10;
 	std::vector<int> freePinIds;
-	ax::NodeEditor::EditorContext* editorContext = nullptr;
+	ax::NodeEditor::EditorContext* editorContext;
+
+	std::vector<Link> links;
+	int nextLinkId = 1000;
 };
 

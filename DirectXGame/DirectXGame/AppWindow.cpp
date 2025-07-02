@@ -82,9 +82,13 @@ struct constant
 
 AppWindow::AppWindow()
 {
+	editorContext = nullptr;
 }
 
-void DrawMathNode(MathNode& node);
+bool IsPinLinked(int pinId, const std::vector<Link>& links);
+int16_t ResolveInputValue(int pinId, const std::vector<MathNode>& mathNodes, const std::vector<Link>& links, int16_t& outValue);
+void DrawMathNode(MathNode& node, const std::vector<MathNode>& mathNodes, const std::vector<Link>& links);
+void EvaluateMathNodes(std::vector<MathNode>& nodes, const std::vector<Link>& links);
 
 void AppWindow::update()
 {
@@ -173,14 +177,6 @@ void AppWindow::update()
 
 	// Use camera matrices
 	cc.m_view = m_camera.getViewMatrix();
-
-	/*cc.m_proj.setOrthoLH
-	(
-		(this->getClientWindowRect().right - this->getClientWindowRect().left)/400.0f,
-		(this->getClientWindowRect().bottom - this->getClientWindowRect().top)/400.0f,
-		-4.0f,
-		4.0f
-	);*/
 	
 	int POVwidth = (this->getClientWindowRect().right - this->getClientWindowRect().left);
 	int POVheight = (this->getClientWindowRect().bottom - this->getClientWindowRect().top);
@@ -230,23 +226,7 @@ void AppWindow::onCreate()
 
 	vertex vertex_list[] =
 	{
-		//X - Y - Z
-		//RECT PRIDE
-		//{-0.5f, -0.5f, 0.0f,	1,0,0}, //POS1
-
-		//{-0.5f,  0.5f, 0.0f,	0,1,0}, //POS2
-
-		//{ 0.5f, -0.5f, 0.0f,	0,0,1},  //POS3
-
-		//{ 0.5f,  0.5f, 0.0f,	1,1,0} //POS4
-
-		//TRIANGLE PRIDE
-		//{-0.5f, -0.5f, 0.0f,	1,0,0}, //POS1
-
-		//{ 0.0f,  0.5f, 0.0f,	0,1,0},	//POS2
-
-		//{ 0.5f, -0.5f, 0.0f,	0,0,1}	//POS3
-		
+		//X - Y - Z		
 		//RECT GREEN
 		//FRONT FACE
 		{Vector3D (-0.5f, -0.5f, -0.5f),	/*Vector3D (-0.32f,-0.11f, 0.0f),*/	Vector3D (1,0,0),	Vector3D(0.2f,0,0)}, //POS1
@@ -266,9 +246,6 @@ void AppWindow::onCreate()
 
 		{Vector3D(-0.5f, -0.5f,  0.5f),	/*Vector3D (0.88f, 0.77f, 0.0f),*/	Vector3D(0,1,0),	Vector3D(0,0.2f,0)} //POS4
 	};
-
-	//const vertex* list = RenderMultipleQuad::getInstance()->getVertexList();
-	//size_t size_list = RenderMultipleQuad::getInstance()->getVertexCount();
 
 	m_vb = GraphicsEngine::get()->createVertexBuffer();
 	UINT size_list = ARRAYSIZE(vertex_list);
@@ -565,7 +542,8 @@ void AppWindow::onUpdate()
 			MathNode& node = mathNodes.back();
 			freePinIds.push_back(node.id);
 			freePinIds.push_back(node.inputA_id);
-			freePinIds.push_back(node.inputB_id);
+			if (node.type != MathOpType::Print && node.type != MathOpType::TransformCube)
+				freePinIds.push_back(node.inputB_id);
 			freePinIds.push_back(node.output_id);
 			mathNodes.pop_back();
 		}
@@ -574,10 +552,32 @@ void AppWindow::onUpdate()
 		ax::NodeEditor::SetCurrentEditor(editorContext);
 		ax::NodeEditor::Begin("MyEditor", ImVec2(0.0f, 0.0f));
 
+		EvaluateMathNodes(mathNodes, links);
+
 		for (auto& node : mathNodes)
 		{
-			DrawMathNode(node);
+			DrawMathNode(node, mathNodes, links);
 		}
+
+		// Draw links
+		for (auto& link : links)
+		{
+			ax::NodeEditor::Link(link.id, link.startPinId, link.endPinId);
+		}
+
+		// Handle new links
+		if (ax::NodeEditor::BeginCreate())
+		{
+			ax::NodeEditor::PinId inputPinId, outputPinId;
+			if (ax::NodeEditor::QueryNewLink(&inputPinId, &outputPinId))
+			{
+				if (inputPinId && outputPinId)
+				{
+					links.push_back({ nextLinkId++, (int)outputPinId.Get(), (int)inputPinId.Get() });
+				}
+			}
+		}
+		ax::NodeEditor::EndCreate();
 
 		ax::NodeEditor::End();
 
@@ -795,9 +795,48 @@ void AppWindow::onRightMouseUp(const Point& mouse_pos)
 		m_scale_cube = 1.0f;
 }
 
-void DrawMathNode(MathNode& node)
+bool IsPinLinked(int pinId, const std::vector<Link>& links)
+{
+	for (const Link& link : links)
+	{
+		if (link.endPinId == pinId)
+			return true;
+	}
+	return false;
+}
+
+void EvaluateMathNodes(std::vector<MathNode>& nodes, const std::vector<Link>& links)
+{
+	// Loop through all nodes and compute their result before drawing
+	for (auto& node : nodes)
+	{
+		int16_t valA = node.inputA;
+		int16_t valB = node.inputB;
+
+		if (IsPinLinked(node.inputA_id, links))
+			ResolveInputValue(node.inputA_id, nodes, links, valA);
+		if (IsPinLinked(node.inputB_id, links))
+			ResolveInputValue(node.inputB_id, nodes, links, valB);
+
+		node.inputA = valA;
+		node.inputB = valB;
+
+		switch (node.type)
+		{
+		case MathOpType::Add: node.result = valA + valB; break;
+		case MathOpType::Subtract: node.result = valA - valB; break;
+		case MathOpType::Multiply: node.result = valA * valB; break;
+		case MathOpType::Divide: node.result = (valB != 0) ? valA / valB : 0; break;
+		default: break;
+		}
+	}
+}
+
+void DrawMathNode(MathNode& node, const std::vector<MathNode>& mathNodes, const std::vector<Link>& links)
 {
 	ax::NodeEditor::BeginNode(node.id);
+
+	ImGui::PushID(node.id);
 
 	// Handle Cube transformation, rotation, position
 	if (node.type == MathOpType::TransformCube)
@@ -809,6 +848,7 @@ void DrawMathNode(MathNode& node)
 		ImGui::DragFloat3("Movement", &node.movement.m_x, 0.1f);
 		ImGui::Checkbox("Apply", &node.applyToCube);
 
+		ImGui::PopID();
 		ax::NodeEditor::EndNode();
 		return;
 	}
@@ -829,51 +869,91 @@ void DrawMathNode(MathNode& node)
 			std::cout << "Blueprint Print: " << node.printMessage << std::endl;
 		}
 
+		ImGui::PopID();
 		ax::NodeEditor::EndNode();
 		return;
 	}
 
 	// Handle math operation nodes (Add, Subtract, Multiply, Divide)
-	std::string nodeLabel;
+	// Draw title
 	switch (node.type)
 	{
-	case MathOpType::Add: nodeLabel = "Addition"; break;
-	case MathOpType::Subtract: nodeLabel = "Subtraction"; break;
-	case MathOpType::Multiply: nodeLabel = "Multiplication"; break;
-	case MathOpType::Divide: nodeLabel = "Division"; break;
+	case MathOpType::Add: ImGui::Text("Add"); break;
+	case MathOpType::Subtract: ImGui::Text("Subtract"); break;
+	case MathOpType::Multiply: ImGui::Text("Multiply"); break;
+	case MathOpType::Divide: ImGui::Text("Divide"); break;
+	default: ImGui::Text("Unknown"); break;
 	}
 
-	ImGui::PushID(node.id); // To get separate nodes
-	ImGui::Text("%s", nodeLabel.c_str());
+	ImGui::PushItemWidth(90.0f);
 
-	ImGui::PushItemWidth(80.0f);
+	int16_t resolvedValue;
 
 	ax::NodeEditor::BeginPin(node.inputA_id, ax::NodeEditor::PinKind::Input);
-	ImGui::DragScalar("A", ImGuiDataType_U16, &node.inputA, 1.0f);
+	if (!IsPinLinked(node.inputA_id, links))
+		ImGui::DragScalar("A", ImGuiDataType_S16, &node.inputA);
+	else
+	{
+		if (ResolveInputValue(node.inputA_id, mathNodes, links, resolvedValue))
+		{
+			//node.inputA = resolvedValue;
+			ImGui::Text("A = %d", resolvedValue);
+		}
+		else
+		{
+			ImGui::DragScalar("A", ImGuiDataType_S16, &node.inputA);
+			ImGui::SameLine();
+			ImGui::Text("A = %d", node.inputA);
+		}
+	}
 	ax::NodeEditor::EndPin();
 
 	ax::NodeEditor::BeginPin(node.inputB_id, ax::NodeEditor::PinKind::Input);
-	ImGui::DragScalar("B", ImGuiDataType_U16, &node.inputB, 1.0f);
+	if (!IsPinLinked(node.inputB_id, links))
+		ImGui::DragScalar("B", ImGuiDataType_S16, &node.inputB);
+	else
+	{
+		if (ResolveInputValue(node.inputB_id, mathNodes, links, resolvedValue))
+		{
+			//node.inputB = resolvedValue;
+			ImGui::Text("B = %d", resolvedValue);
+		}
+		else
+		{
+			ImGui::DragScalar("B", ImGuiDataType_S16, &node.inputB);
+			ImGui::SameLine();
+			ImGui::Text("B = %d", node.inputB);
+		}
+	}
 	ax::NodeEditor::EndPin();
 
+	// Output pin and result calculation
 	ax::NodeEditor::BeginPin(node.output_id, ax::NodeEditor::PinKind::Output);
-	switch (node.type)
-	{
-	case MathOpType::Add: node.result = node.inputA + node.inputB; break;
-	case MathOpType::Subtract: node.result = node.inputA - node.inputB; break;
-	case MathOpType::Multiply: node.result = node.inputA * node.inputB; break;
-	case MathOpType::Divide: node.result = node.inputB != 0 ? node.inputA / node.inputB : 0; break;
-
-	}
-
-	//ImGui::Text("= %u", node.result); // %u for unsigned integer
 	ImGui::Text("= %d", node.result);
 	ax::NodeEditor::EndPin();
 
-	ImGui::PopItemWidth();
 	ImGui::PopID();
-
 	ax::NodeEditor::EndNode();
+}
+
+int16_t ResolveInputValue(int pinId, const std::vector<MathNode>& mathNodes, const std::vector<Link>& links, int16_t& outValue)
+{
+	for (const Link& link : links)
+	{
+		if (link.endPinId == pinId)
+		{
+			int sourcePinId = link.startPinId;
+			for (const MathNode& node : mathNodes)
+			{
+				if (node.output_id == sourcePinId)
+				{
+					outValue = node.result;
+					return true;
+				}
+			}
+		}
+	}
+	return false;
 }
 
 AppWindow::~AppWindow()
