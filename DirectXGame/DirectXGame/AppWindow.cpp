@@ -39,7 +39,8 @@ enum class MathOpType
 	Subtract,
 	Multiply,
 	Divide,
-	TransformCube // Get transformation
+	TransformCube, // Get transformation
+	Print // The Print thingy
 };
 
 struct MathNode
@@ -62,6 +63,10 @@ struct MathNode
 	Vector3D rotation;
 	Vector3D movement;
 	bool applyToCube = false;
+
+	// For the print function
+	//std::string printMessage;
+	char printMessage[128] = "Hello, Blueprint!";
 };
 
 __declspec(align(16))
@@ -434,24 +439,7 @@ void AppWindow::onUpdate()
 	GraphicsEngine::get()->getImmediateDeviceContext()->setIndexBuffer(m_ib);
 
 	//Wireframe
-	//if (GetAsyncKeyState('T') & 0x1) //Press T to toggle
-	//{
-	//	m_wireframe_renderer->toggle(); //Toggles with this line
-	//}
-
 	m_wireframe_renderer->set(GraphicsEngine::get()->getD3DDeviceContext());
-
-	// Check if "T" key is pressed to render triangle
-	if (GetAsyncKeyState('E') & 0x8000)
-	{
-		RenderMultipleQuad::getInstance()->setRenderShape(false); // Set to triangle
-	}
-
-	// Check if "Q" key is pressed to render quad
-	if (GetAsyncKeyState('Q') & 0x8000)
-	{
-		RenderMultipleQuad::getInstance()->setRenderShape(true); // Set to quad
-	}
 
 	//FINALLY DRAW THE TRIANGLE
 	//For animate part
@@ -561,6 +549,17 @@ void AppWindow::onUpdate()
 			node.applyToCube = false;
 			mathNodes.push_back(node);
 		}
+		ImGui::SameLine();
+		if (ImGui::Button("Print Node"))
+		{
+			MathNode node;
+			node.id = GetNewPinID(freePinIds, nextId);
+			node.inputA_id = GetNewPinID(freePinIds, nextId);
+			node.output_id = GetNewPinID(freePinIds, nextId);
+			node.type = MathOpType::Print;
+			strcpy_s(node.printMessage, "Hello from Blueprint!");
+			mathNodes.push_back(node);
+		}
 		if (ImGui::Button("Delete Last Node") && !mathNodes.empty())
 		{
 			MathNode& node = mathNodes.back();
@@ -651,6 +650,9 @@ void AppWindow::onKillFocus()
 
 void AppWindow::onKeyDown(int key)
 {
+	if (ImGui::GetIO().WantCaptureKeyboard)
+		return; // Block game key handling while typing in ImGui
+
 	if (key == 'M' && !m_mKeyDown)
 	{
 		m_mouseVisible = !m_mouseVisible;
@@ -726,6 +728,9 @@ void AppWindow::onKeyDown(int key)
 
 void AppWindow::onKeyUp(int key)
 {
+	if (ImGui::GetIO().WantCaptureKeyboard)
+		return;
+
 	if (key == 'M')
 		m_mKeyDown = false;
 	if (key == 'Z') 
@@ -803,6 +808,26 @@ void DrawMathNode(MathNode& node)
 		ImGui::DragFloat3("Rotation", &node.rotation.m_x, 0.1f);
 		ImGui::DragFloat3("Movement", &node.movement.m_x, 0.1f);
 		ImGui::Checkbox("Apply", &node.applyToCube);
+
+		ax::NodeEditor::EndNode();
+		return;
+	}
+
+	// Handle Print function
+	if (node.type == MathOpType::Print)
+	{
+		ImGui::Text("Print Node");
+
+		ax::NodeEditor::BeginPin(node.inputA_id, ax::NodeEditor::PinKind::Input);
+		ImGui::Text("In");
+		ax::NodeEditor::EndPin();
+
+		ImGui::InputText("Message", node.printMessage, IM_ARRAYSIZE(node.printMessage));
+		ImGui::SameLine();
+		if (ImGui::Button("Print"))
+		{
+			std::cout << "Blueprint Print: " << node.printMessage << std::endl;
+		}
 
 		ax::NodeEditor::EndNode();
 		return;
