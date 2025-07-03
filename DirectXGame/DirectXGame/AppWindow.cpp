@@ -61,7 +61,7 @@ struct MathNode
 	// For Transform Cube type
 	Vector3D position;
 	Vector3D rotation;
-	Vector3D movement;
+	Vector3D scale = Vector3D(1, 1, 1);
 	bool applyToCube = false;
 
 	// For the print function
@@ -129,10 +129,11 @@ void AppWindow::update()
 	cc.m_world *= temp;*/
 
 	cc.m_world.setIdentity();
-	cc.m_world.setScale(Vector3D(m_scale_cube, m_scale_cube, m_scale_cube));
+	//cc.m_world.setScale(Vector3D(m_scale_cube, m_scale_cube, m_scale_cube));
 
 	Vector3D blueprintPos(0, 0, 0);
 	Vector3D blueprintRot(0, 0, 0);
+	Vector3D blueprintScale(1, 1, 1);
 	bool applyBlueprintTransform = false;
 
 	// Find a transform node with applyToCube enabled
@@ -142,6 +143,7 @@ void AppWindow::update()
 		{
 			blueprintPos = node.position;
 			blueprintRot = node.rotation;
+			blueprintScale = node.scale;
 			applyBlueprintTransform = true;
 			break;
 		}
@@ -150,7 +152,9 @@ void AppWindow::update()
 	if (applyBlueprintTransform)
 	{
 		cc.m_world.setIdentity();
-		cc.m_world.setScale(Vector3D(m_scale_cube, m_scale_cube, m_scale_cube));
+
+		// Apply scaling from blueprint
+		cc.m_world.setScale(Vector3D(blueprintScale.m_x, blueprintScale.m_y, blueprintScale.m_z));
 
 		// Apply rotation from blueprint
 		temp.setIdentity();
@@ -522,7 +526,7 @@ void AppWindow::onUpdate()
 			node.type = MathOpType::TransformCube;
 			node.position = Vector3D(0, 0, 0);
 			node.rotation = Vector3D(0, 0, 0);
-			node.movement = Vector3D(0, 0, 0);
+			node.scale = Vector3D(1, 1, 1);
 			node.applyToCube = false;
 			mathNodes.push_back(node);
 		}
@@ -845,7 +849,7 @@ void DrawMathNode(MathNode& node, const std::vector<MathNode>& mathNodes, const 
 
 		ImGui::DragFloat3("Position", &node.position.m_x, 0.1f);
 		ImGui::DragFloat3("Rotation", &node.rotation.m_x, 0.1f);
-		ImGui::DragFloat3("Movement", &node.movement.m_x, 0.1f);
+		ImGui::DragFloat3("Scale", &node.scale.m_x, 0.1f);
 		ImGui::Checkbox("Apply", &node.applyToCube);
 
 		ImGui::PopID();
