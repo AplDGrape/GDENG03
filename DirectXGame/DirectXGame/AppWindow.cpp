@@ -556,7 +556,7 @@ void AppWindow::onUpdate()
 		ax::NodeEditor::SetCurrentEditor(editorContext);
 		ax::NodeEditor::Begin("MyEditor", ImVec2(0.0f, 0.0f));
 
-		EvaluateMathNodes(mathNodes, links);
+		//EvaluateMathNodes(mathNodes, links);
 
 		for (auto& node : mathNodes)
 		{
@@ -572,16 +572,53 @@ void AppWindow::onUpdate()
 		// Handle new links
 		if (ax::NodeEditor::BeginCreate())
 		{
-			ax::NodeEditor::PinId inputPinId, outputPinId;
-			if (ax::NodeEditor::QueryNewLink(&inputPinId, &outputPinId))
+			ax::NodeEditor::PinId pinA, pinB;
+			if (ax::NodeEditor::QueryNewLink(&pinA, &pinB))
 			{
-				if (inputPinId && outputPinId)
+				if (pinA && pinB)
 				{
-					links.push_back({ nextLinkId++, (int)outputPinId.Get(), (int)inputPinId.Get() });
+					int a = pinA.Get();
+					int b = pinB.Get();
+
+					// Find which pin is output and which is input
+					auto isInputPin = [&](int pinId) -> bool {
+						for (const MathNode& node : mathNodes)
+						{
+							if (node.inputA_id == pinId || node.inputB_id == pinId)
+								return true;
+						}
+						return false;
+					};
+
+					int inputPin = isInputPin(a) ? a : b;
+					int outputPin = (inputPin == a) ? b : a;
+
+					// Prevent duplicate link
+					bool alreadyLinked = false;
+					for (const auto& link : links)
+					{
+						if (link.startPinId == outputPin && link.endPinId == inputPin)
+						{
+							alreadyLinked = true;
+							break;
+						}
+					}
+
+					if (!alreadyLinked)
+					{
+						// Only add the link if the user released the mouse button
+						if (ax::NodeEditor::AcceptNewItem())
+						{
+							links.push_back({ nextLinkId++, outputPin, inputPin });
+							std::cout << "Created Link from output pin " << outputPin << " to input pin " << inputPin << std::endl;
+						}
+					}
 				}
 			}
 		}
 		ax::NodeEditor::EndCreate();
+
+		EvaluateMathNodes(mathNodes, links);
 
 		ax::NodeEditor::End();
 
@@ -818,9 +855,13 @@ void EvaluateMathNodes(std::vector<MathNode>& nodes, const std::vector<Link>& li
 		int16_t valB = node.inputB;
 
 		if (IsPinLinked(node.inputA_id, links))
-			ResolveInputValue(node.inputA_id, nodes, links, valA);
+		{
+			ResolveInputValue(node.inputA_id, nodes, links, valA);		
+		}
 		if (IsPinLinked(node.inputB_id, links))
+		{
 			ResolveInputValue(node.inputB_id, nodes, links, valB);
+		}
 
 		node.inputA = valA;
 		node.inputB = valB;
@@ -900,7 +941,7 @@ void DrawMathNode(MathNode& node, const std::vector<MathNode>& mathNodes, const 
 	{
 		if (ResolveInputValue(node.inputA_id, mathNodes, links, resolvedValue))
 		{
-			//node.inputA = resolvedValue;
+			node.inputA = resolvedValue;
 			ImGui::Text("A = %d", resolvedValue);
 		}
 		else
@@ -919,7 +960,7 @@ void DrawMathNode(MathNode& node, const std::vector<MathNode>& mathNodes, const 
 	{
 		if (ResolveInputValue(node.inputB_id, mathNodes, links, resolvedValue))
 		{
-			//node.inputB = resolvedValue;
+			node.inputB = resolvedValue;
 			ImGui::Text("B = %d", resolvedValue);
 		}
 		else
@@ -949,6 +990,8 @@ int16_t ResolveInputValue(int pinId, const std::vector<MathNode>& mathNodes, con
 			int sourcePinId = link.startPinId;
 			for (const MathNode& node : mathNodes)
 			{
+				std::cout << "Comparing node.output_id " << node.output_id << " with sourcePinId " << sourcePinId << std::endl;
+
 				if (node.output_id == sourcePinId)
 				{
 					outValue = node.result;
