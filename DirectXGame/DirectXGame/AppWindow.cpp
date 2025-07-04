@@ -15,19 +15,6 @@
 
 #include "SimplePlane.h"
 
-//static ed::EditorContext* editorContext = nullptr;
-
-//struct vec3
-//{
-//	float x, y, z;
-//};
-//
-//struct vertex
-//{
-//	vec3 position;
-//	vec3 color;
-//};
-
 struct InstanceData
 {
 	Matrix4x4 transform;
@@ -40,7 +27,8 @@ enum class MathOpType
 	Multiply,
 	Divide,
 	TransformCube, // Get transformation
-	Print // The Print thingy
+	Print, // The Print thingy
+	CubeNode // The Cube that will be transformed/changed etc.
 };
 
 struct MathNode
@@ -54,18 +42,33 @@ struct MathNode
 	uint16_t outputB_id;
 	uint16_t outputResult_id;
 
-	/*uint16_t inputA = 0;
-	uint16_t inputB = 0;
-	uint16_t result = 0;*/
 	int16_t inputA = 0;
 	int16_t inputB = 0;
 	int16_t result = 0;
+
+	// The Base Cube Vectors
+	Vector3D cubePosition;
+	Vector3D cubeRotation;
+	Vector3D cubeScale = Vector3D(1, 1, 1);
 
 	// For Transform Cube type
 	Vector3D position;
 	Vector3D rotation;
 	Vector3D scale = Vector3D(1, 1, 1);
 	bool applyToCube = false;
+
+	uint16_t outputPos_id;
+	uint16_t outputRot_id;
+	uint16_t outputScale_id;
+
+	uint16_t inputPos_id;
+	uint16_t inputRot_id;
+	uint16_t inputScale_id;
+
+	// For storing the resolved transform values in CubeNode
+	Vector3D resolvedPos;
+	Vector3D resolvedRot;
+	Vector3D resolvedScale;
 
 	// For the print function
 	//std::string printMessage;
@@ -90,6 +93,7 @@ AppWindow::AppWindow()
 
 bool IsPinLinked(int pinId, const std::vector<Link>& links);
 int16_t ResolveInputValue(int pinId, const std::vector<MathNode>& mathNodes, const std::vector<Link>& links, int16_t& outValue);
+bool ResolveVectorInput(int pinId, const std::vector<MathNode>& mathNodes, const std::vector<Link>& links, Vector3D& outValue);
 void DrawMathNode(MathNode& node, const std::vector<MathNode>& mathNodes, const std::vector<Link>& links);
 void EvaluateMathNodes(std::vector<MathNode>& nodes, const std::vector<Link>& links);
 
@@ -110,26 +114,6 @@ void AppWindow::update()
 	//cc.m_world.setTranslation(Vector3D::lerp(Vector3D(-2, -2, 0), Vector3D(2, 2, 0), m_delta_pos));
 	
 	m_delta_scale += m_delta_time / 0.5f;
-	
-	//cc.m_world.setScale(Vector3D::lerp(Vector3D(0.5, 0.5, 0), Vector3D(1.0f, 1.0f, 0), (sin(m_delta_scale)+1.0f)/2.0f));
-
-	//temp.setTranslation(Vector3D::lerp(Vector3D(-1.5f, -1.5f, 0), Vector3D(1.5f, 1.5f, 0), m_delta_pos));
-
-	//cc.m_world *= temp;
-
-	/*cc.m_world.setScale(Vector3D(m_scale_cube, m_scale_cube, m_scale_cube));
-
-	temp.setIdentity();
-	temp.setRotationZ(0.0f);
-	cc.m_world *= temp;
-
-	temp.setIdentity();
-	temp.setRotationY(m_rot_y);
-	cc.m_world *= temp;
-
-	temp.setIdentity();
-	temp.setRotationX(m_rot_x);
-	cc.m_world *= temp;*/
 
 	cc.m_world.setIdentity();
 	//cc.m_world.setScale(Vector3D(m_scale_cube, m_scale_cube, m_scale_cube));
@@ -139,14 +123,15 @@ void AppWindow::update()
 	Vector3D blueprintScale(1, 1, 1);
 	bool applyBlueprintTransform = false;
 
-	// Find a transform node with applyToCube enabled
+	// Apply transforms into cube when linked
 	for (auto& node : mathNodes)
 	{
-		if (node.type == MathOpType::TransformCube && node.applyToCube)
+		if (node.type == MathOpType::CubeNode)
 		{
-			blueprintPos = node.position;
-			blueprintRot = node.rotation;
-			blueprintScale = node.scale;
+			// Apply the resolved transform, whether linked or not
+			blueprintPos = node.resolvedPos;
+			blueprintRot = node.resolvedRot;
+			blueprintScale = node.resolvedScale;
 			applyBlueprintTransform = true;
 			break;
 		}
@@ -188,16 +173,10 @@ void AppWindow::update()
 	int POVwidth = (this->getClientWindowRect().right - this->getClientWindowRect().left);
 	int POVheight = (this->getClientWindowRect().bottom - this->getClientWindowRect().top);
 
-	//cc.m_proj.setPerspectiveFovLH(1.57f, ((float)POVwidth / (float)POVheight), 0.1f, 100.0f);
-	//Adjusted for zoom in and zoom out
-	//cc.m_proj.setPerspectiveFovLH(1.57f - m_forward * 0.1f, ((float)POVwidth / (float)POVheight), 0.1f, 100.0f);
-
 	m_camera.updateProjectionMatrix(m_camera.getFOV(), ((float)POVwidth / (float)POVheight), 0.1f, 100.0f);
 	cc.m_proj = m_camera.getProjectionMatrix();
 
 	m_cb->update(GraphicsEngine::get()->getImmediateDeviceContext(), &cc);
-
-
 }
 
 void AppWindow::onCreate()
@@ -527,18 +506,31 @@ void AppWindow::onUpdate()
 			node.type = MathOpType::Divide;
 			mathNodes.push_back(node);
 		}
+		if (ImGui::Button("Cube Node"))
+		{
+			MathNode node;
+			node.id = GetNewPinID(freePinIds, nextId);
+			node.inputPos_id = GetNewPinID(freePinIds, nextId);
+			node.inputRot_id = GetNewPinID(freePinIds, nextId);
+			node.inputScale_id = GetNewPinID(freePinIds, nextId);
+			node.type = MathOpType::CubeNode;
+			node.cubePosition = Vector3D(0, 0, 0);
+			node.cubeRotation = Vector3D(0, 0, 0);
+			node.cubeScale = Vector3D(1, 1, 1);
+			mathNodes.push_back(node);
+		}
+		ImGui::SameLine();
 		if (ImGui::Button("Transform Cube Node"))
 		{
 			MathNode node;
 			node.id = GetNewPinID(freePinIds, nextId);
-			node.inputA_id = GetNewPinID(freePinIds, nextId);
-			node.inputB_id = GetNewPinID(freePinIds, nextId);
-			node.outputResult_id = GetNewPinID(freePinIds, nextId);
+			node.outputPos_id = GetNewPinID(freePinIds, nextId);
+			node.outputRot_id = GetNewPinID(freePinIds, nextId);
+			node.outputScale_id = GetNewPinID(freePinIds, nextId);
 			node.type = MathOpType::TransformCube;
 			node.position = Vector3D(0, 0, 0);
 			node.rotation = Vector3D(0, 0, 0);
 			node.scale = Vector3D(1, 1, 1);
-			node.applyToCube = false;
 			mathNodes.push_back(node);
 		}
 		ImGui::SameLine();
@@ -804,14 +796,6 @@ void AppWindow::onMouseMove(const Point& mouse_pos)
 	if (m_mouseVisible)
 		return;
 
-	/*int POVwidth = (this->getClientWindowRect().right - this->getClientWindowRect().left);
-	int POVheight = (this->getClientWindowRect().bottom - this->getClientWindowRect().top);
-
-	m_rot_x += (mouse_pos.m_y - (POVheight / 2.0f)) * m_delta_time * 0.1f;
-	m_rot_y += (mouse_pos.m_x - (POVwidth / 2.0f))* m_delta_time * 0.1f;
-
-	InputSystem::get()->setCursorPosition(Point(POVwidth / 2.0f, POVheight / 2.0f));*/
-
 	int width = getClientWindowRect().right - getClientWindowRect().left;
 	int height = getClientWindowRect().bottom - getClientWindowRect().top;
 
@@ -885,6 +869,19 @@ void EvaluateMathNodes(std::vector<MathNode>& nodes, const std::vector<Link>& li
 		case MathOpType::Divide: node.result = (valB != 0) ? valA / valB : 0; break;
 		default: break;
 		}
+
+		// Cube handling
+		if (node.type == MathOpType::CubeNode)
+		{
+			// Default to node's own transform unless linked
+			node.resolvedPos = node.cubePosition;
+			node.resolvedRot = node.cubeRotation;
+			node.resolvedScale = node.cubeScale;
+
+			ResolveVectorInput(node.inputPos_id, nodes, links, node.resolvedPos);
+			ResolveVectorInput(node.inputRot_id, nodes, links, node.resolvedRot);
+			ResolveVectorInput(node.inputScale_id, nodes, links, node.resolvedScale);
+		}
 	}
 }
 
@@ -899,10 +896,23 @@ void DrawMathNode(MathNode& node, const std::vector<MathNode>& mathNodes, const 
 	{
 		ImGui::Text("Transform Cube");
 
+		// Show editable fields
 		ImGui::DragFloat3("Position", &node.position.m_x, 0.1f);
 		ImGui::DragFloat3("Rotation", &node.rotation.m_x, 0.1f);
 		ImGui::DragFloat3("Scale", &node.scale.m_x, 0.1f);
-		ImGui::Checkbox("Apply", &node.applyToCube);
+
+		// Output pins
+		ax::NodeEditor::BeginPin(node.outputPos_id, ax::NodeEditor::PinKind::Output);
+		ImGui::Text("Out Pos");
+		ax::NodeEditor::EndPin();
+
+		ax::NodeEditor::BeginPin(node.outputRot_id, ax::NodeEditor::PinKind::Output);
+		ImGui::Text("Out Rot");
+		ax::NodeEditor::EndPin();
+
+		ax::NodeEditor::BeginPin(node.outputScale_id, ax::NodeEditor::PinKind::Output);
+		ImGui::Text("Out Scale");
+		ax::NodeEditor::EndPin();
 
 		ImGui::PopID();
 		ax::NodeEditor::EndNode();
@@ -925,6 +935,40 @@ void DrawMathNode(MathNode& node, const std::vector<MathNode>& mathNodes, const 
 			std::cout << "Blueprint Print: " << node.printMessage << std::endl;
 		}
 
+		ImGui::PopID();
+		ax::NodeEditor::EndNode();
+		return;
+	}
+
+	// The Cube that will be handled
+	if (node.type == MathOpType::CubeNode)
+	{
+		ImGui::Text("Cube Node");
+
+		// Input pins
+		ax::NodeEditor::BeginPin(node.inputPos_id, ax::NodeEditor::PinKind::Input);
+		ImGui::Text("Pos In");
+		ax::NodeEditor::EndPin();
+
+		ax::NodeEditor::BeginPin(node.inputRot_id, ax::NodeEditor::PinKind::Input);
+		ImGui::Text("Rot In");
+		ax::NodeEditor::EndPin();
+
+		ax::NodeEditor::BeginPin(node.inputScale_id, ax::NodeEditor::PinKind::Input);
+		ImGui::Text("Scale In");
+		ax::NodeEditor::EndPin();
+
+		// Drop down
+		if (ImGui::TreeNode("Resolved Transform"))
+		{
+			// Display the resolved transform
+			ImGui::Text("Pos: %.2f, %.2f, %.2f", node.resolvedPos.m_x, node.resolvedPos.m_y, node.resolvedPos.m_z);
+			ImGui::Text("Rot: %.2f, %.2f, %.2f", node.resolvedRot.m_x, node.resolvedRot.m_y, node.resolvedRot.m_z);
+			ImGui::Text("Scale: %.2f, %.2f, %.2f", node.resolvedScale.m_x, node.resolvedScale.m_y, node.resolvedScale.m_z);
+
+			ImGui::TreePop();
+		}
+		
 		ImGui::PopID();
 		ax::NodeEditor::EndNode();
 		return;
@@ -991,6 +1035,7 @@ void DrawMathNode(MathNode& node, const std::vector<MathNode>& mathNodes, const 
 	ax::NodeEditor::EndNode();
 }
 
+// For Calculator
 int16_t ResolveInputValue(int pinId, const std::vector<MathNode>& mathNodes, const std::vector<Link>& links, int16_t& outValue)
 {
 	for (const Link& link : links)
@@ -1015,6 +1060,37 @@ int16_t ResolveInputValue(int pinId, const std::vector<MathNode>& mathNodes, con
 				if (node.outputResult_id == sourcePinId)
 				{
 					outValue = node.result;
+					return true;
+				}
+			}
+		}
+	}
+	return false;
+}
+
+// For Cube Transforms
+bool ResolveVectorInput(int pinId, const std::vector<MathNode>& mathNodes, const std::vector<Link>& links, Vector3D& outValue)
+{
+	for (const Link& link : links)
+	{
+		if (link.endPinId == pinId)
+		{
+			int sourcePinId = link.startPinId;
+			for (const MathNode& node : mathNodes)
+			{
+				if (node.outputPos_id == sourcePinId)
+				{
+					outValue = node.position;
+					return true;
+				}
+				if (node.outputRot_id == sourcePinId)
+				{
+					outValue = node.rotation;
+					return true;
+				}
+				if (node.outputScale_id == sourcePinId)
+				{
+					outValue = node.scale;
 					return true;
 				}
 			}
