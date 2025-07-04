@@ -375,7 +375,8 @@ void AppWindow::onUpdate()
 	////cc.m_time = static_cast<unsigned int>(EngineTime::getTime() * 1000); // milliseconds
 	//m_cb->update(GraphicsEngine::get()->getImmediateDeviceContext(), &cc);
 
-	update();
+	if (!isPaused)
+		update();
 
 	// Check if "-" key is pressed, decrease time by 1 second
 	if (GetAsyncKeyState(VK_OEM_MINUS) & 0x1)
@@ -553,6 +554,10 @@ void AppWindow::onUpdate()
 				freePinIds.push_back(node.inputB_id);
 			freePinIds.push_back(node.outputResult_id);
 			mathNodes.pop_back();
+		}
+		if (ImGui::Button(isPaused ? "Play Scene" : "Pause Scene"))
+		{
+			isPaused = !isPaused;
 		}
 
 		// Start drawing editor

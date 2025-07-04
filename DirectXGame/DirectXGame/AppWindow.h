@@ -108,6 +108,8 @@ private:
 
 // Blueprint
 private:
+	bool isPaused = false;
+
 	std::vector<MathNode> mathNodes;
 	int nextId = 10;
 	std::vector<int> freePinIds;
