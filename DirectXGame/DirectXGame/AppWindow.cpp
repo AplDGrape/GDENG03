@@ -444,7 +444,6 @@ void AppWindow::onUpdate()
 	if (m_mouseVisible)
 	{		
 		// Blueprint-style editor (imgui-node-editor)
-
 		if (!editorContext)
 		{
 			ax::NodeEditor::Config config;
@@ -455,7 +454,9 @@ void AppWindow::onUpdate()
 		ImGui::SetNextWindowSize(ImVec2(800, 600), ImGuiCond_Once);
 		ImGui::Begin("Blueprint Editor");
 
-		// Add node creation buttons
+		// ----- Add node creation buttons -----
+		// Calculator/Operations
+		// Addition Node
 		if (ImGui::Button("Add Node"))
 		{
 			MathNode node;
@@ -469,6 +470,7 @@ void AppWindow::onUpdate()
 			mathNodes.push_back(node);
 		}
 		ImGui::SameLine();
+		// Subtraction Node
 		if (ImGui::Button("Subtract Node"))
 		{
 			MathNode node;
@@ -482,6 +484,7 @@ void AppWindow::onUpdate()
 			mathNodes.push_back(node);
 		}
 		ImGui::SameLine();
+		// Multiplication Node
 		if (ImGui::Button("Multiply Node"))
 		{
 			MathNode node;
@@ -495,6 +498,7 @@ void AppWindow::onUpdate()
 			mathNodes.push_back(node);
 		}
 		ImGui::SameLine();
+		// Division Node
 		if (ImGui::Button("Divide Node"))
 		{
 			MathNode node;
@@ -507,6 +511,7 @@ void AppWindow::onUpdate()
 			node.type = MathOpType::Divide;
 			mathNodes.push_back(node);
 		}
+		// Actor Reference - Cube
 		if (ImGui::Button("Cube Node"))
 		{
 			MathNode node;
@@ -521,6 +526,7 @@ void AppWindow::onUpdate()
 			mathNodes.push_back(node);
 		}
 		ImGui::SameLine();
+		// Transformation
 		if (ImGui::Button("Transform Cube Node"))
 		{
 			MathNode node;
@@ -535,6 +541,7 @@ void AppWindow::onUpdate()
 			mathNodes.push_back(node);
 		}
 		ImGui::SameLine();
+		// Print function to Log
 		if (ImGui::Button("Print Node"))
 		{
 			MathNode node;
@@ -545,6 +552,7 @@ void AppWindow::onUpdate()
 			strcpy_s(node.printMessage, "Hello from Blueprint!");
 			mathNodes.push_back(node);
 		}
+		// Deletion of previous nodes
 		if (ImGui::Button("Delete Last Node") && !mathNodes.empty())
 		{
 			MathNode& node = mathNodes.back();
@@ -555,6 +563,7 @@ void AppWindow::onUpdate()
 			freePinIds.push_back(node.outputResult_id);
 			mathNodes.pop_back();
 		}
+		// Pause/Play Button
 		if (ImGui::Button(isPaused ? "Play Scene" : "Pause Scene"))
 		{
 			isPaused = !isPaused;
@@ -564,8 +573,7 @@ void AppWindow::onUpdate()
 		ax::NodeEditor::SetCurrentEditor(editorContext);
 		ax::NodeEditor::Begin("MyEditor", ImVec2(0.0f, 0.0f));
 
-		//EvaluateMathNodes(mathNodes, links);
-
+		// Node Handling
 		for (auto& node : mathNodes)
 		{
 			DrawMathNode(node, mathNodes, links);
@@ -626,6 +634,7 @@ void AppWindow::onUpdate()
 		}
 		ax::NodeEditor::EndCreate();
 
+		// Recalculating Values in Nodes
 		EvaluateMathNodes(mathNodes, links);
 
 		ax::NodeEditor::End();
