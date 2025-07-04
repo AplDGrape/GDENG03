@@ -3,20 +3,27 @@ C:\Users\Francis Apolinar\Documents\GitHub\GDENG03\DirectXGame\DirectXGame\Matri
 C:\Users\Francis Apolinar\Documents\GitHub\GDENG03\DirectXGame\DirectXGame\Matrix4x4.h(109,44): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
 C:\Users\Francis Apolinar\Documents\GitHub\GDENG03\DirectXGame\DirectXGame\Matrix4x4.h(110,44): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
 C:\Users\Francis Apolinar\Documents\GitHub\GDENG03\DirectXGame\DirectXGame\Matrix4x4.h(111,44): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-C:\Users\Francis Apolinar\Documents\GitHub\GDENG03\DirectXGame\DirectXGame\AppWindow.cpp(96,28): warning C4244: '=': conversion from 'DWORD' to 'float', possible loss of data
-C:\Users\Francis Apolinar\Documents\GitHub\GDENG03\DirectXGame\DirectXGame\AppWindow.cpp(297,82): warning C4267: 'argument': conversion from 'size_t' to 'UINT', possible loss of data
-C:\Users\Francis Apolinar\Documents\GitHub\GDENG03\DirectXGame\DirectXGame\AppWindow.cpp(346,28): warning C4244: '=': conversion from 'DWORD' to 'float', possible loss of data
-C:\Users\Francis Apolinar\Documents\GitHub\GDENG03\DirectXGame\DirectXGame\AppWindow.cpp(445,54): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-C:\Users\Francis Apolinar\Documents\GitHub\GDENG03\DirectXGame\DirectXGame\AppWindow.cpp(451,39): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-C:\Users\Francis Apolinar\Documents\GitHub\GDENG03\DirectXGame\DirectXGame\AppWindow.cpp(580,12): warning C4244: 'initializing': conversion from 'T' to 'int', possible loss of data
+C:\Users\Francis Apolinar\Documents\GitHub\GDENG03\DirectXGame\DirectXGame\AppWindow.cpp(99,28): warning C4244: '=': conversion from 'DWORD' to 'float', possible loss of data
+C:\Users\Francis Apolinar\Documents\GitHub\GDENG03\DirectXGame\DirectXGame\AppWindow.cpp(300,82): warning C4267: 'argument': conversion from 'size_t' to 'UINT', possible loss of data
+C:\Users\Francis Apolinar\Documents\GitHub\GDENG03\DirectXGame\DirectXGame\AppWindow.cpp(349,28): warning C4244: '=': conversion from 'DWORD' to 'float', possible loss of data
+C:\Users\Francis Apolinar\Documents\GitHub\GDENG03\DirectXGame\DirectXGame\AppWindow.cpp(448,54): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\Francis Apolinar\Documents\GitHub\GDENG03\DirectXGame\DirectXGame\AppWindow.cpp(454,39): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\Francis Apolinar\Documents\GitHub\GDENG03\DirectXGame\DirectXGame\AppWindow.cpp(591,12): warning C4244: 'initializing': conversion from 'T' to 'int', possible loss of data
           with
           [
               T=uintptr_t
           ]
-C:\Users\Francis Apolinar\Documents\GitHub\GDENG03\DirectXGame\DirectXGame\AppWindow.cpp(581,12): warning C4244: 'initializing': conversion from 'T' to 'int', possible loss of data
+C:\Users\Francis Apolinar\Documents\GitHub\GDENG03\DirectXGame\DirectXGame\AppWindow.cpp(592,12): warning C4244: 'initializing': conversion from 'T' to 'int', possible loss of data
           with
           [
               T=uintptr_t
           ]
-C:\Users\Francis Apolinar\Documents\GitHub\GDENG03\DirectXGame\DirectXGame\AppWindow.cpp(646,30): warning C4244: '=': conversion from 'DWORD' to 'float', possible loss of data
+C:\Users\Francis Apolinar\Documents\GitHub\GDENG03\DirectXGame\DirectXGame\AppWindow.cpp(657,30): warning C4244: '=': conversion from 'DWORD' to 'float', possible loss of data
+Window.obj : warning LNK4099: PDB 'vc142.pdb' was not found with 'Window.obj' or at 'C:\Users\Francis Apolinar\Documents\GitHub\GDENG03\DirectXGame\x64\Debug\vc142.pdb'; linking object as if no debug info
+VertexShader.obj : warning LNK4099: PDB 'vc142.pdb' was not found with 'VertexShader.obj' or at 'C:\Users\Francis Apolinar\Documents\GitHub\GDENG03\DirectXGame\x64\Debug\vc142.pdb'; linking object as if no debug info
+VertexBuffer.obj : warning LNK4099: PDB 'vc142.pdb' was not found with 'VertexBuffer.obj' or at 'C:\Users\Francis Apolinar\Documents\GitHub\GDENG03\DirectXGame\x64\Debug\vc142.pdb'; linking object as if no debug info
+SwapChain.obj : warning LNK4099: PDB 'vc142.pdb' was not found with 'SwapChain.obj' or at 'C:\Users\Francis Apolinar\Documents\GitHub\GDENG03\DirectXGame\x64\Debug\vc142.pdb'; linking object as if no debug info
+main.obj : warning LNK4099: PDB 'vc142.pdb' was not found with 'main.obj' or at 'C:\Users\Francis Apolinar\Documents\GitHub\GDENG03\DirectXGame\x64\Debug\vc142.pdb'; linking object as if no debug info
+GraphicsEngine.obj : warning LNK4099: PDB 'vc142.pdb' was not found with 'GraphicsEngine.obj' or at 'C:\Users\Francis Apolinar\Documents\GitHub\GDENG03\DirectXGame\x64\Debug\vc142.pdb'; linking object as if no debug info
+DeviceContext.obj : warning LNK4099: PDB 'vc142.pdb' was not found with 'DeviceContext.obj' or at 'C:\Users\Francis Apolinar\Documents\GitHub\GDENG03\DirectXGame\x64\Debug\vc142.pdb'; linking object as if no debug info
   DirectXGame.vcxproj -> C:\Users\Francis Apolinar\Documents\GitHub\GDENG03\DirectXGame\x64\Debug\DirectXGame.exe

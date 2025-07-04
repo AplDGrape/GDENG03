@@ -49,7 +49,10 @@ struct MathNode
 	MathOpType type;
 	uint16_t inputA_id;
 	uint16_t inputB_id;
-	uint16_t output_id;
+
+	uint16_t outputA_id;
+	uint16_t outputB_id;
+	uint16_t outputResult_id;
 
 	/*uint16_t inputA = 0;
 	uint16_t inputB = 0;
@@ -479,7 +482,9 @@ void AppWindow::onUpdate()
 			node.id = GetNewPinID(freePinIds, nextId);
 			node.inputA_id = GetNewPinID(freePinIds, nextId);
 			node.inputB_id = GetNewPinID(freePinIds, nextId);
-			node.output_id = GetNewPinID(freePinIds, nextId);
+			node.outputA_id = GetNewPinID(freePinIds, nextId);
+			node.outputB_id = GetNewPinID(freePinIds, nextId);
+			node.outputResult_id = GetNewPinID(freePinIds, nextId);
 			node.type = MathOpType::Add;
 			mathNodes.push_back(node);
 		}
@@ -490,7 +495,9 @@ void AppWindow::onUpdate()
 			node.id = GetNewPinID(freePinIds, nextId);
 			node.inputA_id = GetNewPinID(freePinIds, nextId);
 			node.inputB_id = GetNewPinID(freePinIds, nextId);
-			node.output_id = GetNewPinID(freePinIds, nextId);
+			node.outputA_id = GetNewPinID(freePinIds, nextId);
+			node.outputB_id = GetNewPinID(freePinIds, nextId);
+			node.outputResult_id = GetNewPinID(freePinIds, nextId);
 			node.type = MathOpType::Subtract;
 			mathNodes.push_back(node);
 		}
@@ -501,7 +508,9 @@ void AppWindow::onUpdate()
 			node.id = GetNewPinID(freePinIds, nextId);
 			node.inputA_id = GetNewPinID(freePinIds, nextId);
 			node.inputB_id = GetNewPinID(freePinIds, nextId);
-			node.output_id = GetNewPinID(freePinIds, nextId);
+			node.outputA_id = GetNewPinID(freePinIds, nextId);
+			node.outputB_id = GetNewPinID(freePinIds, nextId);
+			node.outputResult_id = GetNewPinID(freePinIds, nextId);
 			node.type = MathOpType::Multiply;
 			mathNodes.push_back(node);
 		}
@@ -512,7 +521,9 @@ void AppWindow::onUpdate()
 			node.id = GetNewPinID(freePinIds, nextId);
 			node.inputA_id = GetNewPinID(freePinIds, nextId);
 			node.inputB_id = GetNewPinID(freePinIds, nextId);
-			node.output_id = GetNewPinID(freePinIds, nextId);
+			node.outputA_id = GetNewPinID(freePinIds, nextId);
+			node.outputB_id = GetNewPinID(freePinIds, nextId);
+			node.outputResult_id = GetNewPinID(freePinIds, nextId);
 			node.type = MathOpType::Divide;
 			mathNodes.push_back(node);
 		}
@@ -522,7 +533,7 @@ void AppWindow::onUpdate()
 			node.id = GetNewPinID(freePinIds, nextId);
 			node.inputA_id = GetNewPinID(freePinIds, nextId);
 			node.inputB_id = GetNewPinID(freePinIds, nextId);
-			node.output_id = GetNewPinID(freePinIds, nextId);
+			node.outputResult_id = GetNewPinID(freePinIds, nextId);
 			node.type = MathOpType::TransformCube;
 			node.position = Vector3D(0, 0, 0);
 			node.rotation = Vector3D(0, 0, 0);
@@ -536,7 +547,7 @@ void AppWindow::onUpdate()
 			MathNode node;
 			node.id = GetNewPinID(freePinIds, nextId);
 			node.inputA_id = GetNewPinID(freePinIds, nextId);
-			node.output_id = GetNewPinID(freePinIds, nextId);
+			node.outputResult_id = GetNewPinID(freePinIds, nextId);
 			node.type = MathOpType::Print;
 			strcpy_s(node.printMessage, "Hello from Blueprint!");
 			mathNodes.push_back(node);
@@ -548,7 +559,7 @@ void AppWindow::onUpdate()
 			freePinIds.push_back(node.inputA_id);
 			if (node.type != MathOpType::Print && node.type != MathOpType::TransformCube)
 				freePinIds.push_back(node.inputB_id);
-			freePinIds.push_back(node.output_id);
+			freePinIds.push_back(node.outputResult_id);
 			mathNodes.pop_back();
 		}
 
@@ -934,47 +945,46 @@ void DrawMathNode(MathNode& node, const std::vector<MathNode>& mathNodes, const 
 
 	int16_t resolvedValue;
 
+	// ----- Input A -----
 	ax::NodeEditor::BeginPin(node.inputA_id, ax::NodeEditor::PinKind::Input);
-	if (!IsPinLinked(node.inputA_id, links))
-		ImGui::DragScalar("A", ImGuiDataType_S16, &node.inputA);
+	if (ResolveInputValue(node.inputA_id, mathNodes, links, resolvedValue))
+	{
+		node.inputA = resolvedValue;
+		ImGui::Text("A = %d", resolvedValue);  // Show the resolved value
+	}
 	else
 	{
-		if (ResolveInputValue(node.inputA_id, mathNodes, links, resolvedValue))
-		{
-			node.inputA = resolvedValue;
-			ImGui::Text("A = %d", resolvedValue);
-		}
-		else
-		{
-			ImGui::DragScalar("A", ImGuiDataType_S16, &node.inputA);
-			ImGui::SameLine();
-			ImGui::Text("A = %d", node.inputA);
-		}
+		ImGui::DragScalar("A", ImGuiDataType_S16, &node.inputA);  // Allow editing if no link
 	}
 	ax::NodeEditor::EndPin();
 
+	// ----- Input B -----
 	ax::NodeEditor::BeginPin(node.inputB_id, ax::NodeEditor::PinKind::Input);
-	if (!IsPinLinked(node.inputB_id, links))
-		ImGui::DragScalar("B", ImGuiDataType_S16, &node.inputB);
+	if (ResolveInputValue(node.inputB_id, mathNodes, links, resolvedValue))
+	{
+		node.inputB = resolvedValue;
+		ImGui::Text("B = %d", resolvedValue);  // Show the resolved value
+	}
 	else
 	{
-		if (ResolveInputValue(node.inputB_id, mathNodes, links, resolvedValue))
-		{
-			node.inputB = resolvedValue;
-			ImGui::Text("B = %d", resolvedValue);
-		}
-		else
-		{
-			ImGui::DragScalar("B", ImGuiDataType_S16, &node.inputB);
-			ImGui::SameLine();
-			ImGui::Text("B = %d", node.inputB);
-		}
+		ImGui::DragScalar("B", ImGuiDataType_S16, &node.inputB);  // Allow editing if no link
 	}
 	ax::NodeEditor::EndPin();
 
-	// Output pin and result calculation
-	ax::NodeEditor::BeginPin(node.output_id, ax::NodeEditor::PinKind::Output);
-	ImGui::Text("= %d", node.result);
+	// ----- Output pin and result calculation -----
+	// Output pin for inputA
+	ax::NodeEditor::BeginPin(node.outputA_id, ax::NodeEditor::PinKind::Output);
+	ImGui::Text("Out A: %d", node.inputA);
+	ax::NodeEditor::EndPin();
+
+	// Output pin for inputB
+	ax::NodeEditor::BeginPin(node.outputB_id, ax::NodeEditor::PinKind::Output);
+	ImGui::Text("Out B: %d", node.inputB);
+	ax::NodeEditor::EndPin();
+
+	// Output pin for result
+	ax::NodeEditor::BeginPin(node.outputResult_id, ax::NodeEditor::PinKind::Output);
+	ImGui::Text("Result: %d", node.result);
 	ax::NodeEditor::EndPin();
 
 	ImGui::PopID();
@@ -990,9 +1000,19 @@ int16_t ResolveInputValue(int pinId, const std::vector<MathNode>& mathNodes, con
 			int sourcePinId = link.startPinId;
 			for (const MathNode& node : mathNodes)
 			{
-				std::cout << "Comparing node.output_id " << node.output_id << " with sourcePinId " << sourcePinId << std::endl;
+				//std::cout << "Comparing node.output_id " << node.output_id << " with sourcePinId " << sourcePinId << std::endl;
 
-				if (node.output_id == sourcePinId)
+				if (node.outputA_id == sourcePinId)
+				{
+					outValue = node.inputA;
+					return true;
+				}
+				if (node.outputB_id == sourcePinId)
+				{
+					outValue = node.inputB;
+					return true;
+				}
+				if (node.outputResult_id == sourcePinId)
 				{
 					outValue = node.result;
 					return true;
