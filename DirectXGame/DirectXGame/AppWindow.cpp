@@ -203,6 +203,7 @@ void AppWindow::onCreate()
 	ImGui::CreateContext();
 	ImGuiIO& io = ImGui::GetIO(); (void)io;
 	//ImGui::GetIO().FontGlobalScale = 0.5f;
+
 	ImGui::StyleColorsDark();
 
 	ImGui_ImplWin32_Init(this->m_hwnd); // use your HWND
@@ -440,214 +441,13 @@ void AppWindow::onUpdate()
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
 
+	//ImGui::Begin("Blueprint Editor");
 	// Only allow UI interaction when mouse is visible
 	if (m_mouseVisible)
 	{		
-		// Blueprint-style editor (imgui-node-editor)
-		if (!editorContext)
-		{
-			ax::NodeEditor::Config config;
-			config.SettingsFile = "BlueprintNodeEditor.json";
-			editorContext = ax::NodeEditor::CreateEditor(&config);
-		}
-
-		ImGui::SetNextWindowSize(ImVec2(800, 600), ImGuiCond_Once);
-		ImGui::Begin("Blueprint Editor");
-
-		// ----- Add node creation buttons -----
-		// Calculator/Operations
-		// Addition Node
-		if (ImGui::Button("Add Node"))
-		{
-			MathNode node;
-			node.id = GetNewPinID(freePinIds, nextId);
-			node.inputA_id = GetNewPinID(freePinIds, nextId);
-			node.inputB_id = GetNewPinID(freePinIds, nextId);
-			node.outputA_id = GetNewPinID(freePinIds, nextId);
-			node.outputB_id = GetNewPinID(freePinIds, nextId);
-			node.outputResult_id = GetNewPinID(freePinIds, nextId);
-			node.type = MathOpType::Add;
-			mathNodes.push_back(node);
-		}
-		ImGui::SameLine();
-		// Subtraction Node
-		if (ImGui::Button("Subtract Node"))
-		{
-			MathNode node;
-			node.id = GetNewPinID(freePinIds, nextId);
-			node.inputA_id = GetNewPinID(freePinIds, nextId);
-			node.inputB_id = GetNewPinID(freePinIds, nextId);
-			node.outputA_id = GetNewPinID(freePinIds, nextId);
-			node.outputB_id = GetNewPinID(freePinIds, nextId);
-			node.outputResult_id = GetNewPinID(freePinIds, nextId);
-			node.type = MathOpType::Subtract;
-			mathNodes.push_back(node);
-		}
-		ImGui::SameLine();
-		// Multiplication Node
-		if (ImGui::Button("Multiply Node"))
-		{
-			MathNode node;
-			node.id = GetNewPinID(freePinIds, nextId);
-			node.inputA_id = GetNewPinID(freePinIds, nextId);
-			node.inputB_id = GetNewPinID(freePinIds, nextId);
-			node.outputA_id = GetNewPinID(freePinIds, nextId);
-			node.outputB_id = GetNewPinID(freePinIds, nextId);
-			node.outputResult_id = GetNewPinID(freePinIds, nextId);
-			node.type = MathOpType::Multiply;
-			mathNodes.push_back(node);
-		}
-		ImGui::SameLine();
-		// Division Node
-		if (ImGui::Button("Divide Node"))
-		{
-			MathNode node;
-			node.id = GetNewPinID(freePinIds, nextId);
-			node.inputA_id = GetNewPinID(freePinIds, nextId);
-			node.inputB_id = GetNewPinID(freePinIds, nextId);
-			node.outputA_id = GetNewPinID(freePinIds, nextId);
-			node.outputB_id = GetNewPinID(freePinIds, nextId);
-			node.outputResult_id = GetNewPinID(freePinIds, nextId);
-			node.type = MathOpType::Divide;
-			mathNodes.push_back(node);
-		}
-		// Actor Reference - Cube
-		if (ImGui::Button("Cube Node"))
-		{
-			MathNode node;
-			node.id = GetNewPinID(freePinIds, nextId);
-			node.inputPos_id = GetNewPinID(freePinIds, nextId);
-			node.inputRot_id = GetNewPinID(freePinIds, nextId);
-			node.inputScale_id = GetNewPinID(freePinIds, nextId);
-			node.type = MathOpType::CubeNode;
-			node.cubePosition = Vector3D(0, 0, 0);
-			node.cubeRotation = Vector3D(0, 0, 0);
-			node.cubeScale = Vector3D(1, 1, 1);
-			mathNodes.push_back(node);
-		}
-		ImGui::SameLine();
-		// Transformation
-		if (ImGui::Button("Transform Cube Node"))
-		{
-			MathNode node;
-			node.id = GetNewPinID(freePinIds, nextId);
-			node.outputPos_id = GetNewPinID(freePinIds, nextId);
-			node.outputRot_id = GetNewPinID(freePinIds, nextId);
-			node.outputScale_id = GetNewPinID(freePinIds, nextId);
-			node.type = MathOpType::TransformCube;
-			node.position = Vector3D(0, 0, 0);
-			node.rotation = Vector3D(0, 0, 0);
-			node.scale = Vector3D(1, 1, 1);
-			mathNodes.push_back(node);
-		}
-		ImGui::SameLine();
-		// Print function to Log
-		if (ImGui::Button("Print Node"))
-		{
-			MathNode node;
-			node.id = GetNewPinID(freePinIds, nextId);
-			node.inputA_id = GetNewPinID(freePinIds, nextId);
-			node.outputResult_id = GetNewPinID(freePinIds, nextId);
-			node.type = MathOpType::Print;
-			strcpy_s(node.printMessage, "Hello from Blueprint!");
-			mathNodes.push_back(node);
-		}
-		// Deletion of previous nodes
-		if (ImGui::Button("Delete Last Node") && !mathNodes.empty())
-		{
-			MathNode& node = mathNodes.back();
-			freePinIds.push_back(node.id);
-			freePinIds.push_back(node.inputA_id);
-			if (node.type != MathOpType::Print && node.type != MathOpType::TransformCube)
-				freePinIds.push_back(node.inputB_id);
-			freePinIds.push_back(node.outputResult_id);
-			mathNodes.pop_back();
-		}
-		// Pause/Play Button
-		if (ImGui::Button(isPaused ? "Play Scene" : "Pause Scene"))
-		{
-			isPaused = !isPaused;
-		}
-
-		// Start drawing editor
-		ax::NodeEditor::SetCurrentEditor(editorContext);
-		ax::NodeEditor::Begin("MyEditor", ImVec2(0.0f, 0.0f));
-
-		// Node Handling
-		for (auto& node : mathNodes)
-		{
-			DrawMathNode(node, mathNodes, links);
-		}
-
-		// Draw links
-		for (auto& link : links)
-		{
-			ax::NodeEditor::Link(link.id, link.startPinId, link.endPinId);
-		}
-
-		// Handle new links
-		if (ax::NodeEditor::BeginCreate())
-		{
-			ax::NodeEditor::PinId pinA, pinB;
-			if (ax::NodeEditor::QueryNewLink(&pinA, &pinB))
-			{
-				if (pinA && pinB)
-				{
-					int a = pinA.Get();
-					int b = pinB.Get();
-
-					// Find which pin is output and which is input
-					auto isInputPin = [&](int pinId) -> bool {
-						for (const MathNode& node : mathNodes)
-						{
-							if (node.inputA_id == pinId || node.inputB_id == pinId)
-								return true;
-						}
-						return false;
-					};
-
-					int inputPin = isInputPin(a) ? a : b;
-					int outputPin = (inputPin == a) ? b : a;
-
-					// Prevent duplicate link
-					bool alreadyLinked = false;
-					for (const auto& link : links)
-					{
-						if (link.startPinId == outputPin && link.endPinId == inputPin)
-						{
-							alreadyLinked = true;
-							break;
-						}
-					}
-
-					if (!alreadyLinked)
-					{
-						// Only add the link if the user released the mouse button
-						if (ax::NodeEditor::AcceptNewItem())
-						{
-							links.push_back({ nextLinkId++, outputPin, inputPin });
-							std::cout << "Created Link from output pin " << outputPin << " to input pin " << inputPin << std::endl;
-						}
-					}
-				}
-			}
-		}
-		ax::NodeEditor::EndCreate();
-
-		// Recalculating Values in Nodes
-		EvaluateMathNodes(mathNodes, links);
-
-		ax::NodeEditor::End();
-
-		static bool firstTime = true;
-		if (firstTime)
-		{
-			ax::NodeEditor::NavigateToContent();
-			firstTime = false;
-		}
-
-		ImGui::End();
+		DrawBlueprintEditor();
 	}
+	//ImGui::End();
 
 	//printf("ImGui Version: %s\n", ImGui::GetVersion());
 
@@ -843,6 +643,214 @@ void AppWindow::onRightMouseUp(const Point& mouse_pos)
 {
 	if (!m_mouseVisible)
 		m_scale_cube = 1.0f;
+}
+
+void AppWindow::DrawBlueprintEditor()
+{
+	// Blueprint-style editor (imgui-node-editor)
+	if (!editorContext)
+	{
+		ax::NodeEditor::Config config;
+		config.SettingsFile = "BlueprintNodeEditor.json";
+		editorContext = ax::NodeEditor::CreateEditor(&config);
+	}
+
+	ImGui::SetNextWindowSize(ImVec2(800, 600), ImGuiCond_Once);
+	ImGui::Begin("Blueprint Editor");
+
+	// ----- Add node creation buttons -----
+	// Calculator/Operations
+	// Addition Node
+	if (ImGui::Button("Add Node"))
+	{
+		MathNode node;
+		node.id = GetNewPinID(freePinIds, nextId);
+		node.inputA_id = GetNewPinID(freePinIds, nextId);
+		node.inputB_id = GetNewPinID(freePinIds, nextId);
+		node.outputA_id = GetNewPinID(freePinIds, nextId);
+		node.outputB_id = GetNewPinID(freePinIds, nextId);
+		node.outputResult_id = GetNewPinID(freePinIds, nextId);
+		node.type = MathOpType::Add;
+		mathNodes.push_back(node);
+	}
+	ImGui::SameLine();
+	// Subtraction Node
+	if (ImGui::Button("Subtract Node"))
+	{
+		MathNode node;
+		node.id = GetNewPinID(freePinIds, nextId);
+		node.inputA_id = GetNewPinID(freePinIds, nextId);
+		node.inputB_id = GetNewPinID(freePinIds, nextId);
+		node.outputA_id = GetNewPinID(freePinIds, nextId);
+		node.outputB_id = GetNewPinID(freePinIds, nextId);
+		node.outputResult_id = GetNewPinID(freePinIds, nextId);
+		node.type = MathOpType::Subtract;
+		mathNodes.push_back(node);
+	}
+	ImGui::SameLine();
+	// Multiplication Node
+	if (ImGui::Button("Multiply Node"))
+	{
+		MathNode node;
+		node.id = GetNewPinID(freePinIds, nextId);
+		node.inputA_id = GetNewPinID(freePinIds, nextId);
+		node.inputB_id = GetNewPinID(freePinIds, nextId);
+		node.outputA_id = GetNewPinID(freePinIds, nextId);
+		node.outputB_id = GetNewPinID(freePinIds, nextId);
+		node.outputResult_id = GetNewPinID(freePinIds, nextId);
+		node.type = MathOpType::Multiply;
+		mathNodes.push_back(node);
+	}
+	ImGui::SameLine();
+	// Division Node
+	if (ImGui::Button("Divide Node"))
+	{
+		MathNode node;
+		node.id = GetNewPinID(freePinIds, nextId);
+		node.inputA_id = GetNewPinID(freePinIds, nextId);
+		node.inputB_id = GetNewPinID(freePinIds, nextId);
+		node.outputA_id = GetNewPinID(freePinIds, nextId);
+		node.outputB_id = GetNewPinID(freePinIds, nextId);
+		node.outputResult_id = GetNewPinID(freePinIds, nextId);
+		node.type = MathOpType::Divide;
+		mathNodes.push_back(node);
+	}
+	// Actor Reference - Cube
+	if (ImGui::Button("Cube Node"))
+	{
+		MathNode node;
+		node.id = GetNewPinID(freePinIds, nextId);
+		node.inputPos_id = GetNewPinID(freePinIds, nextId);
+		node.inputRot_id = GetNewPinID(freePinIds, nextId);
+		node.inputScale_id = GetNewPinID(freePinIds, nextId);
+		node.type = MathOpType::CubeNode;
+		node.cubePosition = Vector3D(0, 0, 0);
+		node.cubeRotation = Vector3D(0, 0, 0);
+		node.cubeScale = Vector3D(1, 1, 1);
+		mathNodes.push_back(node);
+	}
+	ImGui::SameLine();
+	// Transformation
+	if (ImGui::Button("Transform Cube Node"))
+	{
+		MathNode node;
+		node.id = GetNewPinID(freePinIds, nextId);
+		node.outputPos_id = GetNewPinID(freePinIds, nextId);
+		node.outputRot_id = GetNewPinID(freePinIds, nextId);
+		node.outputScale_id = GetNewPinID(freePinIds, nextId);
+		node.type = MathOpType::TransformCube;
+		node.position = Vector3D(0, 0, 0);
+		node.rotation = Vector3D(0, 0, 0);
+		node.scale = Vector3D(1, 1, 1);
+		mathNodes.push_back(node);
+	}
+	ImGui::SameLine();
+	// Print function to Log
+	if (ImGui::Button("Print Node"))
+	{
+		MathNode node;
+		node.id = GetNewPinID(freePinIds, nextId);
+		node.inputA_id = GetNewPinID(freePinIds, nextId);
+		node.outputResult_id = GetNewPinID(freePinIds, nextId);
+		node.type = MathOpType::Print;
+		strcpy_s(node.printMessage, "Hello from Blueprint!");
+		mathNodes.push_back(node);
+	}
+	// Deletion of previous nodes
+	if (ImGui::Button("Delete Last Node") && !mathNodes.empty())
+	{
+		MathNode& node = mathNodes.back();
+		freePinIds.push_back(node.id);
+		freePinIds.push_back(node.inputA_id);
+		if (node.type != MathOpType::Print && node.type != MathOpType::TransformCube)
+			freePinIds.push_back(node.inputB_id);
+		freePinIds.push_back(node.outputResult_id);
+		mathNodes.pop_back();
+	}
+	// Pause/Play Button
+	if (ImGui::Button(isPaused ? "Play Scene" : "Pause Scene"))
+	{
+		isPaused = !isPaused;
+	}
+
+	// Start drawing editor
+	ax::NodeEditor::SetCurrentEditor(editorContext);
+	ax::NodeEditor::Begin("MyEditor", ImVec2(0.0f, 0.0f));
+
+	// Node Handling
+	for (auto& node : mathNodes)
+	{
+		DrawMathNode(node, mathNodes, links);
+	}
+
+	// Draw links
+	for (auto& link : links)
+	{
+		ax::NodeEditor::Link(link.id, link.startPinId, link.endPinId);
+	}
+
+	// Handle new links
+	if (ax::NodeEditor::BeginCreate())
+	{
+		ax::NodeEditor::PinId pinA, pinB;
+		if (ax::NodeEditor::QueryNewLink(&pinA, &pinB))
+		{
+			if (pinA && pinB)
+			{
+				int a = pinA.Get();
+				int b = pinB.Get();
+
+				// Find which pin is output and which is input
+				auto isInputPin = [&](int pinId) -> bool {
+					for (const MathNode& node : mathNodes)
+					{
+						if (node.inputA_id == pinId || node.inputB_id == pinId)
+							return true;
+					}
+					return false;
+				};
+
+				int inputPin = isInputPin(a) ? a : b;
+				int outputPin = (inputPin == a) ? b : a;
+
+				// Prevent duplicate link
+				bool alreadyLinked = false;
+				for (const auto& link : links)
+				{
+					if (link.startPinId == outputPin && link.endPinId == inputPin)
+					{
+						alreadyLinked = true;
+						break;
+					}
+				}
+
+				if (!alreadyLinked)
+				{
+					// Only add the link if the user released the mouse button
+					if (ax::NodeEditor::AcceptNewItem())
+					{
+						links.push_back({ nextLinkId++, outputPin, inputPin });
+						std::cout << "Created Link from output pin " << outputPin << " to input pin " << inputPin << std::endl;
+					}
+				}
+			}
+		}
+	}
+	ax::NodeEditor::EndCreate();
+
+	// Recalculating Values in Nodes
+	EvaluateMathNodes(mathNodes, links);
+
+	ax::NodeEditor::End();
+
+	static bool firstTime = true;
+	if (firstTime)
+	{
+		ax::NodeEditor::NavigateToContent();
+		firstTime = false;
+	}
+
+	ImGui::End();
 }
 
 bool IsPinLinked(int pinId, const std::vector<Link>& links)

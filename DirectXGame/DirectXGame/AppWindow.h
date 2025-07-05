@@ -65,6 +65,7 @@ public:
 
 	UINT size_list;
 
+	void DrawBlueprintEditor();
 	/*std::vector<MathNode> mathNodes;
 	std::vector<Link> links;*/
 private:
