@@ -445,7 +445,14 @@ void AppWindow::onUpdate()
 	// Only allow UI interaction when mouse is visible
 	if (m_mouseVisible)
 	{		
+		ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0, 0, 0, 0));
+		//ImGui::Begin("Blueprint Editor", nullptr, ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoTitleBar);
+
 		DrawBlueprintEditor();
+
+		//ImGui::End();
+		ImGui::PopStyleColor();
+
 	}
 	//ImGui::End();
 
