@@ -824,7 +824,11 @@ void AppWindow::DrawBlueprintEditor()
 	// Draw links
 	for (auto& link : links)
 	{
-		ax::NodeEditor::Link(link.id, link.startPinId, link.endPinId);
+		ax::NodeEditor::Link(
+			ax::NodeEditor::LinkId(link.id),
+			ax::NodeEditor::PinId(link.startPinId),
+			ax::NodeEditor::PinId(link.endPinId)
+		);
 	}
 
 	// Handle new links
@@ -875,6 +879,29 @@ void AppWindow::DrawBlueprintEditor()
 		}
 	}
 	ax::NodeEditor::EndCreate();
+
+	// Handle link deletion
+	if (ax::NodeEditor::BeginDelete())
+	{
+		ax::NodeEditor::LinkId deletedLinkId;
+		while (ax::NodeEditor::QueryDeletedLink(&deletedLinkId))
+		{
+			if (ax::NodeEditor::AcceptDeletedItem())
+			{
+				// Convert your int id to ax::NodeEditor::LinkId (basically reinterpret_cast)
+				int deletedId = static_cast<int>(deletedLinkId.Get());
+
+				// Remove from your vector
+				auto it = std::remove_if(links.begin(), links.end(),
+					[deletedId](const Link& link)
+					{
+						return link.id == deletedId;
+					});
+				links.erase(it, links.end());
+			}
+		}
+	}
+	ax::NodeEditor::EndDelete();
 
 	// Recalculating Values in Nodes
 	EvaluateMathNodes(mathNodes, links);
