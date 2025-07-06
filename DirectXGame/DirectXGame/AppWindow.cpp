@@ -56,6 +56,9 @@ struct MathNode
 	Vector3D position;
 	Vector3D rotation;
 	Vector3D scale = Vector3D(1, 1, 1);
+
+	bool isActive;
+	int inputTriggerPinId;
 	bool applyToCube = false;
 
 	uint16_t outputPos_id;
@@ -109,6 +112,7 @@ AppWindow::AppWindow()
 }
 
 bool IsPinLinked(int pinId, const std::vector<Link>& links);
+bool IsPinLinkedTo(int outputPinId, int inputPinId, const std::vector<Link>& links);
 int16_t ResolveInputValue(int pinId, const std::vector<MathNode>& mathNodes, const std::vector<Link>& links, int16_t& outValue);
 bool ResolveVectorInput(int pinId, const std::vector<MathNode>& mathNodes, const std::vector<Link>& links, Vector3D& outValue);
 void DrawMathNode(MathNode& node, const std::vector<MathNode>& mathNodes, const std::vector<Link>& links, int& selectedNodeId);
@@ -140,17 +144,34 @@ void AppWindow::update()
 	Vector3D blueprintScale(1, 1, 1);
 	bool applyBlueprintTransform = false;
 
-	// Apply transforms into cube when linked
+	// Check for CubeNode first
 	for (auto& node : mathNodes)
 	{
 		if (node.type == MathOpType::CubeNode)
 		{
-			// Apply the resolved transform, whether linked or not
 			blueprintPos = node.resolvedPos;
 			blueprintRot = node.resolvedRot;
 			blueprintScale = node.resolvedScale;
 			applyBlueprintTransform = true;
-			break;
+
+			// Now check for any active TransformCube nodes linked to this CubeNode
+			for (auto& transformNode : mathNodes)
+			{
+				if (transformNode.type == MathOpType::TransformCube && transformNode.isActive)
+				{
+					// Check if TransformCube's outputs are linked to CubeNode's inputs
+					bool posLinked = IsPinLinkedTo(transformNode.outputPos_id, node.inputPos_id, links);
+					bool rotLinked = IsPinLinkedTo(transformNode.outputRot_id, node.inputRot_id, links);
+					bool scaleLinked = IsPinLinkedTo(transformNode.outputScale_id, node.inputScale_id, links);
+
+					// If at least one output is linked, apply the corresponding values
+					if (posLinked) blueprintPos = transformNode.resolvedPos;
+					if (rotLinked) blueprintRot = transformNode.resolvedRot;
+					if (scaleLinked) blueprintScale = transformNode.resolvedScale;
+				}
+			}
+
+			break; // Assuming you have only one CubeNode
 		}
 	}
 
@@ -762,6 +783,7 @@ void AppWindow::DrawBlueprintEditor()
 		node.outputPos_id = GetNewPinID(freePinIds, nextId);
 		node.outputRot_id = GetNewPinID(freePinIds, nextId);
 		node.outputScale_id = GetNewPinID(freePinIds, nextId);
+		node.inputTriggerPinId = GetNewPinID(freePinIds, nextId);
 		node.type = MathOpType::TransformCube;
 		node.position = Vector3D(0, 0, 0);
 		node.rotation = Vector3D(0, 0, 0);
@@ -952,6 +974,18 @@ bool IsPinLinked(int pinId, const std::vector<Link>& links)
 	return false;
 }
 
+bool IsPinLinkedTo(int outputPinId, int inputPinId, const std::vector<Link>& links)
+{
+	for (const auto& link : links)
+	{
+		if (link.startPinId == outputPinId && link.endPinId == inputPinId)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
 void EvaluateMathNodes(std::vector<MathNode>& nodes, const std::vector<Link>& links)
 {
 	// Loop through all nodes and compute their result before drawing
@@ -1034,6 +1068,25 @@ void EvaluateMathNodes(std::vector<MathNode>& nodes, const std::vector<Link>& li
 			ResolveVectorInput(node.inputRot_id, nodes, links, node.resolvedRot);
 			ResolveVectorInput(node.inputScale_id, nodes, links, node.resolvedScale);
 		}
+
+		// Set Transform Trigger
+		if (node.type == MathOpType::TransformCube)
+		{
+			int16_t triggerValue = 0;
+			bool isLinked = ResolveInputValue(node.inputTriggerPinId, nodes, links, triggerValue);
+
+			// Activate node if not linked, or if trigger != 0
+			node.isActive = (!isLinked || triggerValue != 0);
+
+			node.resolvedPos = node.position;
+			node.resolvedRot = node.rotation;
+			node.resolvedScale = node.scale;
+
+			// Also, resolve the transform values regardless of active state
+			ResolveVectorInput(node.outputPos_id, nodes, links, node.resolvedPos);
+			ResolveVectorInput(node.outputRot_id, nodes, links, node.resolvedRot);
+			ResolveVectorInput(node.outputScale_id, nodes, links, node.resolvedScale);
+		}
 	}
 }
 
@@ -1047,6 +1100,11 @@ void DrawMathNode(MathNode& node, const std::vector<MathNode>& mathNodes, const 
 	if (node.type == MathOpType::TransformCube)
 	{
 		ImGui::Text("Transform Cube");
+
+		// Input pin
+		ax::NodeEditor::BeginPin(node.inputTriggerPinId, ax::NodeEditor::PinKind::Input);
+		ImGui::Text("Trigger");
+		ax::NodeEditor::EndPin();
 
 		// Show editable fields
 		ImGui::DragFloat3("Position", &node.position.m_x, 0.1f);
