@@ -957,26 +957,21 @@ void EvaluateMathNodes(std::vector<MathNode>& nodes, const std::vector<Link>& li
 		// If Else Condition
 		if (node.type == MathOpType::IfElseNode)
 		{
+			int16_t resolvedA = node.inputA;;
+			int16_t resolvedB = node.inputB;
+
 			// Check the selected operator
 			bool conditionResult = false;
 			if (node.op == MathNode::OperatorType::Greater)
-				conditionResult = node.inputA_value > node.inputB_value;
+				conditionResult = resolvedA > resolvedB;
 			else if (node.op == MathNode::OperatorType::Less)
-				conditionResult = node.inputA_value < node.inputB_value;
+				conditionResult = resolvedA < resolvedB;
 			else if (node.op == MathNode::OperatorType::Equal)
-				conditionResult = node.inputA_value == node.inputB_value;
+				conditionResult = resolvedA == resolvedB;
 
 			// Set outputs based on the result
-			if (conditionResult)
-			{
-				node.outputTrue_value = 1;
-				node.outputFalse_value = 0;
-			}
-			else
-			{
-				node.outputTrue_value = 0;
-				node.outputFalse_value = 1;
-			}
+			node.outputTrue_value = conditionResult ? 1 : 0;
+			node.outputFalse_value = conditionResult ? 0 : 1;
 		}
 
 		// Print Handling Condition
@@ -1113,44 +1108,57 @@ void DrawMathNode(MathNode& node, const std::vector<MathNode>& mathNodes, const 
 	{
 		ImGui::Text("IfElse Node");
 
-		// Input A
+		// ------ Input A ------
 		ax::NodeEditor::BeginPin(node.inputA_id, ax::NodeEditor::PinKind::Input);
-		ImGui::Text("A");
+		int16_t resolvedA;
+		if (ResolveInputValue(node.inputA_id, mathNodes, links, resolvedA))
+		{
+			node.inputA = resolvedA;
+			ImGui::Text("A = %d", resolvedA);  // Show resolved value if linked
+		}
+		else
+		{
+			ImGui::PushItemWidth(120);
+			int tempA = node.inputA;  // Temporary int to avoid type mismatch
+			ImGui::InputInt("A", &tempA);
+			node.inputA = static_cast<int16_t>(tempA);  // Convert back to int16_t
+			ImGui::PopItemWidth();
+		}
 		ax::NodeEditor::EndPin();
-		ImGui::SameLine();
-		ImGui::PushItemWidth(120);
-		int tempA = node.inputA_value;
-		ImGui::InputInt("##InputA", &tempA);
-		node.inputA_value = static_cast<int16_t>(tempA);
-		ImGui::PopItemWidth();
 
-		// Show operator as text only
+		// ------ Operator ------
 		const char* ops[] = { ">", "<", "==" };
 		std::string opLabel = "Operator: ";
 		opLabel += ops[static_cast<int>(node.op)];
 		ImGui::Text("%s", opLabel.c_str());
 
-		// Select this node when clicking the operator text
+		// Allow selecting the node by clicking operator text
 		if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
 			selectedNodeId = node.id;
 
-		// Input B
+		// ------ Input B ------
 		ax::NodeEditor::BeginPin(node.inputB_id, ax::NodeEditor::PinKind::Input);
-		ImGui::Text("B");
+		int16_t resolvedB;
+		if (ResolveInputValue(node.inputB_id, mathNodes, links, resolvedB))
+		{
+			node.inputB = resolvedB;
+			ImGui::Text("B = %d", resolvedB);  // Show resolved value if linked
+		}
+		else
+		{
+			ImGui::PushItemWidth(120);
+			int tempB = node.inputB;  // Temporary int to avoid type mismatch
+			ImGui::InputInt("B", &tempB);
+			node.inputB = static_cast<int16_t>(tempB);  // Convert back to int16_t
+			ImGui::PopItemWidth();
+		}
 		ax::NodeEditor::EndPin();
-		ImGui::SameLine();
-		ImGui::PushItemWidth(120);
-		int tempB = node.inputB_value;
-		ImGui::InputInt("##InputB", &tempB);
-		node.inputB_value = static_cast<int16_t>(tempB);
-		ImGui::PopItemWidth();
 
-		// Output True
+		// ------ Outputs ------
 		ax::NodeEditor::BeginPin(node.outputTrue_id, ax::NodeEditor::PinKind::Output);
 		ImGui::Text("True");
 		ax::NodeEditor::EndPin();
 
-		// Output False
 		ax::NodeEditor::BeginPin(node.outputFalse_id, ax::NodeEditor::PinKind::Output);
 		ImGui::Text("False");
 		ax::NodeEditor::EndPin();
@@ -1250,12 +1258,12 @@ int16_t ResolveInputValue(int pinId, const std::vector<MathNode>& mathNodes, con
 				}
 				if (node.outputTrue_id == sourcePinId)
 				{
-					outValue = (node.outputTrue_value != 0.0f) ? 1 : 0;
+					outValue = static_cast<int16_t>(node.outputTrue_value);
 					return true;
 				}
 				if (node.outputFalse_id == sourcePinId)
 				{
-					outValue = (node.outputFalse_value != 0.0f) ? 1 : 0;
+					outValue = static_cast<int16_t>(node.outputFalse_value);
 					return true;
 				}
 			}
