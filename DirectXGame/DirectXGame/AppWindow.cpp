@@ -28,6 +28,7 @@ enum class MathOpType
 	Divide,
 	TransformCube, // Get transformation
 	Print, // The Print thingy
+	IfElseNode, // The If Else condition
 	CubeNode // The Cube that will be transformed/changed etc.
 };
 
@@ -73,6 +74,22 @@ struct MathNode
 	// For the print function
 	//std::string printMessage;
 	char printMessage[128] = "Hello, Blueprint!";
+
+	// For If Else Condition
+	enum class OperatorType { Greater, Less, Equal };
+	OperatorType op = OperatorType::Greater; // default op
+
+	bool wasTriggered = false;
+
+	int outputTrue_id;
+	int outputFalse_id;
+	uint16_t inputCondition_id;
+
+	// Values:
+	int16_t inputA_value = 0;
+	int16_t inputB_value = 0;
+	int16_t outputTrue_value = 0;
+	int16_t outputFalse_value = 0;
 };
 
 __declspec(align(16))
@@ -94,7 +111,7 @@ AppWindow::AppWindow()
 bool IsPinLinked(int pinId, const std::vector<Link>& links);
 int16_t ResolveInputValue(int pinId, const std::vector<MathNode>& mathNodes, const std::vector<Link>& links, int16_t& outValue);
 bool ResolveVectorInput(int pinId, const std::vector<MathNode>& mathNodes, const std::vector<Link>& links, Vector3D& outValue);
-void DrawMathNode(MathNode& node, const std::vector<MathNode>& mathNodes, const std::vector<Link>& links);
+void DrawMathNode(MathNode& node, const std::vector<MathNode>& mathNodes, const std::vector<Link>& links, int& selectedNodeId);
 void EvaluateMathNodes(std::vector<MathNode>& nodes, const std::vector<Link>& links);
 
 void AppWindow::update()
@@ -758,9 +775,23 @@ void AppWindow::DrawBlueprintEditor()
 		MathNode node;
 		node.id = GetNewPinID(freePinIds, nextId);
 		node.inputA_id = GetNewPinID(freePinIds, nextId);
+		node.inputCondition_id = GetNewPinID(freePinIds, nextId);
 		node.outputResult_id = GetNewPinID(freePinIds, nextId);
 		node.type = MathOpType::Print;
 		strcpy_s(node.printMessage, "Hello from Blueprint!");
+		mathNodes.push_back(node);
+	}
+	if (ImGui::Button("IfElseNode"))
+	{
+		MathNode node;
+		node.id = GetNewPinID(freePinIds, nextId);
+		node.inputA_id = GetNewPinID(freePinIds, nextId);
+		node.inputB_id = GetNewPinID(freePinIds, nextId);
+		node.outputTrue_id = GetNewPinID(freePinIds, nextId);
+		node.outputFalse_id = GetNewPinID(freePinIds, nextId);
+
+		node.type = MathOpType::IfElseNode;
+
 		mathNodes.push_back(node);
 	}
 	// Deletion of previous nodes
@@ -787,7 +818,7 @@ void AppWindow::DrawBlueprintEditor()
 	// Node Handling
 	for (auto& node : mathNodes)
 	{
-		DrawMathNode(node, mathNodes, links);
+		DrawMathNode(node, mathNodes, links, selectedNodeId);
 	}
 
 	// Draw links
@@ -850,6 +881,30 @@ void AppWindow::DrawBlueprintEditor()
 
 	ax::NodeEditor::End();
 
+	// Property Editor also be able to click on the operand window
+	if (selectedNodeId != -1)
+	{
+		for (auto& node : mathNodes)
+		{
+			if (node.id == selectedNodeId && node.type == MathOpType::IfElseNode)
+			{
+				ImGui::SetNextWindowSize(ImVec2(150, 0), ImGuiCond_FirstUseEver);
+				ImGui::Begin("Change Operand");
+
+				const char* ops[] = { ">", "<", "==" };
+				int currentOp = static_cast<int>(node.op);
+				ImGui::SetNextItemWidth(60);
+				if (ImGui::Combo("Operator", &currentOp, ops, IM_ARRAYSIZE(ops)))
+				{
+					node.op = static_cast<MathNode::OperatorType>(currentOp);
+				}
+
+				ImGui::End();
+				break; // found the node, no need to keep searching
+			}
+		}
+	}
+
 	static bool firstTime = true;
 	if (firstTime)
 	{
@@ -899,6 +954,52 @@ void EvaluateMathNodes(std::vector<MathNode>& nodes, const std::vector<Link>& li
 		default: break;
 		}
 
+		// If Else Condition
+		if (node.type == MathOpType::IfElseNode)
+		{
+			// Check the selected operator
+			bool conditionResult = false;
+			if (node.op == MathNode::OperatorType::Greater)
+				conditionResult = node.inputA_value > node.inputB_value;
+			else if (node.op == MathNode::OperatorType::Less)
+				conditionResult = node.inputA_value < node.inputB_value;
+			else if (node.op == MathNode::OperatorType::Equal)
+				conditionResult = node.inputA_value == node.inputB_value;
+
+			// Set outputs based on the result
+			if (conditionResult)
+			{
+				node.outputTrue_value = 1;
+				node.outputFalse_value = 0;
+			}
+			else
+			{
+				node.outputTrue_value = 0;
+				node.outputFalse_value = 1;
+			}
+		}
+
+		// Print Handling Condition
+		if (node.type == MathOpType::Print)
+		{
+			int16_t triggerValue = 0;
+			if (IsPinLinked(node.inputCondition_id, links))
+			{
+				ResolveInputValue(node.inputCondition_id, nodes, links, triggerValue);
+			}
+
+			// Print only if trigger is non-zero
+			bool isTriggered = triggerValue != 0;
+
+			if (isTriggered && !node.wasTriggered)
+			{
+				std::cout << "Blueprint Print (triggered): " << node.printMessage << std::endl;
+			}
+
+			// Update previous trigger state
+			node.wasTriggered = isTriggered;
+		}
+
 		// Cube handling
 		if (node.type == MathOpType::CubeNode)
 		{
@@ -914,7 +1015,7 @@ void EvaluateMathNodes(std::vector<MathNode>& nodes, const std::vector<Link>& li
 	}
 }
 
-void DrawMathNode(MathNode& node, const std::vector<MathNode>& mathNodes, const std::vector<Link>& links)
+void DrawMathNode(MathNode& node, const std::vector<MathNode>& mathNodes, const std::vector<Link>& links, int& selectedNodeId)
 {
 	ax::NodeEditor::BeginNode(node.id);
 
@@ -952,6 +1053,11 @@ void DrawMathNode(MathNode& node, const std::vector<MathNode>& mathNodes, const 
 	if (node.type == MathOpType::Print)
 	{
 		ImGui::Text("Print Node");
+
+		// Input pin for trigger/condition
+		ax::NodeEditor::BeginPin(node.inputCondition_id, ax::NodeEditor::PinKind::Input);
+		ImGui::Text("Trigger");
+		ax::NodeEditor::EndPin();
 
 		ax::NodeEditor::BeginPin(node.inputA_id, ax::NodeEditor::PinKind::Input);
 		ImGui::Text("In");
@@ -998,6 +1104,57 @@ void DrawMathNode(MathNode& node, const std::vector<MathNode>& mathNodes, const 
 			ImGui::TreePop();
 		}
 		
+		ImGui::PopID();
+		ax::NodeEditor::EndNode();
+		return;
+	}
+
+	if (node.type == MathOpType::IfElseNode)
+	{
+		ImGui::Text("IfElse Node");
+
+		// Input A
+		ax::NodeEditor::BeginPin(node.inputA_id, ax::NodeEditor::PinKind::Input);
+		ImGui::Text("A");
+		ax::NodeEditor::EndPin();
+		ImGui::SameLine();
+		ImGui::PushItemWidth(120);
+		int tempA = node.inputA_value;
+		ImGui::InputInt("##InputA", &tempA);
+		node.inputA_value = static_cast<int16_t>(tempA);
+		ImGui::PopItemWidth();
+
+		// Show operator as text only
+		const char* ops[] = { ">", "<", "==" };
+		std::string opLabel = "Operator: ";
+		opLabel += ops[static_cast<int>(node.op)];
+		ImGui::Text("%s", opLabel.c_str());
+
+		// Select this node when clicking the operator text
+		if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
+			selectedNodeId = node.id;
+
+		// Input B
+		ax::NodeEditor::BeginPin(node.inputB_id, ax::NodeEditor::PinKind::Input);
+		ImGui::Text("B");
+		ax::NodeEditor::EndPin();
+		ImGui::SameLine();
+		ImGui::PushItemWidth(120);
+		int tempB = node.inputB_value;
+		ImGui::InputInt("##InputB", &tempB);
+		node.inputB_value = static_cast<int16_t>(tempB);
+		ImGui::PopItemWidth();
+
+		// Output True
+		ax::NodeEditor::BeginPin(node.outputTrue_id, ax::NodeEditor::PinKind::Output);
+		ImGui::Text("True");
+		ax::NodeEditor::EndPin();
+
+		// Output False
+		ax::NodeEditor::BeginPin(node.outputFalse_id, ax::NodeEditor::PinKind::Output);
+		ImGui::Text("False");
+		ax::NodeEditor::EndPin();
+
 		ImGui::PopID();
 		ax::NodeEditor::EndNode();
 		return;
@@ -1089,6 +1246,16 @@ int16_t ResolveInputValue(int pinId, const std::vector<MathNode>& mathNodes, con
 				if (node.outputResult_id == sourcePinId)
 				{
 					outValue = node.result;
+					return true;
+				}
+				if (node.outputTrue_id == sourcePinId)
+				{
+					outValue = (node.outputTrue_value != 0.0f) ? 1 : 0;
+					return true;
+				}
+				if (node.outputFalse_id == sourcePinId)
+				{
+					outValue = (node.outputFalse_value != 0.0f) ? 1 : 0;
 					return true;
 				}
 			}

@@ -110,6 +110,7 @@ private:
 // Blueprint
 private:
 	bool isPaused = false;
+	int selectedNodeId = -1;
 
 	std::vector<MathNode> mathNodes;
 	int nextId = 10;
