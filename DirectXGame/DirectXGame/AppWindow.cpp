@@ -1113,9 +1113,9 @@ void EvaluateMathNodes(std::vector<MathNode>& nodes, const std::vector<Link>& li
 			}
 
 			// Also, resolve the transform values regardless of active state
-			/*ResolveVectorInput(node.outputPos_id, nodes, links, node.resolvedPos);
+			ResolveVectorInput(node.outputPos_id, nodes, links, node.resolvedPos);
 			ResolveVectorInput(node.outputRot_id, nodes, links, node.resolvedRot);
-			ResolveVectorInput(node.outputScale_id, nodes, links, node.resolvedScale);*/
+			ResolveVectorInput(node.outputScale_id, nodes, links, node.resolvedScale);
 		}
 
 		// Pause Node
