@@ -29,7 +29,8 @@ enum class MathOpType
 	TransformCube, // Get transformation
 	Print, // The Print thingy
 	IfElseNode, // The If Else condition
-	CubeNode // The Cube that will be transformed/changed etc.
+	CubeNode, // The Cube that will be transformed/changed etc.
+	PauseNode // Pause scene for X seconds
 };
 
 struct MathNode
@@ -93,6 +94,15 @@ struct MathNode
 	int16_t inputB_value = 0;
 	int16_t outputTrue_value = 0;
 	int16_t outputFalse_value = 0;
+
+	// For Pause Node
+	uint16_t inputDurationPinId = 0;  // Can be linked from another node
+	int16_t durationSeconds = 1;      // Default 1 second
+	bool isPausing = false;           // Flag to track pause state
+	double pauseStartTime = 0.0;      // Time when pause started
+
+	uint16_t outputTriggerDone_id = 0;
+	int16_t outputTriggerDone_value = 0;
 };
 
 __declspec(align(16))
@@ -116,7 +126,7 @@ bool IsPinLinkedTo(int outputPinId, int inputPinId, const std::vector<Link>& lin
 int16_t ResolveInputValue(int pinId, const std::vector<MathNode>& mathNodes, const std::vector<Link>& links, int16_t& outValue);
 bool ResolveVectorInput(int pinId, const std::vector<MathNode>& mathNodes, const std::vector<Link>& links, Vector3D& outValue);
 void DrawMathNode(MathNode& node, const std::vector<MathNode>& mathNodes, const std::vector<Link>& links, int& selectedNodeId);
-void EvaluateMathNodes(std::vector<MathNode>& nodes, const std::vector<Link>& links);
+void EvaluateMathNodes(std::vector<MathNode>& nodes, const std::vector<Link>& links, bool& isPaused);
 
 void AppWindow::update()
 {
@@ -832,6 +842,22 @@ void AppWindow::DrawBlueprintEditor()
 	{
 		isPaused = !isPaused;
 	}
+	ImGui::SameLine();
+	// Pause Node
+	if (ImGui::Button("Pause Node"))
+	{
+		MathNode node;
+		node.id = GetNewPinID(freePinIds, nextId);
+		node.inputTriggerPinId = GetNewPinID(freePinIds, nextId);
+		node.inputDurationPinId = GetNewPinID(freePinIds, nextId); // input pin for duration
+		node.outputTriggerDone_id = GetNewPinID(freePinIds, nextId);
+
+		node.type = MathOpType::PauseNode;
+		node.durationSeconds = 1; // Default pause duration
+		node.isPausing = false;
+		node.pauseStartTime = 0.0;
+		mathNodes.push_back(node);
+	}
 
 	// Start drawing editor
 	ax::NodeEditor::SetCurrentEditor(editorContext);
@@ -926,7 +952,7 @@ void AppWindow::DrawBlueprintEditor()
 	ax::NodeEditor::EndDelete();
 
 	// Recalculating Values in Nodes
-	EvaluateMathNodes(mathNodes, links);
+	EvaluateMathNodes(mathNodes, links, isPaused);
 
 	ax::NodeEditor::End();
 
@@ -986,7 +1012,7 @@ bool IsPinLinkedTo(int outputPinId, int inputPinId, const std::vector<Link>& lin
 	return false;
 }
 
-void EvaluateMathNodes(std::vector<MathNode>& nodes, const std::vector<Link>& links)
+void EvaluateMathNodes(std::vector<MathNode>& nodes, const std::vector<Link>& links, bool& isPaused)
 {
 	// Loop through all nodes and compute their result before drawing
 	for (auto& node : nodes)
@@ -1078,14 +1104,63 @@ void EvaluateMathNodes(std::vector<MathNode>& nodes, const std::vector<Link>& li
 			// Activate node if not linked, or if trigger != 0
 			node.isActive = (!isLinked || triggerValue != 0);
 
-			node.resolvedPos = node.position;
-			node.resolvedRot = node.rotation;
-			node.resolvedScale = node.scale;
+			if (node.isActive)
+			{
+				// Only set these when active
+				node.resolvedPos = node.position;
+				node.resolvedRot = node.rotation;
+				node.resolvedScale = node.scale;
+			}
 
 			// Also, resolve the transform values regardless of active state
-			ResolveVectorInput(node.outputPos_id, nodes, links, node.resolvedPos);
+			/*ResolveVectorInput(node.outputPos_id, nodes, links, node.resolvedPos);
 			ResolveVectorInput(node.outputRot_id, nodes, links, node.resolvedRot);
-			ResolveVectorInput(node.outputScale_id, nodes, links, node.resolvedScale);
+			ResolveVectorInput(node.outputScale_id, nodes, links, node.resolvedScale);*/
+		}
+
+		// Pause Node
+		if (node.type == MathOpType::PauseNode)
+		{
+			int16_t triggerValue = 0;
+			int16_t durationValue = node.durationSeconds;
+
+			// Resolve trigger and duration from input pins
+			bool triggerLinked = ResolveInputValue(node.inputTriggerPinId, nodes, links, triggerValue);
+			ResolveInputValue(node.inputDurationPinId, nodes, links, durationValue);
+
+			// Activate node if not linked, or if trigger != 0
+			bool shouldTrigger = (!triggerLinked || triggerValue != 0);
+
+			node.outputTriggerDone_value = 0;
+
+			// If newly triggered, start pause
+			if (shouldTrigger && !node.wasTriggered && !node.isPausing)
+			{
+				node.isPausing = true;
+				node.pauseStartTime = EngineTime::getCurrentTime();
+				isPaused = true;
+				node.wasTriggered = true; // mark as triggered
+				std::cout << "[Blueprint] Pause triggered for " << durationValue << " seconds.\n";
+			}
+
+			// If pausing, check elapsed time
+			if (node.isPausing)
+			{
+				double elapsed = EngineTime::getCurrentTime() - node.pauseStartTime;
+				if (elapsed >= durationValue)
+				{
+					node.isPausing = false;
+					isPaused = false;
+					node.outputTriggerDone_value = 1;
+					std::cout << "[Blueprint] Pause ended.\n";
+				}
+			}
+
+			// Reset trigger if triggerValue goes back to 0
+			if (!shouldTrigger && !node.isPausing)
+			{
+				node.wasTriggered = false;
+			}
 		}
 	}
 }
@@ -1253,6 +1328,41 @@ void DrawMathNode(MathNode& node, const std::vector<MathNode>& mathNodes, const 
 		return;
 	}
 
+	// Handling Pauses
+	if (node.type == MathOpType::PauseNode)
+	{
+		ImGui::Text("Pause Node");
+
+		// Trigger pin
+		ax::NodeEditor::BeginPin(node.inputTriggerPinId, ax::NodeEditor::PinKind::Input);
+		ImGui::Text("Trigger");
+		ax::NodeEditor::EndPin();
+
+		ax::NodeEditor::BeginPin(node.inputDurationPinId, ax::NodeEditor::PinKind::Input);
+		ImGui::PushItemWidth(60);
+		int16_t resolvedDuration;
+		if (ResolveInputValue(node.inputDurationPinId, mathNodes, links, resolvedDuration))
+		{
+			node.durationSeconds = resolvedDuration;
+			ImGui::Text("Seconds = %d", resolvedDuration);
+		}
+		else
+		{
+			ImGui::DragScalar("Seconds", ImGuiDataType_S16, &node.durationSeconds);
+		}
+		ImGui::PopItemWidth();
+		ax::NodeEditor::EndPin();
+
+		// Output pin
+		ax::NodeEditor::BeginPin(node.outputTriggerDone_id, ax::NodeEditor::PinKind::Output);
+		ImGui::Text("Done: %d", node.outputTriggerDone_value);
+		ax::NodeEditor::EndPin();
+
+		ImGui::PopID();
+		ax::NodeEditor::EndNode();
+		return;
+	}
+
 	// Handle math operation nodes (Add, Subtract, Multiply, Divide)
 	// Draw title
 	switch (node.type)
@@ -1349,6 +1459,11 @@ int16_t ResolveInputValue(int pinId, const std::vector<MathNode>& mathNodes, con
 				if (node.outputFalse_id == sourcePinId)
 				{
 					outValue = static_cast<int16_t>(node.outputFalse_value);
+					return true;
+				}
+				if (pinId == node.outputTriggerDone_id)
+				{
+					outValue = node.outputTriggerDone_value;
 					return true;
 				}
 			}

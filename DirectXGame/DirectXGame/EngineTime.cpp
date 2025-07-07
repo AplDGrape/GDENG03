@@ -90,3 +90,11 @@ void EngineTime::LogFrameEnd()
     std::chrono::duration<double> duration = sharedInstance->end - sharedInstance->start;
     sharedInstance->deltaTime = duration.count();
 }
+
+double EngineTime::getCurrentTime()
+{
+    using namespace std::chrono;
+    auto now = high_resolution_clock::now();
+    auto duration = now.time_since_epoch();
+    return duration_cast<milliseconds>(duration).count() / 1000.0;
+}

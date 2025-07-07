@@ -18,6 +18,7 @@ public:
 	static void increaseTime(double seconds);
 	static void decreaseTime(double seconds);
 
+	static double getCurrentTime();
 private:
 	EngineTime();
 	~EngineTime();
