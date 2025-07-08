@@ -318,7 +318,6 @@ void AppWindow::onCreate()
 	{
 		// Handle error / incase some shit happens
 	}
-	
 
 	GraphicsEngine::get()->releaseCompiledShader();
 }
@@ -421,6 +420,11 @@ void AppWindow::onUpdate()
 		obj->draw(width, height, m_vs, m_ps);
 	}
 
+	ImVec4 color = ImVec4(1, 0, 0, 1);
+	ImGuiWindowFlags flags = ImGuiColorEditFlags_NoSidePreview | ImGuiColorEditFlags_NoSmallPreview;
+
+	//float f = 0.0f;
+
 	//Start ImGui frame
 	ImGui_ImplDX11_NewFrame();
 	ImGui_ImplWin32_NewFrame();
@@ -432,6 +436,12 @@ void AppWindow::onUpdate()
 		ImGui::SetNextWindowPos(ImVec2(10, 10), ImGuiCond_FirstUseEver);
 		ImGui::Begin("My ImGui Window", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
 		ImGui::Text("Full mouse control!");
+
+		ImGui::ColorPicker4("MickoPicker", (float*)&color,
+			flags |
+			ImGuiColorEditFlags_PickerHueWheel |
+			ImGuiColorEditFlags_InputRGB
+		);
 		/*ImGui::DragFloat("Rotate X", &m_rot_x, 0.01f);
 		ImGui::DragFloat("Rotate Y", &m_rot_y, 0.01f);
 		ImGui::SliderFloat("Scale Cube", &m_scale_cube, 0.1f, 2.0f);*/
@@ -444,17 +454,17 @@ void AppWindow::onUpdate()
 		ImGui::SetNextWindowSize(ImVec2(500, 300), ImGuiCond_FirstUseEver);
 		ImGui::Begin("Credits");
 
-		ImGui::Text("Game Title: My DX11 Project");
+		ImGui::Text("About");
+		ImGui::Spacing(); ImGui::Spacing(); ImGui::Spacing();
+		ImGui::Text("Scene Editor Version: 1.1");
+		ImGui::Text("Developed by: Francis Raphael D. Apolinar");
+		ImGui::Spacing(); ImGui::Spacing(); ImGui::Spacing();
+		ImGui::Text("Acknowledgements:");
 		ImGui::Separator();
-		ImGui::Text("Scene Editor Version: 1.0");
-		ImGui::Separator();
-		ImGui::Text("Developed by:");
-		ImGui::BulletText("Francis Raphael D. Apolinar");
-		ImGui::Spacing();
-		ImGui::Text("Special Thanks:");
-		ImGui::BulletText("IMGUI");
+		ImGui::Text("PardCode Game Engine Tutorial");
+		ImGui::Text("Sir Neil's GAMENG3 Course");
 
-		ImGui::Spacing();
+		ImGui::Spacing(); ImGui::Spacing(); ImGui::Spacing();
 		ImGui::Text("Press P again to close this screen or");
 		ImGui::Text("	click the close button.		");
 

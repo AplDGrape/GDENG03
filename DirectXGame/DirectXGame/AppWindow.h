@@ -51,6 +51,8 @@ public:
 	virtual void onRightMouseUp(const Point& mouse_pos) override;
 
 	UINT size_list;
+
+	float f = 0.0f;
 private:
 	SwapChain* m_swap_chain;
 	VertexBuffer* m_vb;
