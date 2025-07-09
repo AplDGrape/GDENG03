@@ -30,7 +30,8 @@ enum class MathOpType
 	Print, // The Print thingy
 	IfElseNode, // The If Else condition
 	CubeNode, // The Cube that will be transformed/changed etc.
-	PauseNode // Pause scene for X seconds
+	PauseNode, // Pause scene for X seconds
+	ForLoopNode // For Loop condition
 };
 
 struct MathNode
@@ -103,6 +104,28 @@ struct MathNode
 
 	uint16_t outputTriggerDone_id = 0;
 	int16_t outputTriggerDone_value = 0;
+
+	// For Loop node specific
+	int16_t inputVal1 = 0;
+	int16_t inputVal2 = 0;
+	int16_t inputVal3 = 0;
+	
+	int16_t resolvedVal1 = 0;
+	int16_t resolvedVal2 = 0;
+	int16_t resolvedVal3 = 0;
+	
+	uint16_t inputVal1_id = 0;
+	uint16_t inputVal2_id = 0;
+	uint16_t inputVal3_id = 0;
+	uint16_t outputTrigger_id = 0;
+
+	enum class ComparisonOp { LessThan, GreaterThan, EqualTo, LessThanEqual, GreaterThanEqual };
+	ComparisonOp loopOp = ComparisonOp::LessThan;
+	ComparisonOp innerOp = ComparisonOp::EqualTo;
+	
+	bool increment = true;
+	
+	int16_t triggerOutput = 0;
 };
 
 __declspec(align(16))
@@ -826,6 +849,31 @@ void AppWindow::DrawBlueprintEditor()
 
 		mathNodes.push_back(node);
 	}
+	ImGui::SameLine();
+	if (ImGui::Button("For Loop Node"))
+	{
+		MathNode node;
+		node.id = GetNewPinID(freePinIds, nextId);
+
+		// Input pins
+		node.inputVal1_id = GetNewPinID(freePinIds, nextId); // val1 (x start)
+		node.inputVal2_id = GetNewPinID(freePinIds, nextId); // val2 (loop condition bound)
+		node.inputVal3_id = GetNewPinID(freePinIds, nextId); // val3 (inner condition bound)
+
+		// Setup defaults
+		node.inputVal1 = 0;
+		node.inputVal2 = 10;
+		node.inputVal3 = 5;
+
+		node.outputTrigger_id = GetNewPinID(freePinIds, nextId); // output pin
+
+		node.loopOp = MathNode::ComparisonOp::LessThan;
+		node.innerOp = MathNode::ComparisonOp::EqualTo;
+		node.increment = true;
+
+		node.type = MathOpType::ForLoopNode;
+		mathNodes.push_back(node);
+	}
 	// Deletion of previous nodes
 	if (ImGui::Button("Delete Last Node") && !mathNodes.empty())
 	{
@@ -959,6 +1007,7 @@ void AppWindow::DrawBlueprintEditor()
 	// Property Editor also be able to click on the operand window
 	if (selectedNodeId != -1)
 	{
+		// If-Else Node operand window
 		for (auto& node : mathNodes)
 		{
 			if (node.id == selectedNodeId && node.type == MathOpType::IfElseNode)
@@ -976,6 +1025,41 @@ void AppWindow::DrawBlueprintEditor()
 
 				ImGui::End();
 				break; // found the node, no need to keep searching
+			}
+		}
+
+		// For Loop Node operand window
+		for (auto& node : mathNodes)
+		{
+			if (node.id == selectedNodeId && node.type == MathOpType::ForLoopNode)
+			{
+				ImGui::SetNextWindowSize(ImVec2(200, 0), ImGuiCond_FirstUseEver);
+				ImGui::Begin("Change Loop Operators");
+
+				const char* comparisonOps[] = { "<", ">", "==", "<=", ">=" };
+
+				ImGui::Text("Loop Condition Operator:");
+				for (int i = 0; i < IM_ARRAYSIZE(comparisonOps); ++i)
+				{
+					if (ImGui::Button(comparisonOps[i]))
+					{
+						node.loopOp = static_cast<MathNode::ComparisonOp>(i);
+					}
+				}
+
+				ImGui::Separator();
+
+				ImGui::Text("Inner Condition Operator:");
+				for (int i = 0; i < IM_ARRAYSIZE(comparisonOps); ++i)
+				{
+					if (ImGui::Button(comparisonOps[i]))
+					{
+						node.innerOp = static_cast<MathNode::ComparisonOp>(i);
+					}
+				}
+
+				ImGui::End();
+				break;
 			}
 		}
 	}
@@ -1010,6 +1094,29 @@ bool IsPinLinkedTo(int outputPinId, int inputPinId, const std::vector<Link>& lin
 		}
 	}
 	return false;
+}
+
+void DrawPinOrInput(const char* label, uint16_t pinId, int16_t & fallbackValue, const std::vector<Link>&links)
+{
+	ImGui::Text("%s", label);
+	ax::NodeEditor::BeginPin(pinId, ax::NodeEditor::PinKind::Input);
+	
+	if (!IsPinLinked(pinId, links))
+	{
+		ImGui::SameLine();
+		ImGui::PushItemWidth(60);
+		int tempValue = fallbackValue;  // temporary for InputInt
+		ImGui::InputInt(("##Input" + std::to_string(pinId)).c_str(), &tempValue);
+		fallbackValue = static_cast<int16_t>(tempValue);
+		ImGui::PopItemWidth();
+	}
+	else
+	{
+		ImGui::SameLine();
+		ImGui::Text("(linked)");
+	}
+	
+	ax::NodeEditor::EndPin();
 }
 
 void EvaluateMathNodes(std::vector<MathNode>& nodes, const std::vector<Link>& links, bool& isPaused)
@@ -1160,6 +1267,54 @@ void EvaluateMathNodes(std::vector<MathNode>& nodes, const std::vector<Link>& li
 			if (!shouldTrigger && !node.isPausing)
 			{
 				node.wasTriggered = false;
+			}
+		}
+
+		if (node.type == MathOpType::ForLoopNode)
+		{
+			node.triggerOutput = 0; // Default output
+
+			// Resolve X (Val1)
+			int16_t x;
+			if (!ResolveInputValue(node.inputVal1_id, nodes, links, x))
+				x = node.inputVal1; // fallback if not linked
+			node.resolvedVal1 = x;
+
+			// Resolve Y (Val2)
+			int16_t y;
+			if (!ResolveInputValue(node.inputVal2_id, nodes, links, y))
+				y = node.inputVal2;
+			node.resolvedVal2 = y;
+
+			// Resolve Z (Val3)
+			int16_t z;
+			if (!ResolveInputValue(node.inputVal3_id, nodes, links, z))
+				z = node.inputVal3;
+			node.resolvedVal3 = z;
+
+			// Simple loop
+			auto checkCondition = [](int16_t a, MathNode::ComparisonOp op, int16_t b) -> bool
+			{
+				switch (op)
+				{
+				case MathNode::ComparisonOp::LessThan: return a < b;
+				case MathNode::ComparisonOp::GreaterThan: return a > b;
+				case MathNode::ComparisonOp::EqualTo: return a == b;
+				case MathNode::ComparisonOp::LessThanEqual: return a <= b;
+				case MathNode::ComparisonOp::GreaterThanEqual: return a >= b;
+				}
+				return false;
+			};
+
+			// Perform the loop condition check
+			while (checkCondition(x, node.loopOp, y))
+			{
+				if (checkCondition(x, node.innerOp, z))
+				{
+					node.triggerOutput = 1; // Trigger ON
+					break;
+				}
+				node.increment ? ++x : --x;
 			}
 		}
 	}
@@ -1363,6 +1518,119 @@ void DrawMathNode(MathNode& node, const std::vector<MathNode>& mathNodes, const 
 		return;
 	}
 
+	// For loop Node
+	if (node.type == MathOpType::ForLoopNode)
+	{
+		ImGui::Text("For Loop Node");
+		ImGui::Spacing(); ImGui::Spacing(); ImGui::Spacing();
+		ImGui::Spacing(); ImGui::Spacing(); ImGui::Spacing();
+
+		// ------ Input Val1 (X) ------
+		ax::NodeEditor::BeginPin(node.inputVal1_id, ax::NodeEditor::PinKind::Input);
+		int16_t resolvedVal1;
+		if (ResolveInputValue(node.inputVal1_id, mathNodes, links, resolvedVal1))
+		{
+			node.inputVal1 = resolvedVal1;
+			ImGui::Text("X = %d", resolvedVal1);  // Show resolved value if linked
+		}
+		else
+		{
+			ImGui::PushItemWidth(120);
+			int tempVal1 = node.inputVal1;
+			ImGui::InputInt("X", &tempVal1);
+			node.inputVal1 = static_cast<int16_t>(tempVal1);
+			ImGui::PopItemWidth();
+		}
+		ax::NodeEditor::EndPin();
+
+		// ------ Input Val2 (Y) ------
+		ax::NodeEditor::BeginPin(node.inputVal2_id, ax::NodeEditor::PinKind::Input);
+		int16_t resolvedVal2;
+		if (ResolveInputValue(node.inputVal2_id, mathNodes, links, resolvedVal2))
+		{
+			node.inputVal2 = resolvedVal2;
+			ImGui::Text("Y = %d", resolvedVal2);
+		}
+		else
+		{
+			ImGui::PushItemWidth(120);
+			int tempVal2 = node.inputVal2;
+			ImGui::InputInt("Y", &tempVal2);
+			node.inputVal2 = static_cast<int16_t>(tempVal2);
+			ImGui::PopItemWidth();
+		}
+		ax::NodeEditor::EndPin();
+
+		// ------ Input Val3 (Z) ------
+		ax::NodeEditor::BeginPin(node.inputVal3_id, ax::NodeEditor::PinKind::Input);
+		int16_t resolvedVal3;
+		if (ResolveInputValue(node.inputVal3_id, mathNodes, links, resolvedVal3))
+		{
+			node.inputVal3 = resolvedVal3;
+			ImGui::Text("Z = %d", resolvedVal3);
+		}
+		else
+		{
+			ImGui::PushItemWidth(120);
+			int tempVal3 = node.inputVal3;
+			ImGui::InputInt("Z", &tempVal3);
+			node.inputVal3 = static_cast<int16_t>(tempVal3);
+			ImGui::PopItemWidth();
+		}
+		ax::NodeEditor::EndPin();
+
+		ImGui::Spacing(); ImGui::Spacing(); ImGui::Spacing();
+		ImGui::Spacing(); ImGui::Spacing(); ImGui::Spacing();
+
+		// Operands
+		const char* comparisonOps[] = { "<", ">", "==", "<=", ">=" };
+
+		// Loop Condition Operator
+		std::string loopOpLabel = "Loop Condition Operator: ";
+		loopOpLabel += comparisonOps[static_cast<int>(node.loopOp)];
+		ImGui::Text("%s", loopOpLabel.c_str());
+
+		// Select this node when the label is clicked
+		if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
+			selectedNodeId = node.id;
+
+		// Inner Condition Operator
+		std::string innerOpLabel = "Inner Condition Operator: ";
+		innerOpLabel += comparisonOps[static_cast<int>(node.innerOp)];
+		ImGui::Text("%s", innerOpLabel.c_str());
+
+		// Select this node when the label is clicked
+		if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
+			selectedNodeId = node.id;
+
+		ImGui::Spacing(); ImGui::Spacing(); ImGui::Spacing();
+		// Increment or Decrement
+		ImGui::Checkbox("Increment (++ else --)", &node.increment);
+
+		ImGui::Spacing(); ImGui::Spacing(); ImGui::Spacing();
+		ImGui::Spacing(); ImGui::Spacing(); ImGui::Spacing();
+
+		// Show for loop logic
+		ImGui::Text("for (x = %d; %d %s %d; %d %s)", node.resolvedVal1, node.resolvedVal1, comparisonOps[static_cast<int>(node.loopOp)], node.resolvedVal2, node.resolvedVal1, node.increment ? "++" : "--");
+		ImGui::Text("{");
+		ImGui::Text("    if (%d %s %d)", node.resolvedVal1, comparisonOps[static_cast<int>(node.innerOp)], node.resolvedVal3);
+		ImGui::Text("    {");
+		ImGui::Text("		");
+		ImGui::SameLine();
+		ax::NodeEditor::BeginPin(node.outputTrigger_id, ax::NodeEditor::PinKind::Output);
+		ImGui::Text("Trigger");
+		ax::NodeEditor::EndPin();
+		ImGui::Text("    }");
+		ImGui::Text("}");
+
+		// Output check
+		//ImGui::Text("Trigger: %d", node.triggerOutput);
+
+		ImGui::PopID();
+		ax::NodeEditor::EndNode();
+		return;
+	}
+
 	// Handle math operation nodes (Add, Subtract, Multiply, Divide)
 	// Draw title
 	switch (node.type)
@@ -1464,6 +1732,11 @@ int16_t ResolveInputValue(int pinId, const std::vector<MathNode>& mathNodes, con
 				if (pinId == node.outputTriggerDone_id)
 				{
 					outValue = node.outputTriggerDone_value;
+					return true;
+				}
+				if (node.outputTrigger_id == sourcePinId)
+				{
+					outValue = node.triggerOutput;
 					return true;
 				}
 			}
