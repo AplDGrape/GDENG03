@@ -124,7 +124,16 @@ struct MathNode
 	ComparisonOp innerOp = ComparisonOp::EqualTo;
 	
 	bool increment = true;
-	
+	bool loopStarted = false;
+	bool loopCompleted = false;
+	double lastUpdateTime = 0.0;
+
+	int16_t prevVal1 = 0;
+	int16_t prevVal2 = 0;
+	int16_t prevVal3 = 0;
+
+	int16_t currentX = 0;
+
 	int16_t triggerOutput = 0;
 };
 
@@ -1292,6 +1301,31 @@ void EvaluateMathNodes(std::vector<MathNode>& nodes, const std::vector<Link>& li
 				z = node.inputVal3;
 			node.resolvedVal3 = z;
 
+			// --- Restart loop if any input changed ---
+			if (x != node.prevVal1 || y != node.prevVal2 || z != node.prevVal3)
+			{
+				node.loopStarted = false;
+				node.loopCompleted = false;
+
+				node.prevVal1 = x;
+				node.prevVal2 = y;
+				node.prevVal3 = z;
+			}
+
+			// --- Initialize once when not started ---
+			if (!node.loopStarted && !node.loopCompleted)
+			{
+				node.currentX = x;
+				node.lastUpdateTime = EngineTime::getCurrentTime();
+				node.loopStarted = true;
+			}
+
+			double currentTime = EngineTime::getCurrentTime();
+			double elapsedTime = currentTime - node.lastUpdateTime;
+
+			// --- Increment per second ---
+			const double incrementInterval = 1.0; // Every 1 second
+
 			// Simple loop
 			auto checkCondition = [](int16_t a, MathNode::ComparisonOp op, int16_t b) -> bool
 			{
@@ -1306,15 +1340,42 @@ void EvaluateMathNodes(std::vector<MathNode>& nodes, const std::vector<Link>& li
 				return false;
 			};
 
-			// Perform the loop condition check
-			while (checkCondition(x, node.loopOp, y))
+			if (!node.loopCompleted && node.loopStarted)
 			{
-				if (checkCondition(x, node.innerOp, z))
+				// Stop the loop if the outer condition fails
+				if (!checkCondition(node.currentX, node.loopOp, y))
 				{
-					node.triggerOutput = 1; // Trigger ON
-					break;
+					node.loopStarted = false;
+					node.loopCompleted = true;
+					return;
 				}
-				node.increment ? ++x : --x;
+
+				// Increment/decrement per second
+				if (elapsedTime >= incrementInterval)
+				{
+					node.lastUpdateTime = currentTime;
+
+					if (node.increment)
+						node.currentX++;
+					else
+						node.currentX--;
+
+					std::cout << "[Blueprint] ForLoopNode X = " << node.currentX << std::endl;
+
+					// Stop the loop when reaching y
+					if (node.currentX == y)
+					{
+						node.loopStarted = false;
+						node.loopCompleted = true;
+						return;
+					}
+				}
+
+				// Trigger output
+				if (checkCondition(node.currentX, node.innerOp, z))
+				{
+					node.triggerOutput = 1;
+				}
 			}
 		}
 	}
