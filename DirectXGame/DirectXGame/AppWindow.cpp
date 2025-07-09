@@ -14,6 +14,7 @@
 #include "CubeMeshData.h"
 
 #include "SimplePlane.h"
+#include "TextureLoader.h"
 
 //struct vec3
 //{
@@ -167,6 +168,13 @@ void AppWindow::onCreate()
 
 	ImGui_ImplWin32_Init(this->m_hwnd); // use your HWND
 	ImGui_ImplDX11_Init(GraphicsEngine::get()->getD3DDevice(), GraphicsEngine::get()->getD3DDeviceContext());
+
+	// Image
+	m_creditsImage = TextureLoader::LoadTextureFromFile(
+		GraphicsEngine::get()->getD3DDevice(),
+		GraphicsEngine::get()->getD3DDeviceContext(),
+		"external/image/DLSULogo.png"
+	);
 
 	m_world_cam.setTranslation(Vector3D(0, 0, -2));
 
@@ -430,33 +438,68 @@ void AppWindow::onUpdate()
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
 
+	// Menu bar at the top
+	if (ImGui::BeginMainMenuBar())
+	{
+		if (ImGui::BeginMenu("About"))
+		{
+			if (ImGui::MenuItem("Credits"))
+			{
+				m_showCredits = !m_showCredits;
+			}
+			ImGui::EndMenu();
+		}
+		if (ImGui::MenuItem("Colour Picker UI"))
+		{
+			m_colorPickerActive = !m_colorPickerActive;
+		}
+		ImGui::EndMainMenuBar();
+	}
+
 	// Only allow UI interaction when mouse is visible
 	if (m_mouseVisible)
 	{
-		ImGui::SetNextWindowPos(ImVec2(10, 10), ImGuiCond_FirstUseEver);
-		ImGui::Begin("My ImGui Window", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
-		ImGui::Text("Full mouse control!");
+	}
 
-		ImGui::ColorPicker4("MickoPicker", (float*)&color,
-			flags |
-			ImGuiColorEditFlags_PickerHueWheel |
-			ImGuiColorEditFlags_InputRGB
+	// Color picker triggered by P key
+	if (m_colorPickerActive)
+	{
+		ImGui::Begin("Color Picker Screen", &m_colorPickerActive, ImGuiWindowFlags_AlwaysAutoResize);
+
+		// Left side: Color Wheel
+		ImGui::BeginGroup(); // Start left section
+		ImGui::ColorPicker4("##ColorWheel", (float*)&m_creditsImageTint,
+			ImGuiColorEditFlags_PickerHueWheel | ImGuiColorEditFlags_NoSidePreview | ImGuiColorEditFlags_NoInputs
 		);
-		/*ImGui::DragFloat("Rotate X", &m_rot_x, 0.01f);
-		ImGui::DragFloat("Rotate Y", &m_rot_y, 0.01f);
-		ImGui::SliderFloat("Scale Cube", &m_scale_cube, 0.1f, 2.0f);*/
+		ImGui::EndGroup();
+
+		ImGui::SameLine(); // Go to the right side
+
+		// Right side: Display selected color
+		ImGui::BeginGroup(); // Start right section
+		ImGui::Text("Color");
+		ImGui::ColorButton("Current Color", m_creditsImageTint, ImGuiColorEditFlags_NoTooltip, ImVec2(65, 35));
+		ImGui::EndGroup();
+
 		ImGui::End();
 	}
 
-	//Credits
 	if (m_showCredits)
 	{
-		ImGui::SetNextWindowSize(ImVec2(500, 300), ImGuiCond_FirstUseEver);
-		ImGui::Begin("Credits");
+		ImGui::SetNextWindowSize(ImVec2(550, 900), ImGuiCond_FirstUseEver);
+		ImGui::Begin("Credits", &m_showCredits, ImGuiWindowFlags_AlwaysAutoResize);
+
+		// Display the image here
+		if (m_creditsImage)
+		{
+			// ImGui::Image() expects ImTextureID
+			//ImGui::Text("DLSU Logo:");
+			ImGui::Image((ImTextureID)m_creditsImage, ImVec2(256, 256), ImVec2(0, 0), ImVec2(1, 1), m_creditsImageTint);
+		}
 
 		ImGui::Text("About");
 		ImGui::Spacing(); ImGui::Spacing(); ImGui::Spacing();
-		ImGui::Text("Scene Editor Version: 1.1");
+		ImGui::Text("Scene Editor v1.1");
 		ImGui::Text("Developed by: Francis Raphael D. Apolinar");
 		ImGui::Spacing(); ImGui::Spacing(); ImGui::Spacing();
 		ImGui::Text("Acknowledgements:");
@@ -465,17 +508,15 @@ void AppWindow::onUpdate()
 		ImGui::Text("Sir Neil's GAMENG3 Course");
 
 		ImGui::Spacing(); ImGui::Spacing(); ImGui::Spacing();
-		ImGui::Text("Press P again to close this screen or");
-		ImGui::Text("	click the close button.		");
 
 		ImGui::Spacing();
 		ImGui::Separator();
 		ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 10.0f);
 		ImGui::SetCursorPosX((ImGui::GetWindowSize().x - 80.0f) / 2.0f); // center button
-		if (ImGui::Button("Close", ImVec2(80, 0)))
+		/*if (ImGui::Button("Close", ImVec2(80, 0)))
 		{
 			m_showCredits = false;
-		}
+		}*/
 
 		ImGui::End();
 	}
@@ -513,6 +554,12 @@ void AppWindow::onDestroy()
 	ImGui_ImplDX11_Shutdown();
 	ImGui_ImplWin32_Shutdown();
 	ImGui::DestroyContext();
+
+	if (m_creditsImage)
+	{
+		static_cast<ID3D11ShaderResourceView*>(m_creditsImage)->Release();
+		m_creditsImage = nullptr;
+	}
 
 	//wireframe
 	m_wireframe_renderer->release();
@@ -579,7 +626,7 @@ void AppWindow::onKeyDown(int key)
 	}
 	if (key == 'P' && !m_pKeyDown) // Press 'P' to show/hide credits
 	{
-		m_showCredits = !m_showCredits;
+		m_colorPickerActive = !m_colorPickerActive;
 		m_pKeyDown = true;
 	}
 

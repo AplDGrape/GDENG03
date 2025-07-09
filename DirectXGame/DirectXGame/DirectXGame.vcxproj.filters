@@ -49,6 +49,9 @@
     <Filter Include="GameEngine\Camera">
       <UniqueIdentifier>{52250ae6-b81b-44d2-9b04-71b4e36fa817}</UniqueIdentifier>
     </Filter>
+    <Filter Include="GameEngine\Image">
+      <UniqueIdentifier>{38bfff59-0fbc-41f7-9faa-5ef9ee994296}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -128,6 +131,9 @@
     </ClCompile>
     <ClCompile Include="external\imgui\imgui_widgets.cpp">
       <Filter>GameEngine\GraphicsEngine\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="TextureLoader.cpp">
+      <Filter>GameEngine\Image</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -232,6 +238,9 @@
     </ClInclude>
     <ClInclude Include="external\imgui\imstb_truetype.h">
       <Filter>GameEngine\GraphicsEngine\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="TextureLoader.h">
+      <Filter>GameEngine\Image</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

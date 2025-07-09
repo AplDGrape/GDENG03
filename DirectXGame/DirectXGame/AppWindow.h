@@ -94,6 +94,10 @@ private:
 	std::vector<Cube*> cubeList;
 	std::vector<AGameObject*> cubeList2;
 
-	
+private:
+	ImTextureID m_creditsImage = nullptr; // Stores the image texture for ImGui
+	ImVec4 m_creditsImageTint = ImVec4(1, 1, 1, 1); // Default image color
+
+	bool m_colorPickerActive = false;
 };
 
