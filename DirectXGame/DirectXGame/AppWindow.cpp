@@ -1647,7 +1647,7 @@ void DrawMathNode(MathNode& node, const std::vector<MathNode>& mathNodes, const 
 		const char* comparisonOps[] = { "<", ">", "==", "<=", ">=" };
 
 		// Loop Condition Operator
-		std::string loopOpLabel = "Loop Condition Operator: ";
+		std::string loopOpLabel = "Loop Condition Operator:  ";
 		loopOpLabel += comparisonOps[static_cast<int>(node.loopOp)];
 		ImGui::Text("%s", loopOpLabel.c_str());
 
@@ -1666,7 +1666,7 @@ void DrawMathNode(MathNode& node, const std::vector<MathNode>& mathNodes, const 
 
 		ImGui::Spacing(); ImGui::Spacing(); ImGui::Spacing();
 		// Increment or Decrement
-		ImGui::Checkbox("Increment (++ else --)", &node.increment);
+		ImGui::Checkbox("Increment ( ++ or -- )", &node.increment);
 
 		ImGui::Spacing(); ImGui::Spacing(); ImGui::Spacing();
 		ImGui::Spacing(); ImGui::Spacing(); ImGui::Spacing();
@@ -1674,7 +1674,7 @@ void DrawMathNode(MathNode& node, const std::vector<MathNode>& mathNodes, const 
 		// Show for loop logic
 		ImGui::Text("for (x = %d; %d %s %d; %d %s)", node.resolvedVal1, node.resolvedVal1, comparisonOps[static_cast<int>(node.loopOp)], node.resolvedVal2, node.resolvedVal1, node.increment ? "++" : "--");
 		ImGui::Text("{");
-		ImGui::Text("    if (%d %s %d)", node.resolvedVal1, comparisonOps[static_cast<int>(node.innerOp)], node.resolvedVal3);
+		ImGui::Text("    if (x %s %d)", comparisonOps[static_cast<int>(node.innerOp)], node.resolvedVal3);
 		ImGui::Text("    {");
 		ImGui::Text("		");
 		ImGui::SameLine();
