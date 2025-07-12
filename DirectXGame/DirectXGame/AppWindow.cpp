@@ -79,6 +79,11 @@ struct MathNode
 	// For the print function
 	//std::string printMessage;
 	char printMessage[128] = "Hello, Blueprint!";
+	char outputBuffer[256] = "";  // Store formatted output
+    bool hasNewOutput = false;    // Flag for new output
+    double lastPrintTime = 0.0;   // Track when last printed
+    int printCount = 0;           // Count of prints
+    bool showOutput = true;       // Toggle output visibility
 
 	// For If Else Condition
 	enum class OperatorType { Greater, Less, Equal };
@@ -840,7 +845,7 @@ void AppWindow::DrawBlueprintEditor()
 		node.id = GetNewPinID(freePinIds, nextId);
 		node.inputA_id = GetNewPinID(freePinIds, nextId);
 		node.inputCondition_id = GetNewPinID(freePinIds, nextId);
-		node.outputResult_id = GetNewPinID(freePinIds, nextId);
+		node.outputResult_id = GetNewPinID(freePinIds, nextId);  // Add output pin
 		node.type = MathOpType::Print;
 		strcpy_s(node.printMessage, "Hello from Blueprint!");
 		mathNodes.push_back(node);
@@ -1181,22 +1186,45 @@ void EvaluateMathNodes(std::vector<MathNode>& nodes, const std::vector<Link>& li
 		if (node.type == MathOpType::Print)
 		{
 			int16_t triggerValue = 0;
+			int16_t inputValue = 0;
+
 			if (IsPinLinked(node.inputCondition_id, links))
 			{
 				ResolveInputValue(node.inputCondition_id, nodes, links, triggerValue);
 			}
 
-			// Print only if trigger is non-zero
+			if (IsPinLinked(node.inputA_id, links))
+			{
+				ResolveInputValue(node.inputA_id, nodes, links, inputValue);
+			}
+
+			// Print only if trigger is non-zero and wasn't previously triggered
 			bool isTriggered = triggerValue != 0;
 
 			if (isTriggered && !node.wasTriggered)
 			{
-				std::cout << "Blueprint Print (triggered): " << node.printMessage << std::endl;
+				// Format the output with timestamp and input value
+				snprintf(node.outputBuffer, sizeof(node.outputBuffer),
+					"[%d] %s (Value: %d)",
+					++node.printCount, node.printMessage, inputValue);
+
+				node.hasNewOutput = true;
+				node.lastPrintTime = EngineTime::getCurrentTime();
+
+				// Console output for debugging
+				std::cout << "Blueprint Print (triggered): " << node.outputBuffer << std::endl;
+			}
+
+			// Reset new output flag after some time
+			if (node.hasNewOutput && (EngineTime::getCurrentTime() - node.lastPrintTime) > 2.0)
+			{
+				node.hasNewOutput = false;
 			}
 
 			// Update previous trigger state
 			node.wasTriggered = isTriggered;
 		}
+
 
 		// Cube handling
 		if (node.type == MathOpType::CubeNode)
@@ -1430,21 +1458,81 @@ void DrawMathNode(MathNode& node, const std::vector<MathNode>& mathNodes, const 
 		ImGui::Text("Trigger");
 		ax::NodeEditor::EndPin();
 
+		// Input pin for values
 		ax::NodeEditor::BeginPin(node.inputA_id, ax::NodeEditor::PinKind::Input);
-		ImGui::Text("In");
+		int16_t resolvedInput = 0;
+		if (ResolveInputValue(node.inputA_id, mathNodes, links, resolvedInput))
+		{
+			ImGui::Text("Value: %d", resolvedInput);
+		}
+		else
+		{
+			ImGui::Text("Value");
+		}
 		ax::NodeEditor::EndPin();
 
+		// Message input
+		ImGui::PushItemWidth(200);
 		ImGui::InputText("Message", node.printMessage, IM_ARRAYSIZE(node.printMessage));
-		ImGui::SameLine();
-		if (ImGui::Button("Print"))
+		ImGui::PopItemWidth();
+
+		// Manual print button
+		if (ImGui::Button("Print Now"))
 		{
-			std::cout << "Blueprint Print: " << node.printMessage << std::endl;
+			int16_t inputValue = 0;
+			ResolveInputValue(node.inputA_id, mathNodes, links, inputValue);
+
+			// Format the output
+			snprintf(node.outputBuffer, sizeof(node.outputBuffer),
+				"[%d] %s (Value: %d)",
+				++node.printCount, node.printMessage, inputValue);
+
+			node.hasNewOutput = true;
+			node.lastPrintTime = EngineTime::getCurrentTime();
+
+			// Still print to console for debugging
+			std::cout << "Blueprint Print: " << node.outputBuffer << std::endl;
 		}
+
+		// Toggle output visibility
+		ImGui::SameLine();
+		ImGui::Checkbox("Show Output", &node.showOutput);
+
+		// Display output in the node
+		if (node.showOutput && strlen(node.outputBuffer) > 0)
+		{
+			ImGui::Separator();
+			ImGui::Text("Output:");
+
+			// Highlight new output
+			if (node.hasNewOutput)
+			{
+				ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.0f, 1.0f, 0.0f, 1.0f)); // Green
+			}
+
+			// Word wrap for long output
+			ImGui::PushTextWrapPos(ImGui::GetCursorPos().x + 250);
+			ImGui::TextWrapped("%s", node.outputBuffer);
+			ImGui::PopTextWrapPos();
+
+			if (node.hasNewOutput)
+			{
+				ImGui::PopStyleColor();
+			}
+
+			// Show timestamp
+			ImGui::Text("Time: %.2f", node.lastPrintTime);
+		}
+		// Output pin (passes through the input value)
+		ax::NodeEditor::BeginPin(node.outputResult_id, ax::NodeEditor::PinKind::Output);
+		ImGui::Text("Out: %d", resolvedInput);  // Use resolvedInput instead of inputValue
+		ax::NodeEditor::EndPin();
 
 		ImGui::PopID();
 		ax::NodeEditor::EndNode();
 		return;
 	}
+
 
 	// The Cube that will be handled
 	if (node.type == MathOpType::CubeNode)

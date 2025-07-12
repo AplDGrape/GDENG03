@@ -1,27 +1,30 @@
 ﻿  AppWindow.cpp
-C:\Users\Francis Apolinar\Documents\GitHub\GDENG03\DirectXGame\DirectXGame\Matrix4x4.h(108,44): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-C:\Users\Francis Apolinar\Documents\GitHub\GDENG03\DirectXGame\DirectXGame\Matrix4x4.h(109,44): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-C:\Users\Francis Apolinar\Documents\GitHub\GDENG03\DirectXGame\DirectXGame\Matrix4x4.h(110,44): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-C:\Users\Francis Apolinar\Documents\GitHub\GDENG03\DirectXGame\DirectXGame\Matrix4x4.h(111,44): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-C:\Users\Francis Apolinar\Documents\GitHub\GDENG03\DirectXGame\DirectXGame\AppWindow.cpp(166,28): warning C4244: '=': conversion from 'DWORD' to 'float', possible loss of data
-C:\Users\Francis Apolinar\Documents\GitHub\GDENG03\DirectXGame\DirectXGame\AppWindow.cpp(360,82): warning C4267: 'argument': conversion from 'size_t' to 'UINT', possible loss of data
-C:\Users\Francis Apolinar\Documents\GitHub\GDENG03\DirectXGame\DirectXGame\AppWindow.cpp(409,28): warning C4244: '=': conversion from 'DWORD' to 'float', possible loss of data
-C:\Users\Francis Apolinar\Documents\GitHub\GDENG03\DirectXGame\DirectXGame\AppWindow.cpp(509,54): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-C:\Users\Francis Apolinar\Documents\GitHub\GDENG03\DirectXGame\DirectXGame\AppWindow.cpp(515,39): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-C:\Users\Francis Apolinar\Documents\GitHub\GDENG03\DirectXGame\DirectXGame\AppWindow.cpp(550,30): warning C4244: '=': conversion from 'DWORD' to 'float', possible loss of data
-C:\Users\Francis Apolinar\Documents\GitHub\GDENG03\DirectXGame\DirectXGame\AppWindow.cpp(947,11): warning C4244: 'initializing': conversion from 'T' to 'int', possible loss of data
-          with
-          [
-              T=uintptr_t
-          ]
-C:\Users\Francis Apolinar\Documents\GitHub\GDENG03\DirectXGame\DirectXGame\AppWindow.cpp(948,11): warning C4244: 'initializing': conversion from 'T' to 'int', possible loss of data
-          with
-          [
-              T=uintptr_t
-          ]
-VertexShader.obj : warning LNK4099: PDB 'vc142.pdb' was not found with 'VertexShader.obj' or at 'C:\Users\Francis Apolinar\Documents\GitHub\GDENG03\DirectXGame\x64\Debug\vc142.pdb'; linking object as if no debug info
-VertexBuffer.obj : warning LNK4099: PDB 'vc142.pdb' was not found with 'VertexBuffer.obj' or at 'C:\Users\Francis Apolinar\Documents\GitHub\GDENG03\DirectXGame\x64\Debug\vc142.pdb'; linking object as if no debug info
-SwapChain.obj : warning LNK4099: PDB 'vc142.pdb' was not found with 'SwapChain.obj' or at 'C:\Users\Francis Apolinar\Documents\GitHub\GDENG03\DirectXGame\x64\Debug\vc142.pdb'; linking object as if no debug info
-GraphicsEngine.obj : warning LNK4099: PDB 'vc142.pdb' was not found with 'GraphicsEngine.obj' or at 'C:\Users\Francis Apolinar\Documents\GitHub\GDENG03\DirectXGame\x64\Debug\vc142.pdb'; linking object as if no debug info
-DeviceContext.obj : warning LNK4099: PDB 'vc142.pdb' was not found with 'DeviceContext.obj' or at 'C:\Users\Francis Apolinar\Documents\GitHub\GDENG03\DirectXGame\x64\Debug\vc142.pdb'; linking object as if no debug info
-  DirectXGame.vcxproj -> C:\Users\Francis Apolinar\Documents\GitHub\GDENG03\DirectXGame\x64\Debug\DirectXGame.exe
+C:\Users\kassi\OneDrive\Documents\GitHub\GDENG3\Camera\GDENG03\DirectXGame\DirectXGame\Matrix4x4.h(108,44): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+  (compiling source file 'AppWindow.cpp')
+  
+C:\Users\kassi\OneDrive\Documents\GitHub\GDENG3\Camera\GDENG03\DirectXGame\DirectXGame\Matrix4x4.h(109,44): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+  (compiling source file 'AppWindow.cpp')
+  
+C:\Users\kassi\OneDrive\Documents\GitHub\GDENG3\Camera\GDENG03\DirectXGame\DirectXGame\Matrix4x4.h(110,44): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+  (compiling source file 'AppWindow.cpp')
+  
+C:\Users\kassi\OneDrive\Documents\GitHub\GDENG3\Camera\GDENG03\DirectXGame\DirectXGame\Matrix4x4.h(111,44): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+  (compiling source file 'AppWindow.cpp')
+  
+C:\Users\kassi\OneDrive\Documents\GitHub\GDENG3\Camera\GDENG03\DirectXGame\DirectXGame\AppWindow.cpp(171,28): warning C4244: '=': conversion from 'DWORD' to 'float', possible loss of data
+C:\Users\kassi\OneDrive\Documents\GitHub\GDENG3\Camera\GDENG03\DirectXGame\DirectXGame\AppWindow.cpp(365,71): warning C4267: 'argument': conversion from 'size_t' to 'UINT', possible loss of data
+C:\Users\kassi\OneDrive\Documents\GitHub\GDENG3\Camera\GDENG03\DirectXGame\DirectXGame\AppWindow.cpp(414,28): warning C4244: '=': conversion from 'DWORD' to 'float', possible loss of data
+C:\Users\kassi\OneDrive\Documents\GitHub\GDENG3\Camera\GDENG03\DirectXGame\DirectXGame\AppWindow.cpp(514,54): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\kassi\OneDrive\Documents\GitHub\GDENG3\Camera\GDENG03\DirectXGame\DirectXGame\AppWindow.cpp(520,39): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\kassi\OneDrive\Documents\GitHub\GDENG3\Camera\GDENG03\DirectXGame\DirectXGame\AppWindow.cpp(555,30): warning C4244: '=': conversion from 'DWORD' to 'float', possible loss of data
+C:\Users\kassi\OneDrive\Documents\GitHub\GDENG3\Camera\GDENG03\DirectXGame\DirectXGame\AppWindow.cpp(952,11): warning C4244: 'initializing': conversion from 'T' to 'int', possible loss of data
+C:\Users\kassi\OneDrive\Documents\GitHub\GDENG3\Camera\GDENG03\DirectXGame\DirectXGame\AppWindow.cpp(952,11): warning C4244:         with
+C:\Users\kassi\OneDrive\Documents\GitHub\GDENG3\Camera\GDENG03\DirectXGame\DirectXGame\AppWindow.cpp(952,11): warning C4244:         [
+C:\Users\kassi\OneDrive\Documents\GitHub\GDENG3\Camera\GDENG03\DirectXGame\DirectXGame\AppWindow.cpp(952,11): warning C4244:             T=uintptr_t
+C:\Users\kassi\OneDrive\Documents\GitHub\GDENG3\Camera\GDENG03\DirectXGame\DirectXGame\AppWindow.cpp(952,11): warning C4244:         ]
+C:\Users\kassi\OneDrive\Documents\GitHub\GDENG3\Camera\GDENG03\DirectXGame\DirectXGame\AppWindow.cpp(953,11): warning C4244: 'initializing': conversion from 'T' to 'int', possible loss of data
+C:\Users\kassi\OneDrive\Documents\GitHub\GDENG3\Camera\GDENG03\DirectXGame\DirectXGame\AppWindow.cpp(953,11): warning C4244:         with
+C:\Users\kassi\OneDrive\Documents\GitHub\GDENG3\Camera\GDENG03\DirectXGame\DirectXGame\AppWindow.cpp(953,11): warning C4244:         [
+C:\Users\kassi\OneDrive\Documents\GitHub\GDENG3\Camera\GDENG03\DirectXGame\DirectXGame\AppWindow.cpp(953,11): warning C4244:             T=uintptr_t
+C:\Users\kassi\OneDrive\Documents\GitHub\GDENG3\Camera\GDENG03\DirectXGame\DirectXGame\AppWindow.cpp(953,11): warning C4244:         ]
+  DirectXGame.vcxproj -> C:\Users\kassi\OneDrive\Documents\GitHub\GDENG3\Camera\GDENG03\DirectXGame\x64\Debug\DirectXGame.exe
