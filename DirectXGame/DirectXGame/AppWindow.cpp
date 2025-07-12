@@ -1050,27 +1050,19 @@ void AppWindow::DrawBlueprintEditor()
 				ImGui::SetNextWindowSize(ImVec2(200, 0), ImGuiCond_FirstUseEver);
 				ImGui::Begin("Change Loop Operators");
 
-				const char* comparisonOps[] = { "<", ">", "==", "<=", ">=" };
+				const char* ops[] = { "<", ">", "==", "<=", ">=" };
 
-				ImGui::Text("Loop Condition Operator:");
-				for (int i = 0; i < IM_ARRAYSIZE(comparisonOps); ++i)
-				{
-					if (ImGui::Button(comparisonOps[i]))
-					{
-						node.loopOp = static_cast<MathNode::ComparisonOp>(i);
-					}
-				}
+				// Outer op
+				int lop = static_cast<int>(node.loopOp);
+				ImGui::SetNextItemWidth(100);
+				if (ImGui::Combo("LoopOp", &lop, ops, IM_ARRAYSIZE(ops)))
+					node.loopOp = static_cast<MathNode::ComparisonOp>(lop);
 
-				ImGui::Separator();
-
-				ImGui::Text("Inner Condition Operator:");
-				for (int i = 0; i < IM_ARRAYSIZE(comparisonOps); ++i)
-				{
-					if (ImGui::Button(comparisonOps[i]))
-					{
-						node.innerOp = static_cast<MathNode::ComparisonOp>(i);
-					}
-				}
+				// Inner op
+				int iop = static_cast<int>(node.innerOp);
+				ImGui::SetNextItemWidth(100);
+				if (ImGui::Combo("InnerOp", &iop, ops, IM_ARRAYSIZE(ops)))
+					node.innerOp = static_cast<MathNode::ComparisonOp>(iop);
 
 				ImGui::End();
 				break;
