@@ -1,6 +1,4 @@
 #include "Plane.h"
-#include "GraphicsEngine.h"
-#include "DeviceContext.h"
 
 Plane::Plane(string name, void* shaderByteCode, size_t sizeShader) : AGameObject(name)
 {
@@ -40,7 +38,8 @@ void Plane::update(float deltaTime)
     this->deltaTime = deltaTime;
 }
 
-void Plane::draw(int width, int height, VertexShader* vertexShader, PixelShader* pixelShader)
+//void Plane::draw(int width, int height, VertexShader* vertexShader, PixelShader* pixelShader)
+void Plane::draw(int width, int height, VertexShader* vertexShader, PixelShader* pixelShader, const Matrix4x4& view, const Matrix4x4& proj)
 {
     GraphicsEngine* gfx = GraphicsEngine::get();
     DeviceContext* ctx = gfx->getImmediateDeviceContext();
@@ -62,15 +61,8 @@ void Plane::draw(int width, int height, VertexShader* vertexShader, PixelShader*
     worldMatrix = worldMatrix.multiplyTo(transMatrix);
 
     cbData.worldMatrix = worldMatrix;
-    cbData.viewMatrix.setIdentity();
-    //cbData.projMatrix.setOrthoLH(width / 400.0f, height / 400.0f, -4.0f, 4.0f);
-    //cbData.projMatrix.setOrthoLH(2.0f, 2.0f, -10.0f, 10.0f);
-    cbData.projMatrix.setPerspectiveFovLH(
-        1.57f, // ~90 degrees
-        (float)width / (float)height,
-        0.1f,
-        100.0f
-    );
+    cbData.viewMatrix = view;
+    cbData.projMatrix = proj;
     cbData.time = 0.0f;
 
     constantBuffer->update(ctx, &cbData);

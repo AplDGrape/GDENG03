@@ -15,7 +15,7 @@ public:
     ~SimplePlane();
 
     void update(float deltaTime) override;
-    void draw(int width, int height, VertexShader* vertexShader, PixelShader* pixelShader) override;
+    void draw(int width, int height, VertexShader* vertexShader, PixelShader* pixelShader);
 
 private:
     VertexBuffer* m_vb;

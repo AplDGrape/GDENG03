@@ -86,6 +86,9 @@ private:
 
 	Matrix4x4 m_world_cam;
 	Camera m_camera;
+
+	Matrix4x4 m_cameraViewMatrix;
+	Matrix4x4 m_cameraProjMatrix;
 private:
 	WireframeRenderer* m_wireframe_renderer = nullptr;
 

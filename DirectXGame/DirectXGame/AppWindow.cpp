@@ -118,6 +118,9 @@ void AppWindow::update()
 	// Use camera matrices
 	cc.m_view = m_camera.getViewMatrix();
 
+	m_cameraViewMatrix = m_camera.getViewMatrix();
+	m_cameraProjMatrix = m_camera.getProjectionMatrix();
+
 	/*cc.m_proj.setOrthoLH
 	(
 		(this->getClientWindowRect().right - this->getClientWindowRect().left)/400.0f,
@@ -276,25 +279,25 @@ void AppWindow::onCreate()
 	//m_vb->load(list, sizeof(vertex), size_list, shader_byte_code, size_shader);
 
 	//Render multiple cube (i.e. 100)
-	Cube* cubeObject = new Cube("Cube", shader_byte_code, size_shader);
+	//Cube* cubeObject = new Cube("Cube", shader_byte_code, size_shader);
 
-	for (int i = 0; i < 100; i++) {
-		float x = MathUtils::randomFloat(-0.75, 0.75f);
-		float y = MathUtils::randomFloat(-0.75, 0.75f);
-		float z = MathUtils::randomFloat(-0.75f, 0.75f); //For depth
+	//for (int i = 0; i < 100; i++) {
+	//	float x = MathUtils::randomFloat(-0.75, 0.75f);
+	//	float y = MathUtils::randomFloat(-0.75, 0.75f);
+	//	float z = MathUtils::randomFloat(-0.75f, 0.75f); //For depth
 
-		Cube* cubeObject = new Cube("Cube", shader_byte_code, size_shader);
-		cubeObject->setAnimSpeed(MathUtils::randomFloat(-3.75f, 3.75f));
-		cubeObject->setPosition(Vector3D(x, y, z/*0.0f*/));
-		cubeObject->setScale(Vector3D(0.25, 0.25, 0.25));
-		this->cubeList.push_back(cubeObject);
-	}
+	//	Cube* cubeObject = new Cube("Cube", shader_byte_code, size_shader);
+	//	cubeObject->setAnimSpeed(MathUtils::randomFloat(-3.75f, 3.75f));
+	//	cubeObject->setPosition(Vector3D(x, y, z/*0.0f*/));
+	//	cubeObject->setScale(Vector3D(0.25, 0.25, 0.25));
+	//	this->cubeList.push_back(cubeObject);
+	//}
 
 	// Added temporary plane
 	//Plane* plane = new Plane("MyPlane", shader_byte_code, size_shader);
-	///*plane->setPosition(Vector3D(0, -0.51f, 0.1f));
-	//plane->setScale(Vector3D(5.0f, 1.0f, 5.0f));*/
-	////plane->setRotation(Vector3D(0, 0, 0)); // Lay flat rotation
+	//plane->setPosition(Vector3D(0, -0.51f, 0.1f));
+	//plane->setScale(Vector3D(5.0f, 1.0f, 5.0f));
+	//plane->setRotation(Vector3D(0, 0, 0)); // Lay flat rotation
 	//this->cubeList2.push_back(plane);
 
 	//VertexBuffer* m_instanceBuffer = nullptr;
@@ -419,13 +422,13 @@ void AppWindow::onUpdate()
 	// Render plane objects
 	for (int i = 0; i < this->cubeList2.size(); i++) {
 		this->cubeList2[i]->update(EngineTime::getDeltaTime());
-		this->cubeList2[i]->draw(width, height, m_vs, m_ps);
+		this->cubeList2[i]->draw(width, height, m_vs, m_ps, m_cameraViewMatrix, m_cameraProjMatrix);
 	}
 
 	for (auto obj : this->cubeList2)
 	{
 		obj->update(EngineTime::getDeltaTime());
-		obj->draw(width, height, m_vs, m_ps);
+		obj->draw(width, height, m_vs, m_ps, m_cameraViewMatrix, m_cameraProjMatrix);
 	}
 
 	ImVec4 color = ImVec4(1, 0, 0, 1);
